@@ -1,0 +1,77 @@
+name: sebhua_notes
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # 状态管理
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  
+  # 本地数据库
+  drift: ^2.18.0
+  drift_flutter: ^0.1.0
+  sqlite3_flutter_libs: ^0.5.20
+  
+  # 富文本编辑
+  flutter_quill: ^9.3.0
+  flutter_quill_extensions: ^9.3.0
+  
+  # 网络
+  dio: ^5.4.0
+  web_socket_channel: ^2.4.0
+  
+  # 剪贴板（跨平台，支持图片/文件）
+  super_clipboard: ^0.8.17
+  
+  # 微信 SDK
+  fluwx: ^4.5.0
+  
+  # 文件选择
+  file_picker: ^6.1.1
+  
+  # 路径管理
+  path_provider: ^2.1.2
+  path: ^1.9.0
+  
+  # 权限
+  permission_handler: ^11.3.0
+  
+  # 系统托盘（桌面端后台）
+  system_tray: ^2.0.9
+  
+  # 本地存储（KV）
+  shared_preferences: ^2.2.2
+  
+  # JSON 序列化
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  
+  # 工具
+  uuid: ^4.3.3
+  crypto: ^3.0.3
+  intl: ^0.19.0
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  
+  # 代码生成
+  build_runner: ^2.4.8
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.11
+  drift_dev: ^2.18.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
