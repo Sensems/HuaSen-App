@@ -26,6 +26,30 @@ abstract class EmailLoginDto with _$EmailLoginDto {
       _$EmailLoginDtoFromJson(json);
 }
 
+/// DTO for sending an email verification code.
+@freezed
+abstract class EmailSendCodeDto with _$EmailSendCodeDto {
+  const factory EmailSendCodeDto({
+    required String email,
+  }) = _EmailSendCodeDto;
+
+  factory EmailSendCodeDto.fromJson(Map<String, dynamic> json) =>
+      _$EmailSendCodeDtoFromJson(json);
+}
+
+/// DTO for email registration.
+@freezed
+abstract class EmailRegisterDto with _$EmailRegisterDto {
+  const factory EmailRegisterDto({
+    required String email,
+    required String password,
+    required String code,
+  }) = _EmailRegisterDto;
+
+  factory EmailRegisterDto.fromJson(Map<String, dynamic> json) =>
+      _$EmailRegisterDtoFromJson(json);
+}
+
 /// DTO for token response after login or refresh.
 @freezed
 abstract class TokenResponseDto with _$TokenResponseDto {

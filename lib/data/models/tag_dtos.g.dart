@@ -11,7 +11,7 @@ _TagResponseDto _$TagResponseDtoFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       createdAt: _dateTimeFromJson(json['createdAt'] as String),
-      count: (json['count'] as num?)?.toInt(),
+      notesCount: _notesCountFromJson(json['_count']),
     );
 
 Map<String, dynamic> _$TagResponseDtoToJson(_TagResponseDto instance) =>
@@ -19,7 +19,7 @@ Map<String, dynamic> _$TagResponseDtoToJson(_TagResponseDto instance) =>
       'id': instance.id,
       'name': instance.name,
       'createdAt': _dateTimeToJson(instance.createdAt),
-      'count': instance.count,
+      '_count': _notesCountToJson(instance.notesCount),
     };
 
 _CreateTagDto _$CreateTagDtoFromJson(Map<String, dynamic> json) =>

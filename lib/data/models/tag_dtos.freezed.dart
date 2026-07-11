@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TagResponseDto {
 
- String get id; String get name;@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) DateTime get createdAt; int? get count;
+ String get id; String get name;@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) DateTime get createdAt;@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson) int? get notesCount;
 /// Create a copy of TagResponseDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $TagResponseDtoCopyWith<TagResponseDto> get copyWith => _$TagResponseDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagResponseDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.count, count) || other.count == count));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagResponseDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.notesCount, notesCount) || other.notesCount == notesCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,createdAt,count);
+int get hashCode => Object.hash(runtimeType,id,name,createdAt,notesCount);
 
 @override
 String toString() {
-  return 'TagResponseDto(id: $id, name: $name, createdAt: $createdAt, count: $count)';
+  return 'TagResponseDto(id: $id, name: $name, createdAt: $createdAt, notesCount: $notesCount)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $TagResponseDtoCopyWith<$Res>  {
   factory $TagResponseDtoCopyWith(TagResponseDto value, $Res Function(TagResponseDto) _then) = _$TagResponseDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name,@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) DateTime createdAt, int? count
+ String id, String name,@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) DateTime createdAt,@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson) int? notesCount
 });
 
 
@@ -65,12 +65,12 @@ class _$TagResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of TagResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? createdAt = null,Object? count = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? createdAt = null,Object? notesCount = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,count: freezed == count ? _self.count : count // ignore: cast_nullable_to_non_nullable
+as DateTime,notesCount: freezed == notesCount ? _self.notesCount : notesCount // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -156,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)  DateTime createdAt,  int? count)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)  DateTime createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson)  int? notesCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TagResponseDto() when $default != null:
-return $default(_that.id,_that.name,_that.createdAt,_that.count);case _:
+return $default(_that.id,_that.name,_that.createdAt,_that.notesCount);case _:
   return orElse();
 
 }
@@ -177,10 +177,10 @@ return $default(_that.id,_that.name,_that.createdAt,_that.count);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)  DateTime createdAt,  int? count)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)  DateTime createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson)  int? notesCount)  $default,) {final _that = this;
 switch (_that) {
 case _TagResponseDto():
-return $default(_that.id,_that.name,_that.createdAt,_that.count);case _:
+return $default(_that.id,_that.name,_that.createdAt,_that.notesCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +197,10 @@ return $default(_that.id,_that.name,_that.createdAt,_that.count);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)  DateTime createdAt,  int? count)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)  DateTime createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson)  int? notesCount)?  $default,) {final _that = this;
 switch (_that) {
 case _TagResponseDto() when $default != null:
-return $default(_that.id,_that.name,_that.createdAt,_that.count);case _:
+return $default(_that.id,_that.name,_that.createdAt,_that.notesCount);case _:
   return null;
 
 }
@@ -212,13 +212,13 @@ return $default(_that.id,_that.name,_that.createdAt,_that.count);case _:
 @JsonSerializable()
 
 class _TagResponseDto implements TagResponseDto {
-  const _TagResponseDto({required this.id, required this.name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) required this.createdAt, this.count});
+  const _TagResponseDto({required this.id, required this.name, @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) required this.createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson) this.notesCount});
   factory _TagResponseDto.fromJson(Map<String, dynamic> json) => _$TagResponseDtoFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) final  DateTime createdAt;
-@override final  int? count;
+@override@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson) final  int? notesCount;
 
 /// Create a copy of TagResponseDto
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TagResponseDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.count, count) || other.count == count));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TagResponseDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.notesCount, notesCount) || other.notesCount == notesCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,createdAt,count);
+int get hashCode => Object.hash(runtimeType,id,name,createdAt,notesCount);
 
 @override
 String toString() {
-  return 'TagResponseDto(id: $id, name: $name, createdAt: $createdAt, count: $count)';
+  return 'TagResponseDto(id: $id, name: $name, createdAt: $createdAt, notesCount: $notesCount)';
 }
 
 
@@ -253,7 +253,7 @@ abstract mixin class _$TagResponseDtoCopyWith<$Res> implements $TagResponseDtoCo
   factory _$TagResponseDtoCopyWith(_TagResponseDto value, $Res Function(_TagResponseDto) _then) = __$TagResponseDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name,@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) DateTime createdAt, int? count
+ String id, String name,@JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson) DateTime createdAt,@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson) int? notesCount
 });
 
 
@@ -270,12 +270,12 @@ class __$TagResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of TagResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? createdAt = null,Object? count = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? createdAt = null,Object? notesCount = freezed,}) {
   return _then(_TagResponseDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,count: freezed == count ? _self.count : count // ignore: cast_nullable_to_non_nullable
+as DateTime,notesCount: freezed == notesCount ? _self.notesCount : notesCount // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }

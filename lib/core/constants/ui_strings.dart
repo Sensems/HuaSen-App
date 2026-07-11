@@ -88,6 +88,7 @@ abstract final class UiStrings {
   static const String registerHasAccount = '已有账号？';
   static const String registerBackToLogin = '返回登录';
   static const String registerSuccess = '注册成功，请登录';
+  static const String registerCodeSent = '验证码已发送';
   static const String registerAgreePrefix = '我已阅读并同意';
   static const String registerUserAgreement = '《用户协议》';
   static const String registerAnd = '和';

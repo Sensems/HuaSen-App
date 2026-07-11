@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tolyui_message/tolyui_message.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
@@ -78,7 +79,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final ok = await ref
         .read(authNotifierProvider.notifier)
         .sendCode(_emailController.text);
-    if (ok && mounted) {
+    if (!mounted) {
+      return;
+    }
+    if (ok) {
+      $message.success(message: UiStrings.registerCodeSent);
       _startCountdown();
     }
   }
@@ -88,17 +93,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (auth.isSubmitting) {
       return;
     }
-    final ok = await ref
-        .read(authNotifierProvider.notifier)
-        .register(
+    final ok = await ref.read(authNotifierProvider.notifier).register(
           email: _emailController.text,
           password: _passwordController.text,
           confirmPassword: _confirmPasswordController.text,
           code: _codeController.text,
           agreedToTerms: _agreedToTerms,
         );
-    if (ok && mounted) {
-      context.go('${AppConstants.routeLogin}?registered=1');
+    if (!mounted) {
+      return;
+    }
+    if (ok) {
+      $message.success(message: UiStrings.registerSuccess);
+      context.go(AppConstants.routeLogin);
     }
   }
 
@@ -150,7 +157,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: TextFormField(
@@ -165,17 +172,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           decoration: const InputDecoration(
                             hintText: UiStrings.registerCodeHint,
                             prefixIcon: Icon(Icons.lock_outline),
+                            // Hide counter so field height matches sibling button.
+                            counterText: '',
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       SizedBox(
-                        height: 56,
+                        width: 120,
+                        height: 48,
                         child: OutlinedButton(
                           onPressed: codeButtonEnabled ? _onGetCode : null,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: colorScheme.primary,
                             side: BorderSide(color: colorScheme.primary),
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -193,6 +206,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   _countdownSeconds > 0
                                       ? '${_countdownSeconds}s'
                                       : UiStrings.registerGetCode,
+                                  textAlign: TextAlign.center,
                                 ),
                         ),
                       ),
@@ -254,39 +268,44 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Checkbox(
-                        value: _agreedToTerms,
-                        onChanged: isSubmitting
-                            ? null
-                            : (value) => setState(
-                                () => _agreedToTerms = value ?? false,
-                              ),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Checkbox(
+                          value: _agreedToTerms,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                          onChanged: isSubmitting
+                              ? null
+                              : (value) => setState(
+                                    () => _agreedToTerms = value ?? false,
+                                  ),
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Text.rich(
-                            TextSpan(
-                              style: theme.textTheme.bodyMedium,
-                              children: [
-                                const TextSpan(
-                                  text: UiStrings.registerAgreePrefix,
-                                ),
-                                TextSpan(
-                                  text: UiStrings.registerUserAgreement,
-                                  style: TextStyle(color: colorScheme.primary),
-                                  recognizer: _termsTap,
-                                ),
-                                const TextSpan(text: UiStrings.registerAnd),
-                                TextSpan(
-                                  text: UiStrings.registerPrivacyPolicy,
-                                  style: TextStyle(color: colorScheme.primary),
-                                  recognizer: _privacyTap,
-                                ),
-                              ],
-                            ),
+                        child: Text.rich(
+                          TextSpan(
+                            style: theme.textTheme.bodyMedium,
+                            children: [
+                              const TextSpan(
+                                text: UiStrings.registerAgreePrefix,
+                              ),
+                              TextSpan(
+                                text: UiStrings.registerUserAgreement,
+                                style: TextStyle(color: colorScheme.primary),
+                                recognizer: _termsTap,
+                              ),
+                              const TextSpan(text: UiStrings.registerAnd),
+                              TextSpan(
+                                text: UiStrings.registerPrivacyPolicy,
+                                style: TextStyle(color: colorScheme.primary),
+                                recognizer: _privacyTap,
+                              ),
+                            ],
                           ),
                         ),
                       ),

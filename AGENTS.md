@@ -1,7 +1,7 @@
 # Sebhua Notes — Agent 指南
 
 > 本文档面向 AI Agent / 开发者，说明项目定位、目录结构、架构约定与开发注意事项。  
-> **以代码为准**：若本文与源码冲突，以 `sebhua_notes_app/` 下实际代码为准。
+> **以代码为准**：若本文与源码冲突，以仓库根目录下实际代码为准。
 
 ---
 
@@ -35,28 +35,27 @@
 
 ## 2. 工作区布局（重要）
 
-仓库根目录与真正的 Flutter 应用**不是同一层**：
+仓库根目录即为唯一 Flutter 应用：
 
 ```
-sebhua-notes-app/                 ← 工作区根（本 AGENTS.md 所在位置）
+sebhua-notes-app/          ← 工作区根 = Flutter 工程根
 ├── AGENTS.md
-├── pubspec.yaml                  ← ⚠️ 根级旧/草稿依赖清单，勿当作主工程
-├── lib/                          ← ⚠️ 根级极简 stub（main/app），勿在此开发
-├── .omo/plans/                   ← 内部实现计划（脚手架、API Client 等）
-├── .codegraph/                   ← Codegraph 索引（可选）
-└── sebhua_notes_app/             ← ✅ 真正的 Flutter 应用（日常开发目录）
-    ├── pubspec.yaml              ← 主依赖清单（以此为准）
-    ├── lib/                      ← 全部业务代码
-    ├── docs/                     ← OpenAPI 相关 JSON
-    ├── android/ ios/ windows/ macos/ linux/ web/
-    └── test/
+├── pubspec.yaml           ← 主依赖清单
+├── lib/                   ← 全部业务代码
+├── docs/
+│   ├── api-docs.json      ← OpenAPI
+│   ├── schemas-only.json
+│   └── superpowers/       ← 设计/实现计划
+├── android/ ios/ windows/ macos/ linux/ web/
+├── test/
+├── .omo/plans/            ← 内部实现计划（脚手架、API Client 等）
+└── .codegraph/            ← Codegraph 索引（可选）
 ```
 
 **Agent 约定：**
 
-1. 所有功能开发、依赖变更、`flutter` 命令均在 **`sebhua_notes_app/`** 下执行。
-2. 不要修改根目录 `lib/` / `pubspec.yaml`，除非用户明确要求清理或合并工程。
-3. OpenAPI 参考：`sebhua_notes_app/docs/api-docs.json`、`schemas-only.json`。
+1. 所有功能开发、依赖变更、`flutter` 命令均在**仓库根目录**执行。
+2. OpenAPI 参考：`docs/api-docs.json`、`docs/schemas-only.json`。
 
 ---
 
@@ -135,7 +134,7 @@ UI (Screen / Widget)
 ### 5.1 应用入口
 
 ```
-sebhua_notes_app/lib/
+lib/
 ├── main.dart          # ProviderScope + runApp
 └── app.dart           # SebhuaNotesApp：MaterialApp.router + 主题
 ```
@@ -278,8 +277,8 @@ ui/
 
 ### 6.1 改代码前
 
-1. 确认工作目录是 `sebhua_notes_app/`。
-2. 优先用 Codegraph / 现有 README 定位模块，避免在根 `lib/` 写代码。
+1. 确认工作目录是仓库根（含 `pubspec.yaml` 与平台目录）。
+2. 优先用 Codegraph / 现有 README 定位模块。
 3. 网络相关改动：同步检查 `docs/api-docs.json` 与对应 Service/DTO。
 
 ### 6.2 分层与文件放置
@@ -306,13 +305,12 @@ ui/
 修改 Freezed / json_serializable / Riverpod / Drift 注解后：
 
 ```bash
-cd sebhua_notes_app
 dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### 6.5 验证
 
-完成功能或修复后，在 `sebhua_notes_app/` 执行：
+完成功能或修复后，在仓库根执行：
 
 ```bash
 flutter analyze
@@ -327,8 +325,6 @@ flutter test
 ## 7. 常用命令
 
 ```bash
-cd sebhua_notes_app
-
 flutter pub get
 flutter run -d windows          # 或 android / macos
 flutter run --dart-define=API_BASE_URL=https://...
@@ -364,7 +360,6 @@ dart run build_runner build --delete-conflicting-outputs
 3. **Drift schema + DAO**：笔记 / 剪贴板本地表与迁移。
 4. **Repository 层**：打通 Service ↔ 本地 DB，供 Riverpod 消费。
 5. **Feature 内部分层**：将扁平 Screen 迁入 `presentation/`，补 domain。
-6. **根目录 stub 清理**：合并或删除根级 `lib/` 与旧 `pubspec.yaml`，避免双工程混淆。
 
 ---
 
@@ -374,7 +369,7 @@ dart run build_runner build --delete-conflicting-outputs
 |------|------|
 | `.omo/plans/flutter-scaffold.md` | 脚手架与占位页计划（已完成） |
 | `.omo/plans/api-client-architecture.md` | API Client 分层计划（已完成） |
-| `sebhua_notes_app/lib/**/README.md` | 各层职责说明 |
+| `lib/**/README.md` | 各层职责说明 |
 
 ---
 
@@ -385,11 +380,21 @@ dart run build_runner build --delete-conflicting-outputs
 ## Learned User Preferences
 
 - Always persist auth tokens after successful login; do not use a "remember me" checkbox.
-- Prefer closely restoring provided design mocks for branded screens (e.g. login); app primary/accent color is `#ed6f5c`.
+- Prefer closely restoring provided design mocks for branded screens (e.g. login/register); app primary/accent color is `#ed6f5c`.
 - Login brand copy follows the approved mock: title「花森」, slogan「记录，以编辑的方式」.
+- Auth work should include proactive token refresh scheduling (before expiry) plus reactive 401 single-flight refresh; do not ship login with storage-only refresh.
+- After successful registration, auto-return to the login screen; do not auto-login or persist tokens from the register response.
+- Show auth success feedback (send-code / register) with `toly_ui` message (e.g.「注册成功，请登录」), not ad-hoc SnackBars.
+- 《用户协议》 and 《隐私政策》 links should be tappable and open placeholder pages (content filled later); terms checkbox is required before register.
+- Register password rule: ≥8 characters and must include letters and digits; verification code is 6 digits with a 60s resend countdown after successful send-code.
+- Prefer manual QA for auth registration work in this phase; do not add automated tests unless asked.
 
 ## Learned Workspace Facts
 
 - Local development API base URL: `http://127.0.0.1:3000`.
 - Backend email auth endpoints: `POST /auth/email/login`, `POST /auth/email/register`, `POST /auth/email/send-code`; no forgot-password endpoint.
-- Auth delivery scope: login-only first (`features/auth`, `/login` + route guard + `TokenStorage`); register / forgot-password links are placeholders for now.
+- Register API may return tokens; client must discard them. Confirm-password is client-only and not sent to the API.
+- Auth delivery scope: login and email registration are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register); forgot-password remains a placeholder.
+- Public unauthenticated routes: `/login`, `/register`, `/legal/terms`, `/legal/privacy`.
+- Git remote: `https://github.com/Sensems/HuaSen-App.git` (Sensems/HuaSen-App).
+- Flutter app lives at the repo root (single project); there is no nested `sebhua_notes_app/` app directory.

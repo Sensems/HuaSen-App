@@ -21,6 +21,26 @@ _EmailLoginDto _$EmailLoginDtoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$EmailLoginDtoToJson(_EmailLoginDto instance) =>
     <String, dynamic>{'email': instance.email, 'password': instance.password};
 
+_EmailSendCodeDto _$EmailSendCodeDtoFromJson(Map<String, dynamic> json) =>
+    _EmailSendCodeDto(email: json['email'] as String);
+
+Map<String, dynamic> _$EmailSendCodeDtoToJson(_EmailSendCodeDto instance) =>
+    <String, dynamic>{'email': instance.email};
+
+_EmailRegisterDto _$EmailRegisterDtoFromJson(Map<String, dynamic> json) =>
+    _EmailRegisterDto(
+      email: json['email'] as String,
+      password: json['password'] as String,
+      code: json['code'] as String,
+    );
+
+Map<String, dynamic> _$EmailRegisterDtoToJson(_EmailRegisterDto instance) =>
+    <String, dynamic>{
+      'email': instance.email,
+      'password': instance.password,
+      'code': instance.code,
+    };
+
 _TokenResponseDto _$TokenResponseDtoFromJson(Map<String, dynamic> json) =>
     _TokenResponseDto(
       accessToken: json['accessToken'] as String,

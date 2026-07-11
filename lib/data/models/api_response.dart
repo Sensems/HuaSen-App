@@ -35,8 +35,10 @@ class ApiResponse<T> {
   /// Typed payload.  May be `null` for empty responses.
   final T? data;
 
-  /// Convenience getter that checks whether [code] equals 200.
-  bool get isSuccess => code == 200;
+  /// Whether the business payload succeeded.
+  ///
+  /// Backend responses use either HTTP-style `200` or Nest-style `0`.
+  bool get isSuccess => code == 200 || code == 0;
 
   Map<String, dynamic> toJson(Object? Function(T value) toJsonT) =>
       _$ApiResponseToJson(this, toJsonT);

@@ -15,7 +15,7 @@
 .omo/run-continuation/
 .omo/boulder.json
 
-# Dart / Flutter (root stub + app)
+# Dart / Flutter
 .dart_tool/
 .packages
 .pub-cache/

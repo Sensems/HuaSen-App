@@ -29,15 +29,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         return;
       }
       ref.read(authNotifierProvider.notifier).clearError();
-      final registered = GoRouterState.of(
-        context,
-      ).uri.queryParameters['registered'];
-      if (registered == '1') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(UiStrings.registerSuccess)),
-        );
-        context.go(AppConstants.routeLogin);
-      }
     });
   }
 

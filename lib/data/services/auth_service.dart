@@ -1,10 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../models/api_response.dart';
-import '../models/auth_dtos.dart' show EmailLoginDto;
-import '../models/logout_response_dto.dart';
-import '../models/token_response_dto.dart';
-import '../models/wechat_callback_dto.dart';
+import '../models/auth_dtos.dart';
 
 /// Service for authentication-related API calls.
 class AuthService {
@@ -43,13 +40,49 @@ class AuthService {
     );
   }
 
+  /// Send email verification code.
+  ///
+  /// POST /auth/email/send-code
+  Future<ApiResponse<void>> sendEmailCode({required String email}) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/auth/email/send-code',
+      data: EmailSendCodeDto(email: email).toJson(),
+    );
+    return ApiResponse.fromJson(response.data!, (_) {});
+  }
+
+  /// Email registration.
+  ///
+  /// POST /auth/email/register
+  ///
+  /// OpenAPI returns [TokenResponseDto], but the app must not persist tokens
+  /// or auto-login after register — callers should discard [ApiResponse.data].
+  Future<ApiResponse<TokenResponseDto>> emailRegister({
+    required String email,
+    required String password,
+    required String code,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/auth/email/register',
+      data: EmailRegisterDto(
+        email: email,
+        password: password,
+        code: code,
+      ).toJson(),
+    );
+    return ApiResponse.fromJson(
+      response.data!,
+      (json) => TokenResponseDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
   /// Refresh access token.
   ///
   /// POST /auth/refresh
   Future<ApiResponse<TokenResponseDto>> refreshToken(String refreshToken) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/auth/refresh',
-      data: {'refreshToken': refreshToken},
+      data: RefreshTokenDto(refreshToken: refreshToken).toJson(),
     );
     return ApiResponse.fromJson(
       response.data!,
