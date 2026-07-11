@@ -28,8 +28,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) {
         return;
       }
-      final registered =
-          GoRouterState.of(context).uri.queryParameters['registered'];
+      ref.read(authNotifierProvider.notifier).clearError();
+      final registered = GoRouterState.of(
+        context,
+      ).uri.queryParameters['registered'];
       if (registered == '1') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text(UiStrings.registerSuccess)),
@@ -175,7 +177,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       TextButton(
                         onPressed: isSubmitting
                             ? null
-                            : () => context.push(AppConstants.routeRegister),
+                            : () {
+                                ref
+                                    .read(authNotifierProvider.notifier)
+                                    .clearError();
+                                context.push(AppConstants.routeRegister);
+                              },
                         style: TextButton.styleFrom(
                           foregroundColor: colorScheme.primary,
                         ),

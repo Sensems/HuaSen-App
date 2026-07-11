@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,6 +38,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.initState();
     _termsTap.onTap = () => context.push(AppConstants.routeLegalTerms);
     _privacyTap.onTap = () => context.push(AppConstants.routeLegalPrivacy);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(authNotifierProvider.notifier).clearError();
+      }
+    });
   }
 
   @override
@@ -82,7 +88,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (auth.isSubmitting) {
       return;
     }
-    final ok = await ref.read(authNotifierProvider.notifier).register(
+    final ok = await ref
+        .read(authNotifierProvider.notifier)
+        .register(
           email: _emailController.text,
           password: _passwordController.text,
           confirmPassword: _confirmPasswordController.text,
@@ -150,6 +158,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           enabled: !isSubmitting,
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          maxLength: 6,
                           decoration: const InputDecoration(
                             hintText: UiStrings.registerCodeHint,
                             prefixIcon: Icon(Icons.lock_outline),
@@ -203,8 +215,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         onPressed: isSubmitting
                             ? null
                             : () => setState(
-                                  () => _obscurePassword = !_obscurePassword,
-                                ),
+                                () => _obscurePassword = !_obscurePassword,
+                              ),
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_outlined
@@ -230,8 +242,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         onPressed: isSubmitting
                             ? null
                             : () => setState(
-                                  () => _obscureConfirm = !_obscureConfirm,
-                                ),
+                                () => _obscureConfirm = !_obscureConfirm,
+                              ),
                         icon: Icon(
                           _obscureConfirm
                               ? Icons.visibility_outlined
@@ -249,8 +261,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         onChanged: isSubmitting
                             ? null
                             : (value) => setState(
-                                  () => _agreedToTerms = value ?? false,
-                                ),
+                                () => _agreedToTerms = value ?? false,
+                              ),
                       ),
                       Expanded(
                         child: Padding(
@@ -322,7 +334,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       TextButton(
                         onPressed: isSubmitting
                             ? null
-                            : () => context.go(AppConstants.routeLogin),
+                            : () {
+                                ref
+                                    .read(authNotifierProvider.notifier)
+                                    .clearError();
+                                context.go(AppConstants.routeLogin);
+                              },
                         style: TextButton.styleFrom(
                           foregroundColor: colorScheme.primary,
                         ),

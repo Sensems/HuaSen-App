@@ -14,8 +14,9 @@ class AuthNotifier extends Notifier<AuthState> {
   final ValueNotifier<int> routerRefresh = ValueNotifier<int>(0);
 
   static final RegExp _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-  static final RegExp _passwordPattern =
-      RegExp(r'^(?=.*[A-Za-z])(?=.*\d).{8,}$');
+  static final RegExp _passwordPattern = RegExp(
+    r'^(?=.*[A-Za-z])(?=.*\d).{8,}$',
+  );
   static final RegExp _codePattern = RegExp(r'^\d{6}$');
 
   int _bootstrapGeneration = 0;
@@ -58,20 +59,16 @@ class AuthNotifier extends Notifier<AuthState> {
     final validationMessage = _validateLogin(trimmedEmail, password);
 
     if (validationMessage != null) {
-      state = AuthState(
-        status: state.status,
-        errorMessage: validationMessage,
-      );
+      state = AuthState(status: state.status, errorMessage: validationMessage);
       return;
     }
 
     state = AuthState(status: state.status, isSubmitting: true);
 
     try {
-      final response = await ref.read(authServiceProvider).emailLogin(
-            email: trimmedEmail,
-            password: password,
-          );
+      final response = await ref
+          .read(authServiceProvider)
+          .emailLogin(email: trimmedEmail, password: password);
       final tokenResponse = response.data;
 
       if (response.isSuccess && tokenResponse != null) {
@@ -179,17 +176,16 @@ class AuthNotifier extends Notifier<AuthState> {
       agreedToTerms: agreedToTerms,
     );
     if (validationMessage != null) {
-      state = AuthState(
-        status: state.status,
-        errorMessage: validationMessage,
-      );
+      state = AuthState(status: state.status, errorMessage: validationMessage);
       return false;
     }
 
     state = AuthState(status: state.status, isSubmitting: true);
 
     try {
-      final response = await ref.read(authServiceProvider).emailRegister(
+      final response = await ref
+          .read(authServiceProvider)
+          .emailRegister(
             email: trimmedEmail,
             password: password,
             code: trimmedCode,
@@ -220,6 +216,18 @@ class AuthNotifier extends Notifier<AuthState> {
         );
       }
     }
+  }
+
+  /// Dismisses a prior form error without changing the active auth request.
+  void clearError() {
+    if (state.errorMessage == null) {
+      return;
+    }
+    state = AuthState(
+      status: state.status,
+      isSubmitting: state.isSubmitting,
+      isSendingCode: state.isSendingCode,
+    );
   }
 
   Future<void> forceLogout() async {
@@ -300,8 +308,9 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 }
 
-final authNotifierProvider =
-    NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authNotifierProvider = NotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);
 
 final initialAuthStatusProvider = Provider<AuthStatus>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
@@ -321,8 +330,8 @@ AuthStatus initialAuthStatusFromStoredTokens({
     return AuthStatus.unauthenticated;
   }
 
-  final isExpired = expiresAt != null &&
-      expiresAt <= DateTime.now().millisecondsSinceEpoch;
+  final isExpired =
+      expiresAt != null && expiresAt <= DateTime.now().millisecondsSinceEpoch;
   final canRefresh = refreshToken != null && refreshToken.isNotEmpty;
   if (isExpired && !canRefresh) {
     return AuthStatus.unauthenticated;
