@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/constants/ui_strings.dart';
 import '../../ui/components/custom_app_bar.dart';
-import '../../ui/components/custom_bottom_nav.dart';
 
 /// Screen for app settings.
 ///
@@ -33,34 +31,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         showBack: !_isWide,
       ),
       body: _buildBody(),
-      bottomNavigationBar: _isWide
-          ? null
-          : CustomBottomNav(
-              currentIndex: 3,
-              items: const [
-                CustomNavItem(
-                  icon: Icons.note_outlined,
-                  activeIcon: Icons.note,
-                  label: UiStrings.navNotes,
-                ),
-                CustomNavItem(
-                  icon: Icons.content_copy_outlined,
-                  activeIcon: Icons.content_copy,
-                  label: UiStrings.navClipboard,
-                ),
-                CustomNavItem(
-                  icon: Icons.drafts_outlined,
-                  activeIcon: Icons.drafts,
-                  label: UiStrings.navDrafts,
-                ),
-                CustomNavItem(
-                  icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings,
-                  label: UiStrings.navSettings,
-                ),
-              ],
-              onTap: _onNavTap,
-            ),
     );
   }
 
@@ -181,16 +151,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _onNavTap(int index) {
-    switch (index) {
-      case 0:
-        context.go('/');
-      case 1:
-        context.go('/clipboard');
-      case 2:
-        context.go('/drafts');
-    }
-  }
 }
 
 /// A single settings row with icon, title, subtitle, and trailing widget.

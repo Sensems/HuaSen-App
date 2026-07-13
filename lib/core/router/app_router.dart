@@ -8,18 +8,19 @@ import '../../features/auth/legal_placeholder_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
 import '../../features/auth/reset_password_screen.dart';
+import '../../features/clipboard/clipboard_history_screen.dart';
+import '../../features/notes/note_editor_screen.dart';
+import '../../features/notes/notes_list_screen.dart';
+import '../../features/settings/settings_screen.dart';
+import '../../features/wechat/drafts_screen.dart';
+import '../../ui/shell/main_shell.dart';
 import '../constants/app_constants.dart';
 import '../constants/ui_strings.dart';
 
 /// Configures the app's [GoRouter].
 ///
-/// Routes are defined as top-level entries — no nested [ShellRoute]
-/// is used yet because the shell (scaffold with bottom nav / rail)
-/// will be added in a later task alongside the real screen widgets.
-///
-/// The builder callbacks return minimal placeholder [Scaffold]s so the
-/// router compiles and navigates immediately.  Each placeholder will
-/// be replaced by the real screen widget in a separate task.
+/// Authenticated main tabs live under a [ShellRoute] ([MainShell]).
+/// Auth / legal routes, note editor, and clipboard stay outside the shell.
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.read(authNotifierProvider.notifier);
 
@@ -80,41 +81,38 @@ final routerProvider = Provider<GoRouter>((ref) {
           title: UiStrings.legalPrivacyTitle,
         ),
       ),
-      GoRoute(
-        path: AppConstants.routeHome,
-        name: 'home',
-        builder: (context, state) => const _PlaceholderScreen(
-          title: 'Notes',
-          subtitle: 'Home / notes list — placeholder',
-        ),
+      ShellRoute(
+        builder: (context, state, child) => MainShell(child: child),
+        routes: [
+          GoRoute(
+            path: AppConstants.routeHome,
+            name: 'home',
+            builder: (context, state) => const NotesListScreen(),
+          ),
+          GoRoute(
+            path: AppConstants.routeDrafts,
+            name: 'drafts',
+            builder: (context, state) => const DraftsScreen(),
+          ),
+          GoRoute(
+            path: AppConstants.routeSettings,
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: AppConstants.routeNote,
         name: 'note',
         builder: (context, state) {
           final id = state.pathParameters['id'] ?? AppConstants.newNoteId;
-          final isNew = id == AppConstants.newNoteId;
-          return _PlaceholderScreen(
-            title: isNew ? 'New Note' : 'Edit Note',
-            subtitle: 'Note editor — placeholder\nid: $id',
-          );
+          return NoteEditorScreen(noteId: id);
         },
-      ),
-      GoRoute(
-        path: AppConstants.routeSettings,
-        name: 'settings',
-        builder: (context, state) => const _PlaceholderScreen(
-          title: 'Settings',
-          subtitle: 'Settings — placeholder',
-        ),
       ),
       GoRoute(
         path: AppConstants.routeClipboard,
         name: 'clipboard',
-        builder: (context, state) => const _PlaceholderScreen(
-          title: 'Clipboard',
-          subtitle: 'Clipboard / scratch space — placeholder',
-        ),
+        builder: (context, state) => const ClipboardHistoryScreen(),
       ),
     ],
     errorBuilder: (context, state) => _PlaceholderScreen(
@@ -124,11 +122,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Minimal placeholder used by every route until the real screen
-/// widgets are implemented in a separate task.
-///
-/// This is intentionally not a shared / reusable widget — it exists
-/// only so the router has something to render.
+/// Fallback for unmatched routes.
 class _PlaceholderScreen extends StatelessWidget {
   const _PlaceholderScreen({required this.title, required this.subtitle});
 

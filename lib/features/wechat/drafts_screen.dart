@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/constants/ui_strings.dart';
 import '../../ui/components/custom_app_bar.dart';
-import '../../ui/components/custom_bottom_nav.dart';
 import '../../ui/components/custom_button.dart';
 
 /// Placeholder draft note data.
@@ -89,34 +87,6 @@ class _DraftsScreenState extends State<DraftsScreen> {
         showBack: !_isWide,
       ),
       body: _drafts.isEmpty ? _buildEmptyState() : _buildList(),
-      bottomNavigationBar: _isWide
-          ? null
-          : CustomBottomNav(
-              currentIndex: 2,
-              items: const [
-                CustomNavItem(
-                  icon: Icons.note_outlined,
-                  activeIcon: Icons.note,
-                  label: UiStrings.navNotes,
-                ),
-                CustomNavItem(
-                  icon: Icons.content_copy_outlined,
-                  activeIcon: Icons.content_copy,
-                  label: UiStrings.navClipboard,
-                ),
-                CustomNavItem(
-                  icon: Icons.drafts_outlined,
-                  activeIcon: Icons.drafts,
-                  label: UiStrings.navDrafts,
-                ),
-                CustomNavItem(
-                  icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings,
-                  label: UiStrings.navSettings,
-                ),
-              ],
-              onTap: _onNavTap,
-            ),
     );
   }
 
@@ -250,16 +220,5 @@ class _DraftsScreenState extends State<DraftsScreen> {
         ],
       ),
     );
-  }
-
-  void _onNavTap(int index) {
-    switch (index) {
-      case 0:
-        context.go('/');
-      case 1:
-        context.go('/clipboard');
-      case 3:
-        context.go('/settings');
-    }
   }
 }
