@@ -9,17 +9,31 @@ abstract final class UiStrings {
   static const String appTitle = 'Sebhua Notes';
 
   // --- Navigation ---
-  static const String navNotes = 'Notes';
-  static const String navClipboard = 'Clipboard';
-  static const String navDrafts = 'Drafts';
-  static const String navSettings = 'Settings';
+  static const String navNotes = '笔记';
+  static const String navClipboard = '剪贴板';
+  static const String navDrafts = '草稿';
+  static const String navSettings = '设置';
 
   // --- Notes list screen ---
-  static const String searchNotes = 'Search notes...';
-  static const String noNotesFound = 'No notes yet';
-  static const String noNotesHint =
-      'Tap the + button to create your first note';
-  static const String createNote = 'Create note';
+  static const String notesBrandTitle = '花森';
+  static const String searchNotes = '搜索笔记';
+  static const String searchNotesHint = '输入关键词';
+  static const String notesFilterAll = '全部';
+  static const String notesFilterPinned = '置顶';
+  static const String notesFilterRecent = '最近';
+  static const String noNotesFound = '还没有笔记';
+  static const String noNotesHint = '点击右上角 + 创建第一条笔记';
+  static const String noSearchResults = '没有找到相关笔记';
+  static const String noSearchResultsHint = '试试其他关键词';
+  static const String notesPinnedEmpty = '暂无置顶笔记';
+  static const String notesPinnedEmptyHint = '置顶同步能力待后端支持';
+  static const String notesLoadFailed = '加载失败，请重试';
+  static const String notesRetry = '重试';
+  static const String notesRefreshFailed = '刷新失败';
+  static const String notesLoadMoreFailed = '加载更多失败，点击重试';
+  static const String notesNoMore = '没有更多了';
+  static const String notesUntitled = '无标题';
+  static const String createNote = '新建笔记';
 
   // --- Note editor screen ---
   static const String noteTitleHint = 'Note title';

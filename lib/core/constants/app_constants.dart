@@ -20,6 +20,12 @@ class AppConstants {
   /// Settings screen.
   static const String routeSettings = '/settings';
 
+  /// WeChat drafts screen.
+  static const String routeDrafts = '/drafts';
+
+  /// Default page size for notes list.
+  static const int notesPageSize = 20;
+
   /// Clipboard / scratch space screen.
   static const String routeClipboard = '/clipboard';
 
