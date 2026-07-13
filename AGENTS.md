@@ -396,7 +396,7 @@ dart run build_runner build --delete-conflicting-outputs
 - Live OpenAPI for syncing client API config: `http://127.0.0.1:3000/api/docs-json` (mirrored in `docs/api-docs.json` / `docs/schemas-only.json`).
 - Backend email auth endpoints: `POST /auth/email/login`, `POST /auth/email/register`, `POST /auth/email/send-code` (requires `purpose`: `register` | `reset_password`), `POST /auth/email/reset-password`.
 - Register API success has no token payload; confirm-password is client-only and not sent to the API.
-- Auth delivery scope: login and email registration are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register); reset-password API is wired in `AuthService`; reset-password UI is approved to mirror register at `/reset-password` (implementation pending if not yet shipped).
+- Auth delivery scope: login, email registration, and reset-password are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register/reset UI); reset-password mirrors register; send-code uses `purpose: reset_password`; success uses toly_ui and returns to login without tokens or auto-login.
 - Public unauthenticated routes: `/login`, `/register`, `/reset-password`, `/legal/terms`, `/legal/privacy`.
 - Git remote: `https://github.com/Sensems/HuaSen-App.git` (Sensems/HuaSen-App).
 - Flutter app lives at the repo root (single project); there is no nested `sebhua_notes_app/` app directory.
