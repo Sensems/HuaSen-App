@@ -44,10 +44,20 @@
         "type": "string",
         "description": "接收验证码的邮箱",
         "example": "user@example.com"
+      },
+      "purpose": {
+        "type": "string",
+        "description": "验证码用途：register 注册 / reset_password 重置密码",
+        "example": "register",
+        "enum": [
+          "register",
+          "reset_password"
+        ]
       }
     },
     "required": [
-      "email"
+      "email",
+      "purpose"
     ]
   },
   "EmailRegisterDto": {
@@ -61,6 +71,31 @@
       "password": {
         "type": "string",
         "description": "密码（≥8位，必须包含字母和数字）",
+        "example": "Abc12345"
+      },
+      "code": {
+        "type": "string",
+        "description": "6位数字验证码",
+        "example": "482931"
+      }
+    },
+    "required": [
+      "email",
+      "password",
+      "code"
+    ]
+  },
+  "EmailResetPasswordDto": {
+    "type": "object",
+    "properties": {
+      "email": {
+        "type": "string",
+        "description": "邮箱",
+        "example": "user@example.com"
+      },
+      "password": {
+        "type": "string",
+        "description": "新密码（≥8位，必须包含字母和数字）",
         "example": "Abc12345"
       },
       "code": {

@@ -544,7 +544,7 @@ as String,
 /// @nodoc
 mixin _$EmailSendCodeDto {
 
- String get email;
+ String get email; EmailCodePurpose get purpose;
 /// Create a copy of EmailSendCodeDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -557,16 +557,16 @@ $EmailSendCodeDtoCopyWith<EmailSendCodeDto> get copyWith => _$EmailSendCodeDtoCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailSendCodeDto&&(identical(other.email, email) || other.email == email));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailSendCodeDto&&(identical(other.email, email) || other.email == email)&&(identical(other.purpose, purpose) || other.purpose == purpose));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,email);
+int get hashCode => Object.hash(runtimeType,email,purpose);
 
 @override
 String toString() {
-  return 'EmailSendCodeDto(email: $email)';
+  return 'EmailSendCodeDto(email: $email, purpose: $purpose)';
 }
 
 
@@ -577,7 +577,7 @@ abstract mixin class $EmailSendCodeDtoCopyWith<$Res>  {
   factory $EmailSendCodeDtoCopyWith(EmailSendCodeDto value, $Res Function(EmailSendCodeDto) _then) = _$EmailSendCodeDtoCopyWithImpl;
 @useResult
 $Res call({
- String email
+ String email, EmailCodePurpose purpose
 });
 
 
@@ -594,10 +594,11 @@ class _$EmailSendCodeDtoCopyWithImpl<$Res>
 
 /// Create a copy of EmailSendCodeDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? purpose = null,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,
+as String,purpose: null == purpose ? _self.purpose : purpose // ignore: cast_nullable_to_non_nullable
+as EmailCodePurpose,
   ));
 }
 
@@ -682,10 +683,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  EmailCodePurpose purpose)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EmailSendCodeDto() when $default != null:
-return $default(_that.email);case _:
+return $default(_that.email,_that.purpose);case _:
   return orElse();
 
 }
@@ -703,10 +704,10 @@ return $default(_that.email);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  EmailCodePurpose purpose)  $default,) {final _that = this;
 switch (_that) {
 case _EmailSendCodeDto():
-return $default(_that.email);case _:
+return $default(_that.email,_that.purpose);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -723,10 +724,10 @@ return $default(_that.email);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  EmailCodePurpose purpose)?  $default,) {final _that = this;
 switch (_that) {
 case _EmailSendCodeDto() when $default != null:
-return $default(_that.email);case _:
+return $default(_that.email,_that.purpose);case _:
   return null;
 
 }
@@ -738,10 +739,11 @@ return $default(_that.email);case _:
 @JsonSerializable()
 
 class _EmailSendCodeDto implements EmailSendCodeDto {
-  const _EmailSendCodeDto({required this.email});
+  const _EmailSendCodeDto({required this.email, required this.purpose});
   factory _EmailSendCodeDto.fromJson(Map<String, dynamic> json) => _$EmailSendCodeDtoFromJson(json);
 
 @override final  String email;
+@override final  EmailCodePurpose purpose;
 
 /// Create a copy of EmailSendCodeDto
 /// with the given fields replaced by the non-null parameter values.
@@ -756,16 +758,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailSendCodeDto&&(identical(other.email, email) || other.email == email));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailSendCodeDto&&(identical(other.email, email) || other.email == email)&&(identical(other.purpose, purpose) || other.purpose == purpose));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,email);
+int get hashCode => Object.hash(runtimeType,email,purpose);
 
 @override
 String toString() {
-  return 'EmailSendCodeDto(email: $email)';
+  return 'EmailSendCodeDto(email: $email, purpose: $purpose)';
 }
 
 
@@ -776,7 +778,7 @@ abstract mixin class _$EmailSendCodeDtoCopyWith<$Res> implements $EmailSendCodeD
   factory _$EmailSendCodeDtoCopyWith(_EmailSendCodeDto value, $Res Function(_EmailSendCodeDto) _then) = __$EmailSendCodeDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String email
+ String email, EmailCodePurpose purpose
 });
 
 
@@ -793,10 +795,11 @@ class __$EmailSendCodeDtoCopyWithImpl<$Res>
 
 /// Create a copy of EmailSendCodeDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? purpose = null,}) {
   return _then(_EmailSendCodeDto(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,
+as String,purpose: null == purpose ? _self.purpose : purpose // ignore: cast_nullable_to_non_nullable
+as EmailCodePurpose,
   ));
 }
 
@@ -1062,6 +1065,275 @@ class __$EmailRegisterDtoCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,Object? code = null,}) {
   return _then(_EmailRegisterDto(
+email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$EmailResetPasswordDto {
+
+ String get email; String get password; String get code;
+/// Create a copy of EmailResetPasswordDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EmailResetPasswordDtoCopyWith<EmailResetPasswordDto> get copyWith => _$EmailResetPasswordDtoCopyWithImpl<EmailResetPasswordDto>(this as EmailResetPasswordDto, _$identity);
+
+  /// Serializes this EmailResetPasswordDto to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EmailResetPasswordDto&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.code, code) || other.code == code));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,email,password,code);
+
+@override
+String toString() {
+  return 'EmailResetPasswordDto(email: $email, password: $password, code: $code)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EmailResetPasswordDtoCopyWith<$Res>  {
+  factory $EmailResetPasswordDtoCopyWith(EmailResetPasswordDto value, $Res Function(EmailResetPasswordDto) _then) = _$EmailResetPasswordDtoCopyWithImpl;
+@useResult
+$Res call({
+ String email, String password, String code
+});
+
+
+
+
+}
+/// @nodoc
+class _$EmailResetPasswordDtoCopyWithImpl<$Res>
+    implements $EmailResetPasswordDtoCopyWith<$Res> {
+  _$EmailResetPasswordDtoCopyWithImpl(this._self, this._then);
+
+  final EmailResetPasswordDto _self;
+  final $Res Function(EmailResetPasswordDto) _then;
+
+/// Create a copy of EmailResetPasswordDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? password = null,Object? code = null,}) {
+  return _then(_self.copyWith(
+email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [EmailResetPasswordDto].
+extension EmailResetPasswordDtoPatterns on EmailResetPasswordDto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _EmailResetPasswordDto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _EmailResetPasswordDto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _EmailResetPasswordDto value)  $default,){
+final _that = this;
+switch (_that) {
+case _EmailResetPasswordDto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _EmailResetPasswordDto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _EmailResetPasswordDto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String password,  String code)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _EmailResetPasswordDto() when $default != null:
+return $default(_that.email,_that.password,_that.code);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String password,  String code)  $default,) {final _that = this;
+switch (_that) {
+case _EmailResetPasswordDto():
+return $default(_that.email,_that.password,_that.code);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String password,  String code)?  $default,) {final _that = this;
+switch (_that) {
+case _EmailResetPasswordDto() when $default != null:
+return $default(_that.email,_that.password,_that.code);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _EmailResetPasswordDto implements EmailResetPasswordDto {
+  const _EmailResetPasswordDto({required this.email, required this.password, required this.code});
+  factory _EmailResetPasswordDto.fromJson(Map<String, dynamic> json) => _$EmailResetPasswordDtoFromJson(json);
+
+@override final  String email;
+@override final  String password;
+@override final  String code;
+
+/// Create a copy of EmailResetPasswordDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$EmailResetPasswordDtoCopyWith<_EmailResetPasswordDto> get copyWith => __$EmailResetPasswordDtoCopyWithImpl<_EmailResetPasswordDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$EmailResetPasswordDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailResetPasswordDto&&(identical(other.email, email) || other.email == email)&&(identical(other.password, password) || other.password == password)&&(identical(other.code, code) || other.code == code));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,email,password,code);
+
+@override
+String toString() {
+  return 'EmailResetPasswordDto(email: $email, password: $password, code: $code)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$EmailResetPasswordDtoCopyWith<$Res> implements $EmailResetPasswordDtoCopyWith<$Res> {
+  factory _$EmailResetPasswordDtoCopyWith(_EmailResetPasswordDto value, $Res Function(_EmailResetPasswordDto) _then) = __$EmailResetPasswordDtoCopyWithImpl;
+@override @useResult
+$Res call({
+ String email, String password, String code
+});
+
+
+
+
+}
+/// @nodoc
+class __$EmailResetPasswordDtoCopyWithImpl<$Res>
+    implements _$EmailResetPasswordDtoCopyWith<$Res> {
+  __$EmailResetPasswordDtoCopyWithImpl(this._self, this._then);
+
+  final _EmailResetPasswordDto _self;
+  final $Res Function(_EmailResetPasswordDto) _then;
+
+/// Create a copy of EmailResetPasswordDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? password = null,Object? code = null,}) {
+  return _then(_EmailResetPasswordDto(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
 as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable

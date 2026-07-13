@@ -3,6 +3,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'auth_dtos.freezed.dart';
 part 'auth_dtos.g.dart';
 
+/// Purpose for [EmailSendCodeDto] / `POST /auth/email/send-code`.
+enum EmailCodePurpose {
+  @JsonValue('register')
+  register,
+  @JsonValue('reset_password')
+  resetPassword,
+}
+
 /// DTO for WeChat OAuth login callback.
 @freezed
 abstract class WechatCallbackDto with _$WechatCallbackDto {
@@ -31,6 +39,7 @@ abstract class EmailLoginDto with _$EmailLoginDto {
 abstract class EmailSendCodeDto with _$EmailSendCodeDto {
   const factory EmailSendCodeDto({
     required String email,
+    required EmailCodePurpose purpose,
   }) = _EmailSendCodeDto;
 
   factory EmailSendCodeDto.fromJson(Map<String, dynamic> json) =>
@@ -48,6 +57,19 @@ abstract class EmailRegisterDto with _$EmailRegisterDto {
 
   factory EmailRegisterDto.fromJson(Map<String, dynamic> json) =>
       _$EmailRegisterDtoFromJson(json);
+}
+
+/// DTO for email password reset (`POST /auth/email/reset-password`).
+@freezed
+abstract class EmailResetPasswordDto with _$EmailResetPasswordDto {
+  const factory EmailResetPasswordDto({
+    required String email,
+    required String password,
+    required String code,
+  }) = _EmailResetPasswordDto;
+
+  factory EmailResetPasswordDto.fromJson(Map<String, dynamic> json) =>
+      _$EmailResetPasswordDtoFromJson(json);
 }
 
 /// DTO for token response after login or refresh.

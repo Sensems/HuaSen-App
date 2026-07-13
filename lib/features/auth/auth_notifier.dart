@@ -8,6 +8,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
 import '../../core/network/shared_preferences_token_storage.dart';
 import '../../core/providers/core_providers.dart';
+import '../../data/models/auth_dtos.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends Notifier<AuthState> {
@@ -127,9 +128,10 @@ class AuthNotifier extends Notifier<AuthState> {
     state = AuthState(status: state.status, isSendingCode: true);
 
     try {
-      final response = await ref
-          .read(authServiceProvider)
-          .sendEmailCode(email: trimmedEmail);
+      final response = await ref.read(authServiceProvider).sendEmailCode(
+            email: trimmedEmail,
+            purpose: EmailCodePurpose.register,
+          );
       if (response.isSuccess) {
         state = AuthState(status: state.status);
         return true;
@@ -191,7 +193,6 @@ class AuthNotifier extends Notifier<AuthState> {
             code: trimmedCode,
           );
       if (response.isSuccess) {
-        // Intentionally discard response.data tokens.
         state = AuthState(status: state.status);
         return true;
       }

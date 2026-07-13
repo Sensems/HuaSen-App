@@ -43,10 +43,13 @@ class AuthService {
   /// Send email verification code.
   ///
   /// POST /auth/email/send-code
-  Future<ApiResponse<void>> sendEmailCode({required String email}) async {
+  Future<ApiResponse<void>> sendEmailCode({
+    required String email,
+    required EmailCodePurpose purpose,
+  }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/auth/email/send-code',
-      data: EmailSendCodeDto(email: email).toJson(),
+      data: EmailSendCodeDto(email: email, purpose: purpose).toJson(),
     );
     return ApiResponse.fromJson(response.data!, (_) {});
   }
@@ -55,9 +58,9 @@ class AuthService {
   ///
   /// POST /auth/email/register
   ///
-  /// OpenAPI returns [TokenResponseDto], but the app must not persist tokens
-  /// or auto-login after register — callers should discard [ApiResponse.data].
-  Future<ApiResponse<TokenResponseDto>> emailRegister({
+  /// OpenAPI documents a success response without token payload. Callers must
+  /// not persist tokens or auto-login after register.
+  Future<ApiResponse<void>> emailRegister({
     required String email,
     required String password,
     required String code,
@@ -70,10 +73,26 @@ class AuthService {
         code: code,
       ).toJson(),
     );
-    return ApiResponse.fromJson(
-      response.data!,
-      (json) => TokenResponseDto.fromJson(json as Map<String, dynamic>),
+    return ApiResponse.fromJson(response.data!, (_) {});
+  }
+
+  /// Reset password with email verification code.
+  ///
+  /// POST /auth/email/reset-password
+  Future<ApiResponse<void>> emailResetPassword({
+    required String email,
+    required String password,
+    required String code,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/auth/email/reset-password',
+      data: EmailResetPasswordDto(
+        email: email,
+        password: password,
+        code: code,
+      ).toJson(),
     );
+    return ApiResponse.fromJson(response.data!, (_) {});
   }
 
   /// Refresh access token.

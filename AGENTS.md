@@ -380,21 +380,23 @@ dart run build_runner build --delete-conflicting-outputs
 ## Learned User Preferences
 
 - Always persist auth tokens after successful login; do not use a "remember me" checkbox.
-- Prefer closely restoring provided design mocks for branded screens (e.g. login/register); app primary/accent color is `#ed6f5c`.
+- Prefer closely restoring provided design mocks for branded screens (e.g. login/register/reset-password); app primary/accent color is `#ed6f5c` via global `AppColors` / `ColorScheme.primary`, not hard-coded per page.
 - Login brand copy follows the approved mock: title「花森」, slogan「记录，以编辑的方式」.
 - Auth work should include proactive token refresh scheduling (before expiry) plus reactive 401 single-flight refresh; do not ship login with storage-only refresh.
-- After successful registration, auto-return to the login screen; do not auto-login or persist tokens from the register response.
-- Show auth success feedback (send-code / register) with `toly_ui` message (e.g.「注册成功，请登录」), not ad-hoc SnackBars.
-- 《用户协议》 and 《隐私政策》 links should be tappable and open placeholder pages (content filled later); terms checkbox is required before register.
-- Register password rule: ≥8 characters and must include letters and digits; verification code is 6 digits with a 60s resend countdown after successful send-code.
-- Prefer manual QA for auth registration work in this phase; do not add automated tests unless asked.
+- After successful registration or password reset, auto-return to the login screen; do not auto-login or persist tokens from those responses.
+- Show auth success feedback (send-code / register / password-reset) with `toly_ui` message (e.g.「注册成功，请登录」,「密码重置成功，请登录」), not ad-hoc SnackBars.
+- 《用户协议》 and 《隐私政策》 links should be tappable and open placeholder pages (content filled later); terms checkbox is required before register (not on reset-password).
+- Register/reset password rule: ≥8 characters and must include letters and digits; verification code is 6 digits with a 60s resend countdown after successful send-code.
+- Reset-password UI should mirror the register screen; login「忘记密码?」navigates to `/reset-password` and prefills the current email.
+- Prefer manual QA for auth work in this phase; do not add automated tests unless asked.
 
 ## Learned Workspace Facts
 
 - Local development API base URL: `http://127.0.0.1:3000`.
-- Backend email auth endpoints: `POST /auth/email/login`, `POST /auth/email/register`, `POST /auth/email/send-code`; no forgot-password endpoint.
-- Register API may return tokens; client must discard them. Confirm-password is client-only and not sent to the API.
-- Auth delivery scope: login and email registration are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register); forgot-password remains a placeholder.
-- Public unauthenticated routes: `/login`, `/register`, `/legal/terms`, `/legal/privacy`.
+- Live OpenAPI for syncing client API config: `http://127.0.0.1:3000/api/docs-json` (mirrored in `docs/api-docs.json` / `docs/schemas-only.json`).
+- Backend email auth endpoints: `POST /auth/email/login`, `POST /auth/email/register`, `POST /auth/email/send-code` (requires `purpose`: `register` | `reset_password`), `POST /auth/email/reset-password`.
+- Register API success has no token payload; confirm-password is client-only and not sent to the API.
+- Auth delivery scope: login and email registration are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register); reset-password API is wired in `AuthService`; reset-password UI is approved to mirror register at `/reset-password` (implementation pending if not yet shipped).
+- Public unauthenticated routes: `/login`, `/register`, `/reset-password`, `/legal/terms`, `/legal/privacy`.
 - Git remote: `https://github.com/Sensems/HuaSen-App.git` (Sensems/HuaSen-App).
 - Flutter app lives at the repo root (single project); there is no nested `sebhua_notes_app/` app directory.
