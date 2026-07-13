@@ -100,6 +100,17 @@ abstract final class UiStrings {
   static const String registerTermsRequired = '请先阅读并同意用户协议和隐私政策';
   static const String registerNetworkError = '网络异常，请重试';
 
+  // --- Reset password ---
+  static const String resetPasswordTitle = '重置密码';
+  static const String resetPasswordSubtitle = '输入注册邮箱，我们将发送验证码';
+  static const String resetPasswordHint = '新密码';
+  static const String resetPasswordConfirmHint = '确认新密码';
+  static const String resetPasswordButton = '确认重置';
+  static const String resetPasswordBackToLogin = '← 返回登录';
+  static const String resetPasswordSuccess = '密码重置成功，请登录';
+  static const String resetPasswordResendPrefix = '重新发送';
+  static const String resetPasswordNetworkError = '网络异常，请重试';
+
   // --- Legal placeholders ---
   static const String legalTermsTitle = '用户协议';
   static const String legalPrivacyTitle = '隐私政策';

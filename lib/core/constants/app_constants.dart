@@ -29,6 +29,9 @@ class AppConstants {
   /// Email registration screen.
   static const String routeRegister = '/register';
 
+  /// Email reset-password screen.
+  static const String routeResetPassword = '/reset-password';
+
   /// User agreement placeholder.
   static const String routeLegalTerms = '/legal/terms';
 
