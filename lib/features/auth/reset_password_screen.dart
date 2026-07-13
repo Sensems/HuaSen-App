@@ -119,9 +119,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.fromLTRB(24, 48, 24, 32),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
@@ -131,6 +132,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     UiStrings.resetPasswordTitle,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w700,
+                      fontSize: 32,
                     ),
                   ),
                   const SizedBox(height: 8),

@@ -113,7 +113,8 @@ class CustomInput extends StatelessWidget {
                 : null,
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: colorScheme.surfaceContainerLow,
+            fillColor: theme.inputDecorationTheme.fillColor ??
+                colorScheme.surfaceContainerLow,
             enabledBorder: inputBorder,
             focusedBorder: focusedBorder,
             disabledBorder: inputBorder,

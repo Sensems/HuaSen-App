@@ -320,6 +320,12 @@ flutter test
 
 宣称「通过 / 完成」前必须有上述命令的实际输出依据。
 
+### 6.6 计划执行与 Git 工作流（强制）
+
+1. **计划写完后始终用 Subagent-Driven Development**：实现计划（`writing-plans` / `docs/superpowers/plans/` 等）一旦定稿并获准执行，必须按 `subagent-driven-development` 技能推进——每个任务派发独立 implementer subagent，任务后做 spec/质量 review，全部完成后做整体 review。不要改用手写逐步执行或 `executing-plans` 平行会话，除非用户当场明确改口。
+2. **改动始终在 `master` 上**：所有实现、修复、提交都在当前仓库的 `master` 分支直接进行。
+3. **禁止切分支与 worktree**：不要 `git checkout -b`、不要新建 feature 分支、不要使用 `git worktree` / `using-git-worktrees`。即使用户说「开个 PR」或技能默认建议隔离分支，本仓库仍默认在 `master` 上改；仅当用户**明确**要求切分支或 worktree 时才例外。
+
 ---
 
 ## 7. 常用命令
@@ -379,16 +385,18 @@ dart run build_runner build --delete-conflicting-outputs
 
 ## Learned User Preferences
 
+- After an implementation plan is written and approved, always execute it with Subagent-Driven Development (`subagent-driven-development`); do not fall back to manual step-by-step or parallel-session `executing-plans` unless the user explicitly overrides.
+- Always make code changes on the `master` branch; do not create feature branches, switch branches, or use git worktrees unless the user explicitly asks.
 - Always persist auth tokens after successful login; do not use a "remember me" checkbox.
-- Prefer closely restoring provided design mocks for branded screens (e.g. login/register/reset-password); app primary/accent color is `#ed6f5c` via global `AppColors` / `ColorScheme.primary`, not hard-coded per page.
-- Login brand copy follows the approved mock: title「花森」, slogan「记录，以编辑的方式」.
+- Prefer closely restoring provided design mocks for branded screens (e.g. login/register/reset-password/notes list); primary/accent `#ed6f5c` via global `AppColors` / `ColorScheme.primary` (not per-page); default `ThemeMode.light`; light canvas `#f8f7f4` and white input fills via `AppColors` / `AppTheme`.
+- Login brand copy follows the approved mock: title「花森」, slogan「记录，以编辑的方式」; brand marker is a 10px coral dot with no icon.
 - Auth work should include proactive token refresh scheduling (before expiry) plus reactive 401 single-flight refresh; do not ship login with storage-only refresh.
 - After successful registration or password reset, auto-return to the login screen; do not auto-login or persist tokens from those responses.
 - Show auth success feedback (send-code / register / password-reset) with `toly_ui` message (e.g.「注册成功，请登录」,「密码重置成功，请登录」), not ad-hoc SnackBars.
 - 《用户协议》 and 《隐私政策》 links should be tappable and open placeholder pages (content filled later); terms checkbox is required before register (not on reset-password).
 - Register/reset password rule: ≥8 characters and must include letters and digits; verification code is 6 digits with a 60s resend countdown after successful send-code.
 - Reset-password UI should mirror the register screen; login「忘记密码?」navigates to `/reset-password` and prefills the current email.
-- Prefer manual QA for auth work in this phase; do not add automated tests unless asked.
+- Prefer manual QA in this phase (auth, notes list); do not add automated tests unless asked.
 
 ## Learned Workspace Facts
 
@@ -398,5 +406,7 @@ dart run build_runner build --delete-conflicting-outputs
 - Register API success has no token payload; confirm-password is client-only and not sent to the API.
 - Auth delivery scope: login, email registration, and reset-password are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register/reset UI); reset-password mirrors register; send-code uses `purpose: reset_password`; success uses toly_ui and returns to login without tokens or auto-login.
 - Public unauthenticated routes: `/login`, `/register`, `/reset-password`, `/legal/terms`, `/legal/privacy`.
+- UI stack: Flutter Material + custom `lib/ui/` components; `tolyui_message` for toasts only — no third-party full UI framework.
+- Approved notes-list shell: GoRouter `ShellRoute` tabs 笔记 / 草稿 / 设置; clipboard removed from the bar but `/clipboard` route retained; list via `NotesService.listNotes` (keyword/page/size), pinned filter UI-only until backend supports pin; sticky header with expandable search, pull-to-refresh, and load-more (no Drift/Repository in that scope).
 - Git remote: `https://github.com/Sensems/HuaSen-App.git` (Sensems/HuaSen-App).
 - Flutter app lives at the repo root (single project); there is no nested `sebhua_notes_app/` app directory.

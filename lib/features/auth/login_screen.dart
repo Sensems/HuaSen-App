@@ -60,9 +60,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.fromLTRB(24, 48, 24, 32),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
@@ -203,41 +204,42 @@ class _BrandHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: const BoxDecoration(
-            color: AppColors.coral,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.edit_note_rounded,
-            color: AppColors.lightSurface,
-            size: 32,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              UiStrings.loginBrandTitle,
-              style: theme.textTheme.headlineLarge?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
+            Container(
+              width: 10,
+              height: 10,
+              decoration: const BoxDecoration(
+                color: AppColors.coral,
+                shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(width: 8),
             Text(
-              UiStrings.loginBrandSlogan,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+              UiStrings.loginBrandTitle,
+              style: theme.textTheme.headlineMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                height: 1.2,
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          UiStrings.loginBrandSlogan,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontSize: 15,
+            height: 1.4,
+          ),
         ),
       ],
     );

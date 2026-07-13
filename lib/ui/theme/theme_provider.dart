@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Holds the current [ThemeMode] and exposes methods to change it.
 ///
-/// The initial value is [ThemeMode.system] so the app respects the
-/// OS-level dark-mode setting on first launch.  Call [toggle] to flip
-/// between light and dark, or [set] to pick an explicit mode.
+/// The initial value is [ThemeMode.light] (day mode). Call [toggle] to
+/// flip between light and dark, or [set] to pick an explicit mode.
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
-  ThemeMode build() => ThemeMode.system;
+  ThemeMode build() => ThemeMode.light;
 
   /// Switches to the opposite of the *effective* mode.
   ///

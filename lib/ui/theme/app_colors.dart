@@ -36,13 +36,13 @@ class AppColors {
   static const Color info = Color(0xFF5B8DB8);
 
   // ── Light theme surface tones ────────────────────────────────
-  /// Warm paper background — the base canvas.
-  static const Color lightBackground = Color(0xFFFAF7F2);
+  /// Page canvas background.
+  static const Color lightBackground = Color(0xFFF8F7F4);
 
-  /// Slightly elevated surface (cards, sheets).
-  static const Color lightSurface = Color(0xFFFFFDF8);
+  /// Elevated surface (cards, sheets) and input fill — white.
+  static const Color lightSurface = Color(0xFFFFFFFF);
 
-  /// Muted surface for input fields, app bars.
+  /// Muted surface for chips, app-bar variants, etc.
   static const Color lightSurfaceVariant = Color(0xFFF0EBE0);
 
   /// Warm near-black text.
@@ -92,7 +92,7 @@ class AppColors {
         onError: Color(0xFFFFFFFF),
         errorContainer: Color(0xFFF8E0DE),
         onErrorContainer: Color(0xFF5C1A18),
-        surface: lightSurface,
+        surface: lightBackground,
         onSurface: lightOnBackground,
         surfaceContainerHighest: lightSurfaceVariant,
         onSurfaceVariant: lightOnSurfaceVariant,

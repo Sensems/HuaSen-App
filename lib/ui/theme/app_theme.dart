@@ -11,10 +11,16 @@ import 'app_typography.dart';
 class AppTheme {
   AppTheme._();
 
-  /// Light theme — warm paper-like background, comfortable contrast.
+  /// Light theme — page canvas `#f8f7f4`, white inputs.
   static ThemeData get light {
     final scheme = AppColors.lightColorScheme;
-    return _buildTheme(scheme);
+    final theme = _buildTheme(scheme);
+    return theme.copyWith(
+      scaffoldBackgroundColor: AppColors.lightBackground,
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+        fillColor: AppColors.lightSurface,
+      ),
+    );
   }
 
   /// Dark theme — soft charcoal, easy on the eyes in low light.
