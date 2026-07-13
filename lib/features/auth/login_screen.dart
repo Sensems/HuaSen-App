@@ -50,12 +50,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .login(_emailController.text, _passwordController.text);
   }
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text(UiStrings.loginComingSoon)));
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -122,7 +116,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: isSubmitting ? null : _showComingSoon,
+                      onPressed: isSubmitting
+                          ? null
+                          : () {
+                              ref
+                                  .read(authNotifierProvider.notifier)
+                                  .clearError();
+                              context.push(
+                                AppConstants.routeResetPassword,
+                                extra: _emailController.text.trim(),
+                              );
+                            },
                       child: const Text(UiStrings.loginForgotPassword),
                     ),
                   ),
