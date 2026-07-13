@@ -108,7 +108,10 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   /// Returns `true` only when the API accepts the send-code request.
-  Future<bool> sendCode(String email) async {
+  Future<bool> sendCode(
+    String email, {
+    required EmailCodePurpose purpose,
+  }) async {
     final trimmedEmail = email.trim();
     if (trimmedEmail.isEmpty) {
       state = AuthState(
@@ -130,7 +133,7 @@ class AuthNotifier extends Notifier<AuthState> {
     try {
       final response = await ref.read(authServiceProvider).sendEmailCode(
             email: trimmedEmail,
-            purpose: EmailCodePurpose.register,
+            purpose: purpose,
           );
       if (response.isSuccess) {
         state = AuthState(status: state.status);
@@ -207,6 +210,62 @@ class AuthNotifier extends Notifier<AuthState> {
         status: state.status,
         isSubmitting: true,
         errorMessage: UiStrings.registerNetworkError,
+      );
+      return false;
+    } finally {
+      if (state.isSubmitting) {
+        state = AuthState(
+          status: state.status,
+          errorMessage: state.errorMessage,
+        );
+      }
+    }
+  }
+
+  /// Returns `true` on successful password reset. Does **not** persist
+  /// tokens or set [AuthStatus.authenticated].
+  Future<bool> resetPassword({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String code,
+  }) async {
+    final trimmedEmail = email.trim();
+    final trimmedCode = code.trim();
+    final validationMessage = _validateResetPassword(
+      email: trimmedEmail,
+      password: password,
+      confirmPassword: confirmPassword,
+      code: trimmedCode,
+    );
+    if (validationMessage != null) {
+      state = AuthState(status: state.status, errorMessage: validationMessage);
+      return false;
+    }
+
+    state = AuthState(status: state.status, isSubmitting: true);
+
+    try {
+      final response = await ref.read(authServiceProvider).emailResetPassword(
+            email: trimmedEmail,
+            password: password,
+            code: trimmedCode,
+          );
+      if (response.isSuccess) {
+        state = AuthState(status: state.status);
+        return true;
+      }
+      state = AuthState(
+        status: state.status,
+        isSubmitting: true,
+        errorMessage: response.message,
+      );
+      return false;
+    } on DioException {
+      state = AuthState(
+        status: state.status,
+        isSubmitting: true,
+        errorMessage: UiStrings.resetPasswordNetworkError,
       );
       return false;
     } finally {
@@ -304,6 +363,33 @@ class AuthNotifier extends Notifier<AuthState> {
     }
     if (!agreedToTerms) {
       return UiStrings.registerTermsRequired;
+    }
+    return null;
+  }
+
+  String? _validateResetPassword({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String code,
+  }) {
+    if (email.isEmpty) {
+      return UiStrings.loginEmailRequired;
+    }
+    if (!_emailPattern.hasMatch(email)) {
+      return UiStrings.loginEmailInvalid;
+    }
+    if (code.isEmpty) {
+      return UiStrings.registerCodeRequired;
+    }
+    if (!_codePattern.hasMatch(code)) {
+      return UiStrings.registerCodeInvalid;
+    }
+    if (!_passwordPattern.hasMatch(password)) {
+      return UiStrings.registerPasswordWeak;
+    }
+    if (password != confirmPassword) {
+      return UiStrings.registerPasswordMismatch;
     }
     return null;
   }

@@ -9,6 +9,7 @@ import 'package:tolyui_message/tolyui_message.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
+import '../../data/models/auth_dtos.dart';
 import 'auth_notifier.dart';
 
 /// Email registration screen for `/register`.
@@ -76,9 +77,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (auth.isSendingCode || _countdownSeconds > 0) {
       return;
     }
-    final ok = await ref
-        .read(authNotifierProvider.notifier)
-        .sendCode(_emailController.text);
+    final ok = await ref.read(authNotifierProvider.notifier).sendCode(
+          _emailController.text,
+          purpose: EmailCodePurpose.register,
+        );
     if (!mounted) {
       return;
     }
