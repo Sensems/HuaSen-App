@@ -56,8 +56,6 @@ class _DraftsScreenState extends State<DraftsScreen> {
     ),
   ];
 
-  bool get _isWide => MediaQuery.of(context).size.width >= 600;
-
   void _convertToNote(_DraftItem draft) {
     // Placeholder — will call the repository to convert the draft.
     setState(() {
@@ -82,9 +80,9 @@ class _DraftsScreenState extends State<DraftsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: UiStrings.wechatDrafts,
-        showBack: !_isWide,
+        showBack: false,
       ),
       body: _drafts.isEmpty ? _buildEmptyState() : _buildList(),
     );

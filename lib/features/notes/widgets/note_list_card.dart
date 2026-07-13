@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/ui_strings.dart';
 import '../../../data/models/note_dtos.dart';
+import '../../../ui/theme/app_colors.dart';
 import '../note_time_format.dart';
+
+Color _elevatedCardSurface(BuildContext context) {
+  final brightness = Theme.of(context).brightness;
+  // Light ColorScheme.surface is the cream canvas — cards need white elevate.
+  return brightness == Brightness.light
+      ? AppColors.lightSurface
+      : AppColors.darkSurface;
+}
 
 /// Presentational card for one note in the list.
 ///
@@ -43,7 +52,7 @@ class NoteListCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Ink(
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: _elevatedCardSurface(context),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(

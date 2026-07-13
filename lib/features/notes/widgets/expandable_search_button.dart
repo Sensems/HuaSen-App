@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/ui_strings.dart';
+import '../../../ui/theme/app_colors.dart';
+
+Color _elevatedSearchFill(BuildContext context) {
+  final brightness = Theme.of(context).brightness;
+  return brightness == Brightness.light
+      ? AppColors.lightSurface
+      : AppColors.darkSurface;
+}
 
 /// Compact search control that expands into a keyword field.
 ///
@@ -79,7 +87,7 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
           width: _widthForConstraints(constraints),
           height: _collapsedSize,
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: _elevatedSearchFill(context),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: colorScheme.outlineVariant.withValues(alpha: 0.6),

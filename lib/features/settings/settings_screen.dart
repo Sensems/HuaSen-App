@@ -26,9 +26,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: UiStrings.settings,
-        showBack: !_isWide,
+        showBack: false,
       ),
       body: _buildBody(),
     );
