@@ -7,6 +7,7 @@ import '../../features/auth/auth_state.dart';
 import '../../features/auth/legal_placeholder_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
+import '../../features/auth/reset_password_screen.dart';
 import '../constants/app_constants.dart';
 import '../constants/ui_strings.dart';
 
@@ -30,6 +31,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final location = state.matchedLocation;
       final isPublicRoute = location == AppConstants.routeLogin ||
           location == AppConstants.routeRegister ||
+          location == AppConstants.routeResetPassword ||
           location == AppConstants.routeLegalTerms ||
           location == AppConstants.routeLegalPrivacy;
 
@@ -55,6 +57,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppConstants.routeRegister,
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routeResetPassword,
+        name: 'reset-password',
+        builder: (context, state) {
+          final email = state.extra is String ? state.extra as String : '';
+          return ResetPasswordScreen(initialEmail: email);
+        },
       ),
       GoRoute(
         path: AppConstants.routeLegalTerms,
