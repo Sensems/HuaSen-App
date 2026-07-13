@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/services/auth_service.dart';
+import '../../data/services/notes_service.dart';
 import '../network/dio_client.dart';
 import '../network/shared_preferences_token_storage.dart';
 import '../network/token_refresher.dart';
@@ -44,4 +45,9 @@ final dioProvider = Provider<Dio>((ref) {
 /// Authentication API service.
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(ref.watch(dioProvider));
+});
+
+/// Notes API service.
+final notesServiceProvider = Provider<NotesService>((ref) {
+  return NotesService(ref.watch(dioProvider));
 });
