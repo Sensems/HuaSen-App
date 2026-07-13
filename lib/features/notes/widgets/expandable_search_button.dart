@@ -24,7 +24,7 @@ class ExpandableSearchButton extends StatefulWidget {
 
 class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
   static const double _collapsedSize = 40;
-  static const double _expandedWidth = 220;
+  static const double _maxExpandedWidth = 220;
 
   bool _expanded = false;
   late final FocusNode _focusNode;
@@ -58,23 +58,38 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
     }
   }
 
+  double _widthForConstraints(BoxConstraints constraints) {
+    if (!_expanded) return _collapsedSize;
+
+    final maxWidth = constraints.maxWidth;
+    if (!maxWidth.isFinite) return _maxExpandedWidth;
+
+    return maxWidth.clamp(_collapsedSize, _maxExpandedWidth);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOutCubic,
-      width: _expanded ? _expandedWidth : _collapsedSize,
-      height: _collapsedSize,
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
-        ),
-      ),
-      child: _expanded ? _buildExpanded(colorScheme) : _buildCollapsed(colorScheme),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          width: _widthForConstraints(constraints),
+          height: _collapsedSize,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+            ),
+          ),
+          child: _expanded
+              ? _buildExpanded(colorScheme)
+              : _buildCollapsed(colorScheme),
+        );
+      },
     );
   }
 

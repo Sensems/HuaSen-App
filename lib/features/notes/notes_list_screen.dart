@@ -110,6 +110,13 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
   }
 
   Widget _buildListBody(NotesListState state, NotesListNotifier notifier) {
+    if (state.filterTab == NotesFilterTab.pinned) {
+      return const _EmptyMessage(
+        title: UiStrings.notesPinnedEmpty,
+        subtitle: UiStrings.notesPinnedEmptyHint,
+      );
+    }
+
     if (state.isInitialLoading && state.items.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -119,13 +126,6 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
         title: state.errorMessage!,
         actionLabel: UiStrings.notesRetry,
         onAction: notifier.retry,
-      );
-    }
-
-    if (state.filterTab == NotesFilterTab.pinned) {
-      return const _EmptyMessage(
-        title: UiStrings.notesPinnedEmpty,
-        subtitle: UiStrings.notesPinnedEmptyHint,
       );
     }
 
@@ -206,7 +206,7 @@ class _Header extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Flexible(
+          Expanded(
             child: Align(
               alignment: Alignment.centerRight,
               child: ExpandableSearchButton(
