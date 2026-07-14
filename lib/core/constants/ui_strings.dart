@@ -68,11 +68,26 @@ abstract final class UiStrings {
   static const String maxFileSizeHint = 'Skip files larger than this';
 
   // --- Drafts screen ---
-  static const String wechatDrafts = 'WeChat Drafts';
-  static const String noDrafts = 'No drafts';
-  static const String noDraftsHint = 'WeChat drafts will appear here';
-  static const String convertToNote = 'Convert to Note';
-  static const String draft = 'Draft';
+  static const String draftsTitle = '草稿箱';
+  static const String draftsFilterAll = '全部';
+  static const String draftsFilterText = '文本';
+  static const String draftsFilterImage = '图片';
+  static const String draftsFilterAudio = '音频';
+  static const String noDrafts = '暂无草稿';
+  static const String noDraftsHint = '微信同步的草稿会出现在这里';
+  static const String draftsComplete = '完善';
+  static const String draftsDelete = '删除';
+  static const String draftsLoadFailed = '加载失败，请重试';
+  static const String draftsRetry = '重试';
+  static const String draftsRefreshFailed = '刷新失败';
+  static const String draftsLoadMoreFailed = '加载更多失败，点击重试';
+  static const String draftsNoMore = '没有更多了';
+  static const String draftsDeleteFailed = '删除失败';
+  static const String draftsMediaPlaceholder = '媒体';
+  /// Kept temporarily for old drafts_screen until Task 5 rewrite.
+  static const String wechatDrafts = draftsTitle;
+  static const String convertToNote = draftsComplete;
+  static const String draft = '草稿';
 
   // --- Login ---
   static const String loginBrandTitle = '花森';
