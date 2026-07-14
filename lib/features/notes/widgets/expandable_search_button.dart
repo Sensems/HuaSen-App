@@ -12,8 +12,9 @@ Color _elevatedSearchFill(BuildContext context) {
 
 /// Compact search control that expands into a keyword field.
 ///
-/// Collapsed: square icon button. Expanded: animated field with search submit
-/// and optional clear/collapse. Parent owns [controller] and search side effects.
+/// Collapsed: square icon button. Expanded: animated field with search submit.
+/// Empty + unfocused collapses; non-empty unfocused stays expanded.
+/// Parent owns [controller] and search side effects.
 class ExpandableSearchButton extends StatefulWidget {
   const ExpandableSearchButton({
     super.key,
@@ -33,6 +34,7 @@ class ExpandableSearchButton extends StatefulWidget {
 class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
   static const double _collapsedSize = 40;
   static const double _maxExpandedWidth = 220;
+  static const double _expandedRightInset = 12;
 
   bool _expanded = false;
   late final FocusNode _focusNode;
@@ -40,13 +42,24 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode();
+    _focusNode = FocusNode()..addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _focusNode
+      ..removeListener(_onFocusChange)
+      ..dispose();
     super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus || !_expanded) return;
+    if (widget.controller.text.trim().isNotEmpty) return;
+
+    setState(() => _expanded = false);
+    // clearSearch() no-ops when keyword is already empty.
+    widget.onCollapsedClear();
   }
 
   void _expand() {
@@ -54,16 +67,6 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _focusNode.requestFocus();
     });
-  }
-
-  void _collapseAndClear() {
-    final hadKeyword = widget.controller.text.trim().isNotEmpty;
-    widget.controller.clear();
-    setState(() => _expanded = false);
-    _focusNode.unfocus();
-    if (hadKeyword) {
-      widget.onCollapsedClear();
-    }
   }
 
   double _widthForConstraints(BoxConstraints constraints) {
@@ -119,54 +122,51 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
   }
 
   Widget _buildExpanded(ColorScheme colorScheme) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: widget.controller,
-            focusNode: _focusNode,
-            autofocus: true,
-            textInputAction: TextInputAction.search,
-            onSubmitted: (_) => widget.onSubmit(),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                ),
-            decoration: InputDecoration(
-              isDense: true,
-              hintText: UiStrings.searchNotesHint,
-              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+    return Padding(
+      padding: const EdgeInsets.only(right: _expandedRightInset),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: widget.controller,
+              focusNode: _focusNode,
+              autofocus: true,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => widget.onSubmit(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
                   ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: UiStrings.searchNotesHint,
+                hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              ),
             ),
           ),
-        ),
-        IconButton(
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          icon: Icon(
-            Icons.search,
-            size: 20,
-            color: colorScheme.primary,
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            icon: Icon(
+              Icons.search,
+              size: 20,
+              color: colorScheme.primary,
+            ),
+            onPressed: widget.onSubmit,
+            tooltip: UiStrings.searchNotes,
           ),
-          onPressed: widget.onSubmit,
-          tooltip: UiStrings.searchNotes,
-        ),
-        IconButton(
-          visualDensity: VisualDensity.compact,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-          icon: Icon(
-            Icons.close,
-            size: 18,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          onPressed: _collapseAndClear,
-          tooltip: UiStrings.cancel,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
