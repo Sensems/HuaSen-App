@@ -40,7 +40,9 @@ Out of scope: Drift / Repository layer, real media thumbnail fetch (list DTO has
 
 `PaginatedNotes`: `items: List<NoteDetailDto>`, `total`, `page`, `size`.
 
-`mediaType` values used: `TEXT` | `IMAGE` | `VOICE` (OpenAPI enum also lists `VIDEO` / `FILE`; unused in this UI).
+`mediaType` values used by this UI: `TEXT` | `IMAGE` | `VOICE`.
+
+**Known API gap:** Live OpenAPI `mediaType` enum is `IMAGE` | `VOICE` | `VIDEO` | `FILE` — it does **not** list `TEXT`. Per product decision we still send `mediaType=TEXT` for the「文本」chip. If the backend rejects it, treat as a backend follow-up; do not invent a client-only filter.
 
 `NoteDetailDto` fields used: `id`, `title`, `content`, `mediaIds`, `createdAt`, `updatedAt`.
 
@@ -62,10 +64,11 @@ MainShell (草稿 Tab Badge)
 | Layer | Changes |
 |-------|---------|
 | **Feature wechat** | Rebuild `drafts_screen.dart`; add `DraftsListNotifier` + state; optional widgets for chips/cards; add `draftsCountProvider` |
-| **UI / shell** | `MainShell`: Badge on drafts destination when count > 0 |
-| **Core** | Chinese `UiStrings` for 草稿箱 / chips / empty / actions |
-| **Data** | Reuse `NotesService` + existing DTOs; no Drift |
+| **UI / shell** | Convert `MainShell` to `ConsumerWidget` (or equivalent) so it can watch `draftsCountProvider`; Badge on drafts destination when count > 0. Wide layout still hides the bar (existing behavior; no NavigationRail badge this iteration). |
+| **Core** | Chinese `UiStrings` for 草稿箱 / chips / empty / actions (replace English `wechatDrafts` placeholders) |
+| **Data** | Reuse `NotesService.listNotes` / `deleteNote` + existing DTOs; no Drift |
 | **Router** | Keep `/drafts` under existing `ShellRoute`; no route table change required |
+| **Shared util** | Reuse `lib/features/notes/note_time_format.dart` for relative timestamps |
 
 ## UI / interaction
 
@@ -95,10 +98,10 @@ MainShell (草稿 Tab Badge)
 
 - Pull-to-refresh and load-more on the list region only.
 - Card icon: `Icons.mark_chat_unread` in a circular chip.
-- Title: `title` or「无标题」; timestamp: relative Chinese from `updatedAt ?? createdAt`.
-- Body: truncated `content`; if `mediaIds` non-empty, show a simple image/audio placeholder block (no network thumbnail).
-- 「完善」→ `context.push('/note/:id')`.
-- 「删除」→ call delete API; success removes row and refreshes count; failure shows toast with backend `message` when available.
+- Title: `title` or「无标题」; timestamp: relative Chinese from `updatedAt ?? createdAt` via existing `formatNoteListTime` (or same helper in `note_time_format.dart`).
+- Body: truncated `content`. If `mediaIds` is non-empty, show a **generic** media placeholder block (no network thumbnail; do not invent IMAGE vs VOICE from IDs alone).
+- Card body tap and「完善」both → `context.push('/note/:id')`.
+- 「删除」→ call delete API **without** a confirmation dialog; success removes row and refreshes count; failure shows toast with backend `message` when available.
 - Empty / error / loading: same patterns as notes list (centered spinner, retry, empty copy).
 
 ## Data flow
@@ -134,8 +137,10 @@ MainShell (草稿 Tab Badge)
 
 - Fetch `listNotes(type: 'draft', page: 1, size: 1)` and expose `total`.
 - Independent of list filter so chip changes do not change the badge.
-- Load when `MainShell` watches the provider (authenticated shell); refresh after successful delete.
+- Load when `MainShell` watches the provider (authenticated shell).
+- Refresh after successful delete, and after a successful drafts list pull-to-refresh (keeps badge in sync without waiting for another shell rebuild).
 - Hide badge when count is `0` or still unknown/error (no fake count).
+- Cap display if needed for UI (e.g. `99+`) is optional; default show the numeric `total` as Material `Badge` allows.
 
 ### Errors
 
