@@ -29,6 +29,9 @@ class AppColors {
   /// Cool teal used as a secondary accent (tags, links).
   static const Color teal = Color(0xFF4A9E9E);
 
+  /// WeChat brand green (bind screen / WeChat row accents).
+  static const Color wechat = Color(0xFF07C160);
+
   // ── Semantic ──────────────────────────────────────────────────
   static const Color success = Color(0xFF5B8C5A);
   static const Color warning = Color(0xFFC89642);

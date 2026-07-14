@@ -53,19 +53,57 @@ abstract final class UiStrings {
   static const String unpin = 'Unpin';
 
   // --- Settings screen ---
-  static const String settings = 'Settings';
-  static const String appearance = 'Appearance';
-  static const String darkMode = 'Dark Mode';
-  static const String darkModeHint = 'Toggle dark color scheme';
-  static const String syncSection = 'Sync';
-  static const String clipboardSync = 'Clipboard Sync';
-  static const String clipboardSyncHint =
-      'Automatically capture clipboard items';
-  static const String sizeThresholds = 'Size Thresholds';
-  static const String maxImageSize = 'Max Image Size';
-  static const String maxImageSizeHint = 'Skip images larger than this';
-  static const String maxFileSize = 'Max File Size';
-  static const String maxFileSizeHint = 'Skip files larger than this';
+  static const String settings = '设置';
+  static const String appearance = '外观';
+  static const String darkMode = '深色模式';
+  static const String darkModeHint = '切换深色配色';
+  static const String syncSection = '同步设置';
+  static const String draftsSync = '草稿箱同步';
+  static const String draftsSyncHint = '自动同步微信草稿到本地';
+  static const String clipboardSync = '剪贴板同步';
+  static const String clipboardSyncHint = '跨设备同步剪贴板内容';
+  static const String sizeThresholds = '同步阈值';
+  static const String maxImageSize = '图片同步阈值';
+  static const String maxImageSizeHint = '超过此大小的图片不同步';
+  static const String maxFileSize = '文件同步阈值';
+  static const String maxFileSizeHint = '超过此大小的文件不同步';
+  static const String accountBinding = '账号绑定';
+  static const String edit = '编辑';
+  static const String bound = '已绑定';
+  static const String unbind = '解绑';
+  static const String emailLabel = '邮箱';
+  static const String wechatLabel = '微信';
+  static const String unbindComingSoon = '解绑功能即将开放';
+  static const String placeholderDisplayName = '张明';
+  static const String placeholderAvatarInitial = '张';
+  static const String placeholderEmail = 'zhangming@example.com';
+
+  // --- Account edit ---
+  static const String accountEditTitle = '账号信息';
+  static const String save = '保存';
+  static const String saveChanges = '保存修改';
+  static const String savedToast = '已保存';
+  static const String avatarEditComingSoon = '头像编辑即将开放';
+  static const String usernameLabel = '用户名';
+  static const String boundEmailLabel = '绑定邮箱';
+  static const String boundEmailHint = '修改邮箱请在设置页的账号绑定中操作';
+  static const String tapToEditAvatar = '点击编辑头像';
+
+  // --- WeChat bind ---
+  static const String wechatBindTitle = '绑定微信';
+  static const String wechatBindSubtitle = '绑定后可将公众号消息同步到草稿箱';
+  static const String wechatBindCodeHint = '请输入绑定码';
+  static const String wechatPaste = '粘贴';
+  static const String wechatConfirmBind = '确认绑定';
+  static const String wechatBindSuccess = '绑定成功，消息将同步至草稿箱';
+  static const String wechatBindCodeRequired = '请输入绑定码';
+  static const String wechatClipboardEmpty = '剪贴板为空';
+  static const String wechatExampleCode = 'HS-8K2M-N4X';
+  static const String wechatStepsTitle = '绑定步骤';
+  static const String wechatStep1 = '关注花森公众号';
+  static const String wechatStep2 = '发送关键词「绑定」';
+  static const String wechatStep3 = '复制收到的绑定码';
+  static const String wechatStep4 = '回到 App 粘贴并确认';
 
   // --- Drafts screen ---
   static const String draftsTitle = '草稿箱';
@@ -143,7 +181,7 @@ abstract final class UiStrings {
   static const String legalPlaceholderBody = '内容即将开放，敬请期待。';
 
   // --- Common ---
-  static const String back = 'Back';
+  static const String back = '返回';
   static const String loading = 'Loading...';
   static const String retry = 'Retry';
   static const String cancel = 'Cancel';

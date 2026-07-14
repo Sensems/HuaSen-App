@@ -20,6 +20,12 @@ class AppConstants {
   /// Settings screen.
   static const String routeSettings = '/settings';
 
+  /// Account profile edit (outside shell).
+  static const String routeSettingsAccount = '/settings/account';
+
+  /// WeChat bind flow (outside shell).
+  static const String routeSettingsWechatBind = '/settings/wechat-bind';
+
   /// WeChat drafts screen.
   static const String routeDrafts = '/drafts';
 
