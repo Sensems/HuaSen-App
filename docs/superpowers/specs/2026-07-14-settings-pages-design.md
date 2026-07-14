@@ -39,7 +39,7 @@ SettingsScreen (Shell tab)
   → push /settings/account  → AccountEditScreen (no shell)
   → push /settings/wechat-bind → WechatBindScreen (no shell)
 
-Dark-mode Switch → themeModeProvider (persisted)
+Dark-mode Switch → themeModeProvider (session-only, not SharedPreferences)
 Other controls → local setState placeholders
 ```
 
