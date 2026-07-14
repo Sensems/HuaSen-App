@@ -7,7 +7,6 @@ class DraftsCountNotifier extends AsyncNotifier<int> {
   Future<int> build() => _fetchTotal();
 
   Future<void> refresh() async {
-    state = const AsyncLoading();
     state = await AsyncValue.guard(_fetchTotal);
   }
 

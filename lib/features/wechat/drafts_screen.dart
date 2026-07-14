@@ -63,9 +63,10 @@ class _DraftsScreenState extends ConsumerState<DraftsScreen> {
   }
 
   Future<void> _onDelete(String id) async {
-    final ok = await ref.read(draftsListProvider.notifier).deleteDraft(id);
-    if (!ok && mounted) {
-      $message.error(message: UiStrings.draftsDeleteFailed);
+    final errorMessage =
+        await ref.read(draftsListProvider.notifier).deleteDraft(id);
+    if (errorMessage != null && mounted) {
+      $message.error(message: errorMessage);
     }
   }
 

@@ -85,22 +85,26 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
 
   Future<void> retry() => loadInitial();
 
-  Future<bool> deleteDraft(String id) async {
+  /// Returns `null` on success, or an error message to show in a toast.
+  Future<String?> deleteDraft(String id) async {
     try {
       final response = await ref.read(notesServiceProvider).deleteNote(id);
       if (!response.isSuccess) {
-        return false;
+        return _messageOrFallback(
+          response.message,
+          fallback: UiStrings.draftsDeleteFailed,
+        );
       }
       state = state.copyWith(
         items: state.items.where((n) => n.id != id).toList(),
         total: state.total > 0 ? state.total - 1 : 0,
       );
       await ref.read(draftsCountProvider.notifier).refresh();
-      return true;
-    } on DioException {
-      return false;
+      return null;
+    } on DioException catch (e) {
+      return _dioErrorMessage(e, fallback: UiStrings.draftsDeleteFailed);
     } catch (_) {
-      return false;
+      return UiStrings.draftsDeleteFailed;
     }
   }
 
@@ -117,7 +121,7 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
             type: 'draft',
             mediaType: state.filter.mediaType,
           );
-      if (generation != _fetchGeneration) return false;
+      if (generation != _fetchGeneration) return true;
 
       final data = response.data;
       if (response.isSuccess && data != null) {
@@ -140,7 +144,7 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
       );
       return false;
     } on DioException catch (e) {
-      if (generation != _fetchGeneration) return false;
+      if (generation != _fetchGeneration) return true;
       _handleFetchFailure(
         message: _dioErrorMessage(e),
         replace: replace,
@@ -148,7 +152,7 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
       );
       return false;
     } catch (_) {
-      if (generation != _fetchGeneration) return false;
+      if (generation != _fetchGeneration) return true;
       _handleFetchFailure(
         message: UiStrings.draftsLoadFailed,
         replace: replace,
@@ -183,16 +187,22 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
     );
   }
 
-  String _dioErrorMessage(DioException e) {
+  String _dioErrorMessage(
+    DioException e, {
+    String fallback = UiStrings.draftsLoadFailed,
+  }) {
     final err = e.error;
     if (err is ApiException && err.message.isNotEmpty) {
       return err.message;
     }
-    return UiStrings.draftsLoadFailed;
+    return fallback;
   }
 
-  String _messageOrFallback(String message) {
-    return message.isNotEmpty ? message : UiStrings.draftsLoadFailed;
+  String _messageOrFallback(
+    String message, {
+    String fallback = UiStrings.draftsLoadFailed,
+  }) {
+    return message.isNotEmpty ? message : fallback;
   }
 }
 
