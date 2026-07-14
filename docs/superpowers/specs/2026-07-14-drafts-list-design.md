@@ -25,7 +25,7 @@ Out of scope: Drift / Repository layer, real media thumbnail fetch (list DTO has
 | Card icon | Material `Icons.mark_chat_unread` (no WeChat brand asset) |
 | 完善 | Navigate to `/note/:id` |
 | 删除 | `POST /notes/delete`; on success remove from list and refresh badge count |
-| Tab badge | Always `total` from `type=draft` **without** `mediaType`; hide when `0` |
+| Tab badge | Always `total` from `type=draft` **without** `mediaType`; hide when `0`; use Material **`Badge` / `Badge.count`** on the drafts `NavigationDestination` icon (not a custom positioned red dot) |
 | Visual | Match attached drafts mock; accent via global `AppColors` / `ColorScheme.primary` |
 | Bottom nav | Keep three tabs (笔记 / 草稿 / 设置); do not add clipboard back |
 | UI kit | Material + in-house `lib/ui/` + `tolyui_message` for errors (prefer backend `message`) |
@@ -64,7 +64,7 @@ MainShell (草稿 Tab Badge)
 | Layer | Changes |
 |-------|---------|
 | **Feature wechat** | Rebuild `drafts_screen.dart`; add `DraftsListNotifier` + state; optional widgets for chips/cards; add `draftsCountProvider` |
-| **UI / shell** | Convert `MainShell` to `ConsumerWidget` (or equivalent) so it can watch `draftsCountProvider`; Badge on drafts destination when count > 0. Wide layout still hides the bar (existing behavior; no NavigationRail badge this iteration). |
+| **UI / shell** | Convert `MainShell` to `ConsumerWidget` (or equivalent) so it can watch `draftsCountProvider`. On the drafts `NavigationDestination`, wrap `icon` / `selectedIcon` with Material `Badge.count` when `total > 0` (omit `Badge` when 0 / unknown). Use framework badge chrome only — no custom `Stack`/`Positioned` red dots. Wide layout still hides the bar (existing behavior; no NavigationRail badge this iteration). |
 | **Core** | Chinese `UiStrings` for 草稿箱 / chips / empty / actions (replace English `wechatDrafts` placeholders) |
 | **Data** | Reuse `NotesService.listNotes` / `deleteNote` + existing DTOs; no Drift |
 | **Router** | Keep `/drafts` under existing `ShellRoute`; no route table change required |
@@ -139,8 +139,8 @@ MainShell (草稿 Tab Badge)
 - Independent of list filter so chip changes do not change the badge.
 - Load when `MainShell` watches the provider (authenticated shell).
 - Refresh after successful delete, and after a successful drafts list pull-to-refresh (keeps badge in sync without waiting for another shell rebuild).
-- Hide badge when count is `0` or still unknown/error (no fake count).
-- Cap display if needed for UI (e.g. `99+`) is optional; default show the numeric `total` as Material `Badge` allows.
+- **UI:** Material `Badge.count(count: total, child: Icon(...))` on the drafts `NavigationDestination` icon(s). Prefer `Badge.count`'s built-in overflow (e.g. `maxCount` if available on the SDK) over hand-rolled `99+` strings. When count is `0` or unknown/error, use the plain `Icon` with **no** `Badge` wrapper (no empty badge bubble).
+- Do not invent a custom corner overlay widget.
 
 ### Errors
 
