@@ -84,9 +84,6 @@ abstract final class UiStrings {
   static const String draftsNoMore = '没有更多了';
   static const String draftsDeleteFailed = '删除失败';
   static const String draftsMediaPlaceholder = '媒体';
-  /// Kept temporarily for old drafts_screen until Task 5 rewrite.
-  static const String wechatDrafts = draftsTitle;
-  static const String convertToNote = draftsComplete;
   static const String draft = '草稿';
 
   // --- Login ---

@@ -1,222 +1,276 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tolyui_message/tolyui_message.dart';
 
 import '../../core/constants/ui_strings.dart';
-import '../../ui/components/custom_app_bar.dart';
-import '../../ui/components/custom_button.dart';
+import 'drafts_list_notifier.dart';
+import 'drafts_list_state.dart';
+import 'widgets/draft_list_card.dart';
+import 'widgets/drafts_filter_chips.dart';
 
-/// Placeholder draft note data.
-class _DraftItem {
-  const _DraftItem({
-    required this.id,
-    required this.title,
-    required this.preview,
-    required this.timestamp,
-  });
-
-  final String id;
-  final String title;
-  final String preview;
-  final String timestamp;
-}
-
-/// Screen showing a list of WeChat draft notes.
-///
-/// Each draft has a "Convert to Note" action that will move it to the main
-/// notes collection (placeholder for now).
-class DraftsScreen extends StatefulWidget {
+class DraftsScreen extends ConsumerStatefulWidget {
   const DraftsScreen({super.key});
 
   @override
-  State<DraftsScreen> createState() => _DraftsScreenState();
+  ConsumerState<DraftsScreen> createState() => _DraftsScreenState();
 }
 
-class _DraftsScreenState extends State<DraftsScreen> {
-  /// Mock data — replaced by a provider in a later task.
-  final List<_DraftItem> _drafts = [
-    const _DraftItem(
-      id: 'd1',
-      title: 'Reply to Team Group',
-      preview:
-          'Thanks everyone for the update. I will review the changes and get back by tomorrow afternoon.',
-      timestamp: '30 min ago',
-    ),
-    const _DraftItem(
-      id: 'd2',
-      title: 'Project Update',
-      preview:
-          'The sprint is on track. We completed the UI components and are starting on the data layer.',
-      timestamp: '2 hours ago',
-    ),
-    const _DraftItem(
-      id: 'd3',
-      title: 'Meeting Follow-up',
-      preview:
-          'Action items: 1. Send the design specs. 2. Schedule a review session. 3. Update the roadmap.',
-      timestamp: 'Yesterday',
-    ),
-  ];
+class _DraftsScreenState extends ConsumerState<DraftsScreen> {
+  final _scrollController = ScrollController();
+  var _didRequestInitial = false;
 
-  void _convertToNote(_DraftItem draft) {
-    // Placeholder — will call the repository to convert the draft.
-    setState(() {
-      _drafts.removeWhere((d) => d.id == draft.id);
-    });
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeLoadInitial());
+  }
 
-    if (!mounted) return;
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
 
-    final theme = Theme.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${draft.title} → ${UiStrings.navNotes}',
-          style: TextStyle(color: theme.colorScheme.onPrimaryContainer),
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: theme.colorScheme.primaryContainer,
-      ),
-    );
+  void _maybeLoadInitial() {
+    if (!mounted || _didRequestInitial) return;
+    final state = ref.read(draftsListProvider);
+    if (state.page == 0 &&
+        !state.isInitialLoading &&
+        state.items.isEmpty &&
+        state.errorMessage == null) {
+      _didRequestInitial = true;
+      ref.read(draftsListProvider.notifier).loadInitial();
+    }
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 200) {
+      ref.read(draftsListProvider.notifier).loadMore();
+    }
+  }
+
+  Future<void> _onRefresh() async {
+    final ok = await ref.read(draftsListProvider.notifier).refresh();
+    if (!ok && mounted) {
+      $message.error(message: UiStrings.draftsRefreshFailed);
+    }
+  }
+
+  Future<void> _onDelete(String id) async {
+    final ok = await ref.read(draftsListProvider.notifier).deleteDraft(id);
+    if (!ok && mounted) {
+      $message.error(message: UiStrings.draftsDeleteFailed);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final state = ref.watch(draftsListProvider);
+    final notifier = ref.read(draftsListProvider.notifier);
+
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: UiStrings.wechatDrafts,
-        showBack: false,
+      backgroundColor: colorScheme.surface,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: Text(
+                UiStrings.draftsTitle,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 28,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+              child: DraftsFilterChips(
+                value: state.filter,
+                onChanged: notifier.setFilter,
+              ),
+            ),
+            Expanded(child: _buildListBody(state, notifier)),
+          ],
+        ),
       ),
-      body: _drafts.isEmpty ? _buildEmptyState() : _buildList(),
     );
   }
 
-  Widget _buildList() {
+  Widget _buildListBody(DraftsListState state, DraftsListNotifier notifier) {
+    if (state.isInitialLoading && state.items.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.errorMessage != null && state.items.isEmpty) {
+      return _EmptyMessage(
+        title: state.errorMessage!,
+        actionLabel: UiStrings.draftsRetry,
+        onAction: notifier.retry,
+      );
+    }
+
+    if (state.items.isEmpty) {
+      return const _EmptyMessage(
+        title: UiStrings.noDrafts,
+        subtitle: UiStrings.noDraftsHint,
+      );
+    }
+
+    final itemCount = state.items.length + 1;
+
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ListView.separated(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        itemCount: itemCount,
+        separatorBuilder: (_, index) {
+          if (index >= state.items.length - 1) {
+            return const SizedBox.shrink();
+          }
+          return const SizedBox(height: 12);
+        },
+        itemBuilder: (context, index) {
+          if (index >= state.items.length) {
+            return _ListFooter(
+              isLoadingMore: state.isLoadingMore,
+              loadMoreError: state.loadMoreError,
+              hasMore: state.hasMore,
+              onRetryLoadMore: notifier.loadMore,
+            );
+          }
+          final note = state.items[index];
+          return DraftListCard(
+            note: note,
+            onOpen: () => context.push('/note/${note.id}'),
+            onDelete: () => _onDelete(note.id),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _EmptyMessage extends StatelessWidget {
+  const _EmptyMessage({
+    required this.title,
+    this.subtitle,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final String title;
+  final String? subtitle;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: _drafts.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final draft = _drafts[index];
-
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: theme.shadowColor.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 1),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color:
-                          colorScheme.secondaryContainer.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      UiStrings.draft,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSecondaryContainer,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.schedule,
-                    size: 14,
-                    color:
-                        colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    draft.timestamp,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color:
-                          colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                draft.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.onSurface,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                draft.preview,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  height: 1.4,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 14),
-              Align(
-                alignment: Alignment.centerRight,
-                child: CustomButton(
-                  label: UiStrings.convertToNote,
-                  icon: Icons.swap_horiz,
-                  variant: CustomButtonVariant.ghost,
-                  onPressed: () => _convertToNote(draft),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    final theme = Theme.of(context);
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.drafts_outlined,
-            size: 64,
-            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            UiStrings.noDrafts,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            UiStrings.noDraftsHint,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-            ),
-          ),
-        ],
+            if (subtitle != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                subtitle!,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: 16),
+              TextButton(onPressed: onAction, child: Text(actionLabel!)),
+            ],
+          ],
+        ),
       ),
     );
+  }
+}
+
+class _ListFooter extends StatelessWidget {
+  const _ListFooter({
+    required this.isLoadingMore,
+    required this.loadMoreError,
+    required this.hasMore,
+    required this.onRetryLoadMore,
+  });
+
+  final bool isLoadingMore;
+  final bool loadMoreError;
+  final bool hasMore;
+  final VoidCallback onRetryLoadMore;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    if (isLoadingMore) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    if (loadMoreError) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Center(
+          child: TextButton(
+            onPressed: onRetryLoadMore,
+            child: const Text(UiStrings.draftsLoadMoreFailed),
+          ),
+        ),
+      );
+    }
+
+    if (!hasMore) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Text(
+            UiStrings.draftsNoMore,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox(height: 8);
   }
 }
