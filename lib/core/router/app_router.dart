@@ -22,7 +22,8 @@ import '../constants/ui_strings.dart';
 /// Configures the app's [GoRouter].
 ///
 /// Authenticated main tabs live under a [ShellRoute] ([MainShell]).
-/// Auth / legal routes, note editor, and clipboard stay outside the shell.
+/// Auth / legal routes, note editor, clipboard, settings account, and WeChat
+/// bind stay outside the shell.
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.read(authNotifierProvider.notifier);
 
