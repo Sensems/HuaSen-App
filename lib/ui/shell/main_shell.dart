@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
-import '../components/custom_bottom_nav.dart';
 
 /// App shell with bottom tabs: notes / drafts / settings.
 ///
@@ -19,6 +18,17 @@ class MainShell extends StatelessWidget {
     return 0;
   }
 
+  void _onDestinationSelected(BuildContext context, int i) {
+    switch (i) {
+      case 0:
+        context.go(AppConstants.routeHome);
+      case 1:
+        context.go(AppConstants.routeDrafts);
+      case 2:
+        context.go(AppConstants.routeSettings);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
@@ -29,35 +39,26 @@ class MainShell extends StatelessWidget {
       body: child,
       bottomNavigationBar: wide
           ? null
-          : CustomBottomNav(
-              currentIndex: index,
-              items: const [
-                CustomNavItem(
-                  icon: Icons.note_outlined,
-                  activeIcon: Icons.note,
+          : NavigationBar(
+              selectedIndex: index,
+              onDestinationSelected: (i) => _onDestinationSelected(context, i),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.note_outlined),
+                  selectedIcon: Icon(Icons.note),
                   label: UiStrings.navNotes,
                 ),
-                CustomNavItem(
-                  icon: Icons.drafts_outlined,
-                  activeIcon: Icons.drafts,
+                NavigationDestination(
+                  icon: Icon(Icons.drafts_outlined),
+                  selectedIcon: Icon(Icons.drafts),
                   label: UiStrings.navDrafts,
                 ),
-                CustomNavItem(
-                  icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings,
+                NavigationDestination(
+                  icon: Icon(Icons.settings_outlined),
+                  selectedIcon: Icon(Icons.settings),
                   label: UiStrings.navSettings,
                 ),
               ],
-              onTap: (i) {
-                switch (i) {
-                  case 0:
-                    context.go(AppConstants.routeHome);
-                  case 1:
-                    context.go(AppConstants.routeDrafts);
-                  case 2:
-                    context.go(AppConstants.routeSettings);
-                }
-              },
             ),
     );
   }
