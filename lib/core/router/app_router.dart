@@ -11,6 +11,7 @@ import '../../features/auth/reset_password_screen.dart';
 import '../../features/clipboard/clipboard_history_screen.dart';
 import '../../features/notes/note_editor_screen.dart';
 import '../../features/notes/notes_list_screen.dart';
+import '../../features/settings/account_edit_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/wechat/drafts_screen.dart';
 import '../../ui/shell/main_shell.dart';
@@ -108,6 +109,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id'] ?? AppConstants.newNoteId;
           return NoteEditorScreen(noteId: id);
         },
+      ),
+      GoRoute(
+        path: AppConstants.routeSettingsAccount,
+        name: 'settings-account',
+        builder: (context, state) => const AccountEditScreen(),
       ),
       GoRoute(
         path: AppConstants.routeClipboard,
