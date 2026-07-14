@@ -12,7 +12,7 @@ class DraftsCountNotifier extends AsyncNotifier<int> {
 
   Future<int> _fetchTotal() async {
     final response = await ref.read(notesServiceProvider).listNotes(
-          type: 'draft',
+          type: 'DRAFT',
           page: 1,
           size: 1,
         );

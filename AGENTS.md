@@ -392,7 +392,7 @@ dart run build_runner build --delete-conflicting-outputs
 - Login brand copy follows the approved mock: title「花森」, slogan「记录，以编辑的方式」; brand marker is a 10px coral dot with no icon.
 - Auth work should include proactive token refresh scheduling (before expiry) plus reactive 401 single-flight refresh; do not ship login with storage-only refresh.
 - After successful registration or password reset, auto-return to the login screen; do not auto-login or persist tokens from those responses.
-- Show auth success feedback (send-code / register / password-reset) with `toly_ui` message (e.g.「注册成功，请登录」,「密码重置成功，请登录」), not ad-hoc SnackBars.
+- Show user-facing API/auth feedback with `toly_ui` / `tolyui_message` using the backend `message` field (auth success toasts and all API errors); not ad-hoc SnackBars or hardcoded `UiStrings` for API failures.
 - 《用户协议》 and 《隐私政策》 links should be tappable and open placeholder pages (content filled later); terms checkbox is required before register (not on reset-password).
 - Register/reset password rule: ≥8 characters and must include letters and digits; verification code is 6 digits with a 60s resend countdown after successful send-code.
 - Reset-password UI should mirror the register screen; login「忘记密码?」navigates to `/reset-password` and prefills the current email.
@@ -407,6 +407,7 @@ dart run build_runner build --delete-conflicting-outputs
 - Auth delivery scope: login, email registration, and reset-password are shipped (`features/auth`, route guard, `TokenStorage`, token refresh, send-code + register/reset UI); reset-password mirrors register; send-code uses `purpose: reset_password`; success uses toly_ui and returns to login without tokens or auto-login.
 - Public unauthenticated routes: `/login`, `/register`, `/reset-password`, `/legal/terms`, `/legal/privacy`.
 - UI stack: Flutter Material + custom `lib/ui/` components; `tolyui_message` for toasts only — no third-party full UI framework.
-- Approved notes-list shell: GoRouter `ShellRoute` tabs 笔记 / 草稿 / 设置; clipboard removed from the bar but `/clipboard` route retained; list via `NotesService.listNotes` (keyword/page/size), pinned filter UI-only until backend supports pin; sticky header with expandable search, pull-to-refresh, and load-more (no Drift/Repository in that scope).
+- Approved notes-list shell: GoRouter `ShellRoute` tabs 笔记 / 草稿 / 设置 via Material `NavigationBar` in `MainShell` + global `AppTheme.navigationBarTheme` (primary coral); clipboard keeps `CustomBottomNav` and `/clipboard` deep-link; list via `NotesService.listNotes` (keyword/page/size), pinned filter UI-only until backend supports pin; expandable search (no close button; collapse on empty blur; no TextField border; extra right padding), pull-to-refresh, and load-more (no Drift/Repository in that scope).
+- Drafts tab (approved design): `GET /notes?type=draft`; filters 全部/文本/图片/音频 → mediaType omit/`TEXT`/`IMAGE`/`VOICE`; sticky title+filters with list-only scroll (pull-to-refresh/load-more); tab badge = unfiltered draft `total`; card WeChat logo top-left; edit → `/note/:id`, delete → `POST /notes/delete`; source line uses `title` + content preview.
 - Git remote: `https://github.com/Sensems/HuaSen-App.git` (Sensems/HuaSen-App).
 - Flutter app lives at the repo root (single project); there is no nested `sebhua_notes_app/` app directory.

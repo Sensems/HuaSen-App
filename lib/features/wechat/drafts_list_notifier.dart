@@ -118,7 +118,7 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
       final response = await ref.read(notesServiceProvider).listNotes(
             page: page,
             size: AppConstants.notesPageSize,
-            type: 'draft',
+            type: 'DRAFT',
             mediaType: state.filter.mediaType,
           );
       if (generation != _fetchGeneration) return true;

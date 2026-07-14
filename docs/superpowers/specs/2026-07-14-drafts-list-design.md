@@ -167,7 +167,7 @@ MainShell (草稿 Tab Badge)
 1. Login → 草稿 tab: sticky「草稿箱」+ chips 全部/文本/图片/音频; only list scrolls.
 2. List requests use `type=draft`; chip switches send the mapped `mediaType`; pull-to-refresh and load-more work.
 3. Card uses `mark_chat_unread`; 完善 opens `/note/:id`; delete removes item and decreases badge.
-4. Badge shows unfiltered draft `total`; hidden at `0`; unaffected by chip filter.
+4. Badge shows unfiltered draft `total` via Material `Badge.count` on the drafts nav icon; hidden at `0`; unaffected by chip filter.
 5. Bottom bar remains 笔记 / 草稿 / 设置 (no clipboard).
 
 ## Non-goals
