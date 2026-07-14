@@ -110,6 +110,26 @@ class AppTheme {
           color: scheme.onSurfaceVariant,
         ),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: scheme.surface,
+        indicatorColor: scheme.primary.withValues(alpha: 0.18),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: scheme.primary, size: 24);
+          }
+          return IconThemeData(color: scheme.onSurfaceVariant, size: 24);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final base = textTheme.labelMedium;
+          if (states.contains(WidgetState.selected)) {
+            return base?.copyWith(
+              color: scheme.primary,
+              fontWeight: FontWeight.w600,
+            );
+          }
+          return base?.copyWith(color: scheme.onSurfaceVariant);
+        }),
+      ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
