@@ -110,13 +110,6 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
   }
 
   Widget _buildListBody(NotesListState state, NotesListNotifier notifier) {
-    if (state.filterTab == NotesFilterTab.pinned) {
-      return const _EmptyMessage(
-        title: UiStrings.notesPinnedEmpty,
-        subtitle: UiStrings.notesPinnedEmptyHint,
-      );
-    }
-
     if (state.isInitialLoading && state.items.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -131,6 +124,12 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
 
     if (state.items.isEmpty) {
       final hasKeyword = state.keyword.trim().isNotEmpty;
+      if (state.filterTab == NotesFilterTab.pinned && !hasKeyword) {
+        return const _EmptyMessage(
+          title: UiStrings.notesPinnedEmpty,
+          subtitle: UiStrings.notesPinnedEmptyHint,
+        );
+      }
       return _EmptyMessage(
         title: hasKeyword ? UiStrings.noSearchResults : UiStrings.noNotesFound,
         subtitle:
@@ -164,10 +163,12 @@ class _NotesListScreenState extends ConsumerState<NotesListScreen> {
             );
           }
 
-          final note = state.items[index];
+          final item = state.items[index];
+          final note = item.note;
           return NoteListCard(
             note: note,
-            showPinChrome: false,
+            media: item.media,
+            showPinChrome: note.pinnedAt != null,
             onTap: () => context.push('/note/${note.id}'),
           );
         },
@@ -201,8 +202,9 @@ class _Header extends StatelessWidget {
           Text(
             UiStrings.notesBrandTitle,
             style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
+              fontSize: 28,
             ),
           ),
           const SizedBox(width: 12),

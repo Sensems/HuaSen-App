@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// A reusable, theme-aware card for displaying a note summary.
 ///
 /// Shows a [title], a content [preview] capped at [maxPreviewLines] lines,
@@ -55,7 +57,7 @@ class CustomCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: AppColors.elevatedSurfaceOf(context),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: colorScheme.outlineVariant.withValues(alpha: 0.5),

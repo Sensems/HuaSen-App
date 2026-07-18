@@ -5,6 +5,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/providers/core_providers.dart';
+import '../../data/models/note_dtos.dart';
 import 'notes_list_state.dart';
 
 class NotesListNotifier extends Notifier<NotesListState> {
@@ -121,27 +122,18 @@ class NotesListNotifier extends Notifier<NotesListState> {
     required int generation,
     bool isRefresh = false,
   }) async {
-    if (state.filterTab == NotesFilterTab.pinned) {
-      if (generation != _fetchGeneration) return false;
-      state = state.copyWith(
-        items: const [],
-        page: 0,
-        total: 0,
-        isInitialLoading: false,
-        isRefreshing: false,
-        isLoadingMore: false,
-        clearError: true,
-        loadMoreError: false,
-      );
-      return true;
-    }
-
     try {
       final keyword = state.keyword.trim();
       final response = await ref.read(notesServiceProvider).listNotes(
             page: page,
             size: AppConstants.notesPageSize,
+            type: 'PUBLISHED',
             keyword: keyword.isEmpty ? null : keyword,
+            view: switch (state.filterTab) {
+              NotesFilterTab.pinned => NotesListView.pinned,
+              NotesFilterTab.recent => NotesListView.recent,
+              NotesFilterTab.all => null,
+            },
           );
       if (generation != _fetchGeneration) return false;
 

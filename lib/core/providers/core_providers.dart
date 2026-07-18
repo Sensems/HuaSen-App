@@ -4,10 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/services/auth_service.dart';
 import '../../data/services/notes_service.dart';
+import '../../data/services/storage_service.dart';
+import '../../data/services/user_service.dart';
 import '../network/dio_client.dart';
 import '../network/shared_preferences_token_storage.dart';
 import '../network/token_refresher.dart';
 import '../network/token_storage.dart';
+import '../notifications/local_notification_service.dart';
 
 /// Synchronous SharedPreferences dependency.
 ///
@@ -50,4 +53,19 @@ final authServiceProvider = Provider<AuthService>((ref) {
 /// Notes API service.
 final notesServiceProvider = Provider<NotesService>((ref) {
   return NotesService(ref.watch(dioProvider));
+});
+
+/// User profile / binding API service.
+final userServiceProvider = Provider<UserService>((ref) {
+  return UserService(ref.watch(dioProvider));
+});
+
+/// Object-storage upload / delete API service.
+final storageServiceProvider = Provider<StorageService>((ref) {
+  return StorageService(ref.watch(dioProvider));
+});
+
+/// Local system notifications (draft updates; Web no-op).
+final localNotificationServiceProvider = Provider<LocalNotificationService>((ref) {
+  return LocalNotificationService();
 });

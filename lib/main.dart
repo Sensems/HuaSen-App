@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'core/constants/app_constants.dart';
+import 'core/notifications/local_notification_service.dart';
 import 'core/providers/core_providers.dart';
 import 'features/auth/auth_notifier.dart';
 
@@ -20,11 +21,15 @@ Future<void> main() async {
     expiresAt: prefs.getInt(AppConstants.keyTokenExpiresAt),
   );
 
+  final notificationService = LocalNotificationService();
+  await notificationService.initialize();
+
   runApp(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         initialAuthStatusProvider.overrideWithValue(initialAuthStatus),
+        localNotificationServiceProvider.overrideWithValue(notificationService),
       ],
       child: const SebhuaNotesApp(),
     ),

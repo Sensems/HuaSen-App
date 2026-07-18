@@ -18,6 +18,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.bottom,
   });
 
+  static const double _toolbarHeight = 60;
+  static const double _bottomBorderWidth = 1;
+
   /// Title text. Use null for a title widget if more control is needed.
   final String? title;
 
@@ -36,7 +39,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize {
     final bottomHeight = bottom?.preferredSize.height ?? 0;
-    return Size.fromHeight(60 + bottomHeight);
+    // Include the bottom border — BoxDecoration borders consume layout space
+    // and otherwise cause a 1px "BOTTOM OVERFLOWED" stripe under the bar.
+    return Size.fromHeight(
+      _toolbarHeight + _bottomBorderWidth + bottomHeight,
+    );
   }
 
   @override
@@ -50,6 +57,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           color: colorScheme.surface,
           border: Border(
             bottom: BorderSide(
+              width: _bottomBorderWidth,
               color: colorScheme.outlineVariant.withValues(alpha: 0.4),
             ),
           ),
@@ -58,14 +66,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 60,
+              height: _toolbarHeight,
               child: NavigationToolbar(
                 leading: showBack
-                    ? IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: () => _goBack(context),
+                    ? BackButton(
                         color: colorScheme.onSurface,
-                        tooltip: 'Back',
+                        onPressed: () => _goBack(context),
                       )
                     : null,
                 middle: title != null

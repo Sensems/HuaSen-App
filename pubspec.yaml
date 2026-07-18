@@ -66,8 +66,11 @@ dependencies:
   # Local storage
   shared_preferences: ^2.5.3
   tolyui_message: ^0.2.6+1
+  flutter_local_notifications: ^19.4.0
   flutter_localizations:
     sdk: flutter
+  crop_your_image: ^2.0.0
+  image: ^4.8.0
 
 dev_dependencies:
   flutter_test:

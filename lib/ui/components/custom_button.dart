@@ -78,6 +78,7 @@ class CustomButton extends StatelessWidget {
             constraints: BoxConstraints(
               minWidth: expanded ? double.infinity : 0,
             ),
+            alignment: Alignment.center,
             padding: expanded
                 ? const EdgeInsets.symmetric(horizontal: 24, vertical: 14)
                 : const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -141,6 +142,7 @@ class CustomButton extends StatelessWidget {
 
     return Text(
       label,
+      textAlign: TextAlign.center,
       style: TextStyle(
         color: foregroundColor,
         fontSize: 15,

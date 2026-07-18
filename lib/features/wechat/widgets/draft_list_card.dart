@@ -5,12 +5,8 @@ import '../../../data/models/note_dtos.dart';
 import '../../../ui/theme/app_colors.dart';
 import '../../notes/note_time_format.dart';
 
-Color _elevatedCardSurface(BuildContext context) {
-  final brightness = Theme.of(context).brightness;
-  return brightness == Brightness.light
-      ? AppColors.lightSurface
-      : AppColors.darkSurface;
-}
+Color _elevatedCardSurface(BuildContext context) =>
+    AppColors.elevatedSurfaceOf(context);
 
 class DraftListCard extends StatelessWidget {
   const DraftListCard({
@@ -29,6 +25,43 @@ class DraftListCard extends StatelessWidget {
     return content.replaceAll(RegExp(r'[\r\n]+'), ' ').trim();
   }
 
+  /// WeChat image drafts expose the URL in `meta.media_url`.
+  static String? _imageUrl(NoteDetailDto note) {
+    final meta = note.meta;
+    if (meta == null) return null;
+    final url = meta.mediaUrl?.trim();
+    if (url == null || url.isEmpty) return null;
+    final type = meta.mediaType?.toLowerCase();
+    if (type != null && type != 'image') return null;
+    return url;
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(UiStrings.draftsDeleteConfirmTitle),
+          content: const Text(UiStrings.draftsDeleteConfirmMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text(UiStrings.draftsCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text(UiStrings.draftsDelete),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed == true) onDelete();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -36,9 +69,11 @@ class DraftListCard extends StatelessWidget {
     final title = (note.title?.trim().isNotEmpty ?? false)
         ? note.title!.trim()
         : UiStrings.notesUntitled;
-    final preview = _previewText(note.content);
+    final imageUrl = _imageUrl(note);
+    final preview = imageUrl == null ? _previewText(note.content) : '';
     final timestamp = formatNoteListTime(note.updatedAt, note.createdAt);
-    final hasMedia = note.mediaIds?.isNotEmpty ?? false;
+    final hasMediaPlaceholder =
+        imageUrl == null && (note.mediaIds?.isNotEmpty ?? false);
 
     return Material(
       color: Colors.transparent,
@@ -93,7 +128,41 @@ class DraftListCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (preview.isNotEmpty) ...[
+                if (imageUrl != null) ...[
+                  const SizedBox(height: 10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.5),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Container(
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.5),
+                            alignment: Alignment.center,
+                            child: const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ] else if (preview.isNotEmpty) ...[
                   const SizedBox(height: 10),
                   Text(
                     preview,
@@ -105,7 +174,7 @@ class DraftListCard extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (hasMedia) ...[
+                if (hasMediaPlaceholder) ...[
                   const SizedBox(height: 10),
                   Container(
                     height: 72,
@@ -124,22 +193,36 @@ class DraftListCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton(
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FilledButton(
                         onPressed: onOpen,
+                        style: FilledButton.styleFrom(
+                          fixedSize: const Size(72, 36),
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         child: const Text(UiStrings.draftsComplete),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: onDelete,
+                      const SizedBox(width: 10),
+                      OutlinedButton(
+                        onPressed: () => _confirmDelete(context),
+                        style: OutlinedButton.styleFrom(
+                          fixedSize: const Size(72, 36),
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         child: const Text(UiStrings.draftsDelete),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/ui_strings.dart';
 import '../../ui/components/custom_app_bar.dart';
 import '../../ui/components/custom_bottom_nav.dart';
+import '../../ui/theme/app_colors.dart';
 
 /// The type of content stored in a clipboard entry.
 enum _ClipboardType { text, image, file }
@@ -153,7 +154,7 @@ class _ClipboardHistoryScreenState extends State<ClipboardHistoryScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: AppColors.elevatedSurfaceOf(context),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: colorScheme.outlineVariant.withValues(alpha: 0.4),

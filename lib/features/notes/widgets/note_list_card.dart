@@ -3,36 +3,30 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/ui_strings.dart';
 import '../../../data/models/note_dtos.dart';
 import '../../../ui/theme/app_colors.dart';
+import '../note_content_preview.dart';
+import '../note_file_type_style.dart';
 import '../note_time_format.dart';
 
-Color _elevatedCardSurface(BuildContext context) {
-  final brightness = Theme.of(context).brightness;
-  // Light ColorScheme.surface is the cream canvas — cards need white elevate.
-  return brightness == Brightness.light
-      ? AppColors.lightSurface
-      : AppColors.darkSurface;
-}
+Color _elevatedCardSurface(BuildContext context) =>
+    AppColors.elevatedSurfaceOf(context);
 
 /// Presentational card for one note in the list.
 ///
 /// When [showPinChrome] is true, shows a left primary bar and pin icon
-/// (placeholder pinned UI only — not driven by API).
+/// (driven by [NoteDetailDto.pinnedAt]).
 class NoteListCard extends StatelessWidget {
   const NoteListCard({
     super.key,
     required this.note,
+    this.media = const [],
     required this.onTap,
     this.showPinChrome = false,
   });
 
   final NoteDetailDto note;
+  final List<NoteMediaItemDto> media;
   final VoidCallback onTap;
   final bool showPinChrome;
-
-  static String _previewText(String? content) {
-    if (content == null || content.isEmpty) return '';
-    return content.replaceAll(RegExp(r'[\r\n]+'), ' ').trim();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +35,12 @@ class NoteListCard extends StatelessWidget {
     final title = (note.title?.trim().isNotEmpty ?? false)
         ? note.title!.trim()
         : UiStrings.notesUntitled;
-    final preview = _previewText(note.content);
+    final preview = plainTextPreviewFromNoteContent(note.content);
     final timestamp = formatNoteListTime(note.updatedAt, note.createdAt);
-    final hasMedia = note.mediaIds?.isNotEmpty ?? false;
+    final styles = noteFileTypeStylesForList(
+      media: media,
+      mediaIds: note.mediaIds,
+    );
 
     return Material(
       color: Colors.transparent,
@@ -124,14 +121,36 @@ class NoteListCard extends StatelessWidget {
                                     color: colorScheme.onSurfaceVariant
                                         .withValues(alpha: 0.75),
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              if (hasMedia)
-                                Icon(
-                                  Icons.image_outlined,
-                                  size: 16,
-                                  color: colorScheme.onSurfaceVariant
-                                      .withValues(alpha: 0.7),
+                              if (styles.isNotEmpty)
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    for (final s in styles.take(6))
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 4),
+                                        child: Icon(
+                                          s.icon,
+                                          size: 16,
+                                          color: s.color,
+                                        ),
+                                      ),
+                                    if (styles.length > 6)
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 4),
+                                        child: Text(
+                                          '+${styles.length - 6}',
+                                          style: theme.textTheme.labelSmall
+                                              ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant
+                                                .withValues(alpha: 0.75),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                             ],
                           ),

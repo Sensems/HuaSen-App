@@ -1,12 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../models/api_response.dart';
-import '../models/create_note_dto.dart';
 import '../models/media_dto.dart';
-import '../models/note_detail_dto.dart';
-import '../models/paginated_notes.dart';
-import '../models/share_info_dto.dart';
-import '../models/update_note_dto.dart';
+import '../models/note_dtos.dart';
 
 /// Service for notes-related API calls.
 ///
@@ -19,7 +15,10 @@ class NotesService {
   /// List notes with optional filters.
   ///
   /// GET /notes
-  Future<ApiResponse<PaginatedNotes>> listNotes({
+  ///
+  /// Each item may include a joined `media` array from the same JSON object
+  /// (no N+1). Missing/`null` `media` becomes an empty list.
+  Future<ApiResponse<PaginatedNotesList>> listNotes({
     int? page,
     int? size,
     String? type,
@@ -27,6 +26,7 @@ class NotesService {
     String? tag,
     String? keyword,
     String? mediaType,
+    NotesListView? view,
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/notes',
@@ -38,17 +38,49 @@ class NotesService {
         'tag': tag,
         'keyword': keyword,
         'mediaType': mediaType,
+        'view': switch (view) {
+          NotesListView.pinned => 'pinned',
+          NotesListView.recent => 'recent',
+          null => null,
+        },
       }..removeWhere((_, v) => v == null),
     );
     return ApiResponse.fromJson(
       response.data!,
-      (json) => PaginatedNotes.fromJson(json as Map<String, dynamic>),
+      (json) {
+        final map = json as Map<String, dynamic>;
+        final rawItems = map['items'] as List<dynamic>? ?? const [];
+        final items = rawItems.map((raw) {
+          final itemMap = raw as Map<String, dynamic>;
+          final media = (itemMap['media'] as List?)
+                  ?.map(
+                    (e) =>
+                        NoteMediaItemDto.fromJson(e as Map<String, dynamic>),
+                  )
+                  .toList() ??
+              const <NoteMediaItemDto>[];
+          return NotesListItem(
+            note: NoteDetailDto.fromJson(itemMap),
+            media: media,
+          );
+        }).toList();
+        return PaginatedNotesList(
+          items: items,
+          total: (map['total'] as num).toInt(),
+          page: (map['page'] as num).toInt(),
+          size: (map['size'] as num).toInt(),
+        );
+      },
     );
   }
 
   /// Get note detail by ID.
   ///
   /// GET /notes/detail?id={id}
+  ///
+  /// Prefer [getNoteDetailBundle] when attachments are needed — detail already
+  /// joins `media` (OpenAPI `MediaItemDto[]`); a separate `/notes/media` call
+  /// is unnecessary for the editor.
   Future<ApiResponse<NoteDetailDto>> getNoteDetail(String id) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/notes/detail',
@@ -57,6 +89,32 @@ class NotesService {
     return ApiResponse.fromJson(
       response.data!,
       (json) => NoteDetailDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// Get note detail including joined `media` from the same response body.
+  ///
+  /// GET /notes/detail?id={id}
+  Future<ApiResponse<NoteDetailBundle>> getNoteDetailBundle(String id) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/notes/detail',
+      queryParameters: <String, dynamic>{'id': id},
+    );
+    return ApiResponse.fromJson(
+      response.data!,
+      (json) {
+        final map = json as Map<String, dynamic>;
+        final media = (map['media'] as List<dynamic>?)
+                ?.map(
+                  (e) => NoteMediaItemDto.fromJson(e as Map<String, dynamic>),
+                )
+                .toList() ??
+            const <NoteMediaItemDto>[];
+        return NoteDetailBundle(
+          note: NoteDetailDto.fromJson(map),
+          media: media,
+        );
+      },
     );
   }
 
@@ -122,6 +180,20 @@ class NotesService {
   Future<ApiResponse<NoteDetailDto>> archiveNote(String id) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/notes/archive',
+      data: <String, dynamic>{'id': id},
+    );
+    return ApiResponse.fromJson(
+      response.data!,
+      (json) => NoteDetailDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// Toggle pin state for a note.
+  ///
+  /// POST /notes/pin
+  Future<ApiResponse<NoteDetailDto>> pinNote(String id) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/notes/pin',
       data: <String, dynamic>{'id': id},
     );
     return ApiResponse.fromJson(

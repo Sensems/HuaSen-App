@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tolyui_message/tolyui_message.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
 import 'drafts_list_notifier.dart';
 import 'drafts_list_state.dart';
@@ -154,7 +155,7 @@ class _DraftsScreenState extends ConsumerState<DraftsScreen> {
           final note = state.items[index];
           return DraftListCard(
             note: note,
-            onOpen: () => context.push('/note/${note.id}'),
+            onOpen: () => context.push(AppConstants.noteEditPath(note.id)),
             onDelete: () => _onDelete(note.id),
           );
         },

@@ -7,6 +7,7 @@ import '../../core/network/api_exception.dart';
 import '../../core/providers/core_providers.dart';
 import 'drafts_count_provider.dart';
 import 'drafts_list_state.dart';
+import 'drafts_watch_coordinator.dart';
 
 class DraftsListNotifier extends Notifier<DraftsListState> {
   int _fetchGeneration = 0;
@@ -99,6 +100,7 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
         items: state.items.where((n) => n.id != id).toList(),
         total: state.total > 0 ? state.total - 1 : 0,
       );
+      ref.read(draftsWatchProvider.notifier).onLocalDraftDeleted(id);
       await ref.read(draftsCountProvider.notifier).refresh();
       return null;
     } on DioException catch (e) {
@@ -125,8 +127,9 @@ class DraftsListNotifier extends Notifier<DraftsListState> {
 
       final data = response.data;
       if (response.isSuccess && data != null) {
+        final notes = data.items.map((e) => e.note).toList();
         state = state.copyWith(
-          items: replace ? data.items : [...state.items, ...data.items],
+          items: replace ? notes : [...state.items, ...notes],
           page: data.page,
           total: data.total,
           isInitialLoading: false,

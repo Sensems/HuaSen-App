@@ -16,7 +16,7 @@ class NotesListState {
     this.loadMoreError = false,
   });
 
-  final List<NoteDetailDto> items;
+  final List<NotesListItem> items;
   final int page;
   final int total;
   final String keyword;
@@ -30,7 +30,7 @@ class NotesListState {
   bool get hasMore => items.length < total;
 
   NotesListState copyWith({
-    List<NoteDetailDto>? items,
+    List<NotesListItem>? items,
     int? page,
     int? total,
     String? keyword,

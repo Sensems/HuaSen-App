@@ -11,7 +11,7 @@ import 'app_typography.dart';
 class AppTheme {
   AppTheme._();
 
-  /// Light theme — page canvas `#f8f7f4`, white inputs.
+  /// Light theme — page canvas `#f8f7f4`, white inputs / cards.
   static ThemeData get light {
     final scheme = AppColors.lightColorScheme;
     final theme = _buildTheme(scheme);
@@ -23,14 +23,21 @@ class AppTheme {
     );
   }
 
-  /// Dark theme — soft charcoal, easy on the eyes in low light.
+  /// Dark theme — soft charcoal canvas with lifted cards / inputs.
   static ThemeData get dark {
     final scheme = AppColors.darkColorScheme;
-    return _buildTheme(scheme);
+    final theme = _buildTheme(scheme);
+    return theme.copyWith(
+      scaffoldBackgroundColor: AppColors.darkBackground,
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+        fillColor: AppColors.darkSurface,
+      ),
+    );
   }
 
   static ThemeData _buildTheme(ColorScheme scheme) {
     final textTheme = AppTypography.textTheme(scheme);
+    final elevated = AppColors.elevatedSurface(scheme.brightness);
 
     return ThemeData(
       useMaterial3: true,
@@ -46,7 +53,7 @@ class AppTheme {
         titleTextStyle: textTheme.titleLarge,
       ),
       cardTheme: CardThemeData(
-        color: scheme.surface,
+        color: elevated,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -62,7 +69,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.surfaceContainerHighest,
+        fillColor: elevated,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,

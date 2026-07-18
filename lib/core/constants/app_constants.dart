@@ -13,9 +13,17 @@ class AppConstants {
   /// Notes list / home screen.
   static const String routeHome = '/';
 
-  /// Note editor.  The `:id` segment is `new` for a brand-new note
-  /// or a UUID for an existing one.
+  /// Note detail (read-only). `:id` is a real note UUID — never `new`.
   static const String routeNote = '/note/:id';
+
+  /// Create note editor.
+  static const String routeNoteNew = '/note/new';
+
+  /// Edit existing note.
+  static const String routeNoteEdit = '/note/:id/edit';
+
+  /// Builds `/note/{id}/edit` for navigation pushes.
+  static String noteEditPath(String id) => '/note/$id/edit';
 
   /// Settings screen.
   static const String routeSettings = '/settings';
@@ -72,7 +80,7 @@ class AppConstants {
   /// with a real endpoint before release.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://127.0.0.1:3000',
+    defaultValue: 'https://tv.sensems.top',
   );
 
   /// Seconds before access-token expiry to trigger proactive refresh.
@@ -80,4 +88,10 @@ class AppConstants {
 
   /// Default timeout for network operations (seconds).
   static const int apiTimeoutSeconds = 30;
+
+  /// Polling interval for draft watch while the app process is alive.
+  static const int draftsWatchIntervalSeconds = 30;
+
+  /// Android notification channel id for draft updates.
+  static const String draftsNotificationChannelId = 'drafts_updates';
 }

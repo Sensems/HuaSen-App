@@ -19,3 +19,17 @@ String formatNoteListTime(DateTime? updatedAt, DateTime? createdAt) {
   }
   return '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}';
 }
+
+/// Formats detail-page updated time as `yyyy.MM.dd HH:mm` (local).
+///
+/// Returns empty string when [updatedAt] is null.
+String formatNoteDetailTime(DateTime? updatedAt) {
+  if (updatedAt == null) return '';
+  final local = updatedAt.toLocal();
+  final y = local.year.toString().padLeft(4, '0');
+  final m = local.month.toString().padLeft(2, '0');
+  final d = local.day.toString().padLeft(2, '0');
+  final h = local.hour.toString().padLeft(2, '0');
+  final min = local.minute.toString().padLeft(2, '0');
+  return '$y.$m.$d $h:$min';
+}

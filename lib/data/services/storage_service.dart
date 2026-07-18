@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 
 import '../models/api_response.dart';
@@ -29,15 +27,16 @@ class StorageService {
     );
   }
 
-  /// Upload a file via multipart form.
+  /// Upload file bytes via multipart form (Web + IO platforms).
   ///
   /// POST /storage/upload
   Future<ApiResponse<UploadFileResponseDto>> uploadFile(
-    File file, {
+    List<int> bytes, {
+    required String filename,
     String? type,
   }) async {
     final formData = FormData.fromMap(<String, dynamic>{
-      'file': await MultipartFile.fromFile(file.path),
+      'file': MultipartFile.fromBytes(bytes, filename: filename),
       'type': type,
     }..removeWhere((_, v) => v == null));
     final response = await _dio.post<Map<String, dynamic>>(

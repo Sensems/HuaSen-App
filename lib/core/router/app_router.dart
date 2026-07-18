@@ -9,6 +9,7 @@ import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
 import '../../features/auth/reset_password_screen.dart';
 import '../../features/clipboard/clipboard_history_screen.dart';
+import '../../features/notes/note_detail_screen.dart';
 import '../../features/notes/note_editor_screen.dart';
 import '../../features/notes/notes_list_screen.dart';
 import '../../features/settings/account_edit_screen.dart';
@@ -105,11 +106,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
-        path: AppConstants.routeNote,
-        name: 'note',
+        path: AppConstants.routeNoteNew,
+        name: 'note-new',
+        builder: (context, state) =>
+            const NoteEditorScreen(noteId: AppConstants.newNoteId),
+      ),
+      GoRoute(
+        path: AppConstants.routeNoteEdit,
+        name: 'note-edit',
         builder: (context, state) {
           final id = state.pathParameters['id'] ?? AppConstants.newNoteId;
           return NoteEditorScreen(noteId: id);
+        },
+      ),
+      GoRoute(
+        path: AppConstants.routeNote,
+        name: 'note',
+        builder: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          return NoteDetailScreen(noteId: id);
         },
       ),
       GoRoute(

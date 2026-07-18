@@ -14,7 +14,8 @@ and use-cases.
 | File | Backend Module | Auth Required |
 |------|---------------|---------------|
 | `auth_service.dart` | Authentication (wechat login, refresh, logout) | No |
-| `notes_service.dart` | Notes (CRUD, publish, archive, media, share) | Yes |
+| `notes_service.dart` | Notes (CRUD, publish, archive, pin, media, share) | Yes |
+| `user_service.dart` | User profile / update / WeChat bind | Yes |
 | `categories_service.dart` | Categories (tree, CRUD, reorder) | Yes |
 | `tags_service.dart` | Tags (list, create, delete) | Yes |
 | `storage_service.dart` | File storage (upload token, upload, delete) | Yes |
@@ -41,6 +42,6 @@ if (response.isSuccess) {
   POST for updates and deletes as well).
 - **Query parameters**: passed via `queryParameters` for GET requests.
 - **Request body**: passed via `data` for POST requests.
-- **Multipart**: `StorageService.uploadFile` uses `FormData` for file uploads.
+- **Multipart**: `StorageService.uploadFile` accepts `List<int>` bytes + filename via `MultipartFile.fromBytes` (Web + IO).
 - **JWT auth**: handled automatically by [AuthInterceptor] wired into the Dio
   client; services do not manipulate headers manually.

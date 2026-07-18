@@ -31,9 +31,9 @@ Map<String, dynamic> _$CreateNoteDtoToJson(_CreateNoteDto instance) =>
     };
 
 const _$NoteSourceEnumMap = {
-  NoteSource.wechat: 'wechat',
-  NoteSource.appClipboard: 'app_clipboard',
-  NoteSource.appManual: 'app_manual',
+  NoteSource.wechat: 'WECHAT',
+  NoteSource.appClipboard: 'APP_CLIPBOARD',
+  NoteSource.appManual: 'APP_MANUAL',
 };
 
 _UpdateNoteDto _$UpdateNoteDtoFromJson(Map<String, dynamic> json) =>
@@ -60,6 +60,17 @@ Map<String, dynamic> _$UpdateNoteDtoToJson(_UpdateNoteDto instance) =>
       'mediaIds': instance.mediaIds,
     };
 
+_NoteMetaDto _$NoteMetaDtoFromJson(Map<String, dynamic> json) => _NoteMetaDto(
+  mediaUrl: json['media_url'] as String?,
+  mediaType: json['media_type'] as String?,
+);
+
+Map<String, dynamic> _$NoteMetaDtoToJson(_NoteMetaDto instance) =>
+    <String, dynamic>{
+      'media_url': instance.mediaUrl,
+      'media_type': instance.mediaType,
+    };
+
 _NoteDetailDto _$NoteDetailDtoFromJson(Map<String, dynamic> json) =>
     _NoteDetailDto(
       id: json['id'] as String,
@@ -74,6 +85,10 @@ _NoteDetailDto _$NoteDetailDtoFromJson(Map<String, dynamic> json) =>
       mediaIds: (json['mediaIds'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      meta: json['meta'] == null
+          ? null
+          : NoteMetaDto.fromJson(json['meta'] as Map<String, dynamic>),
+      pinnedAt: _dateTimeFromJsonNullable(json['pinnedAt'] as String?),
       createdAt: _dateTimeFromJsonNullable(json['createdAt'] as String?),
       updatedAt: _dateTimeFromJsonNullable(json['updatedAt'] as String?),
     );
@@ -88,6 +103,8 @@ Map<String, dynamic> _$NoteDetailDtoToJson(_NoteDetailDto instance) =>
       'categoryId': instance.categoryId,
       'tagIds': instance.tagIds,
       'mediaIds': instance.mediaIds,
+      'meta': instance.meta,
+      'pinnedAt': _dateTimeToJsonNullable(instance.pinnedAt),
       'createdAt': _dateTimeToJsonNullable(instance.createdAt),
       'updatedAt': _dateTimeToJsonNullable(instance.updatedAt),
     };

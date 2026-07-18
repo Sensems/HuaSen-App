@@ -36,6 +36,41 @@ abstract final class UiStrings {
   static const String createNote = '新建笔记';
 
   // --- Note editor screen ---
+  static const String noteEditorBack = '返回';
+  static const String noteEditorPageTitleNew = '新建笔记';
+  static const String noteEditorPageTitleEdit = '编辑笔记';
+  static const String noteEditorSave = '保存';
+  static const String noteEditorTitleHint = 'Q3 产品规划会议纪要';
+  static const String noteEditorContentHint = '开始记录...';
+  static const String noteEditorAttachments = '附件';
+  static const String noteEditorAttach = '+ 添加附件';
+  static const String noteEditorSaved = '已保存';
+  static const String noteEditorLoadFailed = '加载笔记失败，请重试';
+  static const String noteEditorRetry = '重试';
+  static const String noteEditorAttachmentUploadFailed = '附件上传失败，请重试';
+  static const String noteEditorAttachmentBytesMissing = '无法读取附件内容，请重新添加';
+  static const String noteEditorNetworkError = '网络异常，请重试';
+  static const String noteEditorPickFileFailed = '选择附件失败，请重试';
+  static const String noteEditorLinkTitle = '添加链接';
+  static const String noteEditorLinkHint = 'https://example.com';
+  static const String noteEditorLinkEmpty = '请输入链接地址';
+
+  // --- Note detail screen ---
+  static const String noteDetailPageTitle = '笔记详情';
+  static const String noteDetailPin = '置顶';
+  static const String noteDetailUnpin = '取消置顶';
+  static const String noteDetailDelete = '删除';
+  static const String noteDetailEdit = '编辑';
+  static const String noteDetailPinnedBadge = '置顶';
+  static const String noteDetailDeleteConfirmTitle = '确认删除';
+  static const String noteDetailDeleteConfirmMessage =
+      '确定删除这条笔记吗？删除后无法恢复。';
+  static const String noteDetailLoadFailed = '加载笔记失败，请重试';
+  static const String noteDetailRetry = '重试';
+  static const String noteDetailNetworkError = '网络异常，请重试';
+  static const String noteDetailUntitled = '无标题';
+  static const String noteDetailCancel = '取消';
+
   static const String noteTitleHint = 'Note title';
   static const String noteContentHint = 'Start writing...';
   static const String mediaAttachments = 'Media Attachments';
@@ -55,6 +90,11 @@ abstract final class UiStrings {
   // --- Settings screen ---
   static const String settings = '设置';
   static const String appearance = '外观';
+  static const String themeMode = '主题';
+  static const String themeModeHint = '选择应用配色';
+  static const String themeModeLight = '浅色模式';
+  static const String themeModeDark = '深色模式';
+  static const String themeModeSystem = '根据系统';
   static const String darkMode = '深色模式';
   static const String darkModeHint = '切换深色配色';
   static const String syncSection = '同步设置';
@@ -70,6 +110,7 @@ abstract final class UiStrings {
   static const String accountBinding = '账号绑定';
   static const String edit = '编辑';
   static const String bound = '已绑定';
+  static const String notBound = '未绑定';
   static const String unbind = '解绑';
   static const String emailLabel = '邮箱';
   static const String wechatLabel = '微信';
@@ -82,12 +123,27 @@ abstract final class UiStrings {
   static const String accountEditTitle = '账号信息';
   static const String save = '保存';
   static const String saveChanges = '保存修改';
+  // Prefer response.message; fallbacks when empty:
+  // UiStrings.savedToast / UiStrings.wechatBindSuccess
   static const String savedToast = '已保存';
+  static const String nicknameUnset = '未设置';
+  static const String profileLoadFailed = '加载失败，请重试';
+  static const String profileRetry = '重试';
   static const String avatarEditComingSoon = '头像编辑即将开放';
   static const String usernameLabel = '用户名';
   static const String boundEmailLabel = '绑定邮箱';
   static const String boundEmailHint = '修改邮箱请在设置页的账号绑定中操作';
   static const String tapToEditAvatar = '点击编辑头像';
+  static const String avatarCropTitle = '裁剪头像';
+  static const String avatarCropCancel = '取消';
+  static const String avatarCropDone = '完成';
+  static const String avatarCropRotate = '旋转';
+  static const String avatarCropDiscardTitle = '放弃本次裁剪？';
+  static const String avatarCropDiscardBody = '返回后将丢弃本次选择的图片';
+  static const String avatarCropDiscardConfirm = '放弃';
+  static const String avatarCropDiscardKeep = '继续裁剪';
+  static const String avatarCropFailed = '裁剪失败，请重试';
+  static const String avatarRotateFailed = '旋转失败，请重试';
 
   // --- WeChat bind ---
   static const String wechatBindTitle = '绑定微信';
@@ -96,9 +152,11 @@ abstract final class UiStrings {
   static const String wechatPaste = '粘贴';
   static const String wechatConfirmBind = '确认绑定';
   static const String wechatBindSuccess = '绑定成功，消息将同步至草稿箱';
+  static const String wechatAlreadyBound = '微信已绑定';
+  static const String wechatAlreadyBoundHint =
+      '当前账号已绑定微信，可将公众号消息同步到草稿箱';
   static const String wechatBindCodeRequired = '请输入绑定码';
   static const String wechatClipboardEmpty = '剪贴板为空';
-  static const String wechatExampleCode = 'HS-8K2M-N4X';
   static const String wechatStepsTitle = '绑定步骤';
   static const String wechatStep1 = '关注花森公众号';
   static const String wechatStep2 = '发送关键词「绑定」';
@@ -114,7 +172,10 @@ abstract final class UiStrings {
   static const String noDrafts = '暂无草稿';
   static const String noDraftsHint = '微信同步的草稿会出现在这里';
   static const String draftsComplete = '完善';
+  static const String draftsCancel = '取消';
   static const String draftsDelete = '删除';
+  static const String draftsDeleteConfirmTitle = '确认删除';
+  static const String draftsDeleteConfirmMessage = '确定删除这条草稿吗？删除后无法恢复。';
   static const String draftsLoadFailed = '加载失败，请重试';
   static const String draftsRetry = '重试';
   static const String draftsRefreshFailed = '刷新失败';
@@ -123,6 +184,15 @@ abstract final class UiStrings {
   static const String draftsDeleteFailed = '删除失败';
   static const String draftsMediaPlaceholder = '媒体';
   static const String draft = '草稿';
+  static const String draftsNotificationChannelName = '草稿更新';
+  static const String draftsNotificationChannelDescription = '有新的微信/同步草稿时提醒';
+  static const String draftsNotificationTitle = '新草稿';
+  static const String draftsNotificationUntitled = '无标题';
+  static const String draftsNotificationMultiplePrefix = '有';
+  static const String draftsNotificationMultipleSuffix = '条新草稿';
+
+  static String draftsNotificationMultiple(int count) =>
+      '$draftsNotificationMultiplePrefix$count$draftsNotificationMultipleSuffix';
 
   // --- Login ---
   static const String loginBrandTitle = '花森';

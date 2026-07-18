@@ -3,17 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/ui_strings.dart';
 import '../../../ui/theme/app_colors.dart';
 
-Color _elevatedSearchFill(BuildContext context) {
-  final brightness = Theme.of(context).brightness;
-  return brightness == Brightness.light
-      ? AppColors.lightSurface
-      : AppColors.darkSurface;
-}
+Color _elevatedSearchFill(BuildContext context) =>
+    AppColors.elevatedSurfaceOf(context);
 
 /// Compact search control that expands into a keyword field.
 ///
 /// Collapsed: square icon button. Expanded: animated field with search submit.
-/// Empty + unfocused collapses; non-empty unfocused stays expanded.
+/// Empty + unfocused (or empty + tap outside) collapses; non-empty stays expanded.
 /// Parent owns [controller] and search side effects.
 class ExpandableSearchButton extends StatefulWidget {
   const ExpandableSearchButton({
@@ -55,7 +51,24 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
 
   void _onFocusChange() {
     if (_focusNode.hasFocus || !_expanded) return;
-    if (widget.controller.text.trim().isNotEmpty) return;
+    _collapseIfEmpty();
+  }
+
+  /// Android/desktop: taps on non-focusable widgets do not unfocus TextFields.
+  /// Collapse is focus-driven, so we must unfocus (or collapse) on outside taps.
+  void _onTapOutside(PointerDownEvent _) {
+    if (!_expanded) return;
+
+    if (_focusNode.hasFocus) {
+      _focusNode.unfocus();
+      return;
+    }
+
+    _collapseIfEmpty();
+  }
+
+  void _collapseIfEmpty() {
+    if (!_expanded || widget.controller.text.trim().isNotEmpty) return;
 
     setState(() => _expanded = false);
     // clearSearch() no-ops when keyword is already empty.
@@ -82,25 +95,28 @@ class _ExpandableSearchButtonState extends State<ExpandableSearchButton> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          width: _widthForConstraints(constraints),
-          height: _collapsedSize,
-          decoration: BoxDecoration(
-            color: _elevatedSearchFill(context),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+    return TapRegion(
+      onTapOutside: _onTapOutside,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            width: _widthForConstraints(constraints),
+            height: _collapsedSize,
+            decoration: BoxDecoration(
+              color: _elevatedSearchFill(context),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+              ),
             ),
-          ),
-          child: _expanded
-              ? _buildExpanded(colorScheme)
-              : _buildCollapsed(colorScheme),
-        );
-      },
+            child: _expanded
+                ? _buildExpanded(colorScheme)
+                : _buildCollapsed(colorScheme),
+          );
+        },
+      ),
     );
   }
 

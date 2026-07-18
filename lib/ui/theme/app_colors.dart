@@ -76,6 +76,19 @@ class AppColors {
   /// Subtle dividers and outlines.
   static const Color darkOutline = Color(0xFF3D3935);
 
+  /// Elevated surface for cards, tiles, and input fills.
+  ///
+  /// [ColorScheme.surface] is the page canvas; use this for content that
+  /// should sit above the canvas (light: white, dark: charcoal lift).
+  static Color elevatedSurface(Brightness brightness) {
+    return brightness == Brightness.light ? lightSurface : darkSurface;
+  }
+
+  /// Convenience for [elevatedSurface] from the ambient [Theme].
+  static Color elevatedSurfaceOf(BuildContext context) {
+    return elevatedSurface(Theme.of(context).brightness);
+  }
+
   // ── ColorScheme builders ──────────────────────────────────────
 
   /// [ColorScheme] for the light theme.
@@ -109,6 +122,10 @@ class AppColors {
       );
 
   /// [ColorScheme] for the dark theme.
+  ///
+  /// [surface] is the page canvas ([darkBackground]), matching light mode
+  /// where [surface] is [lightBackground]. Elevated UI uses [darkSurface]
+  /// via [elevatedSurface] / theme card & input fills.
   static ColorScheme get darkColorScheme => const ColorScheme(
         brightness: Brightness.dark,
         primary: coralLight,
@@ -125,7 +142,7 @@ class AppColors {
         onError: Color(0xFF3A0E0C),
         errorContainer: Color(0xFF5C1A18),
         onErrorContainer: Color(0xFFF8E0DE),
-        surface: darkSurface,
+        surface: darkBackground,
         onSurface: darkOnBackground,
         surfaceContainerHighest: darkSurfaceVariant,
         onSurfaceVariant: darkOnSurfaceVariant,
