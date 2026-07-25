@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/services/auth_service.dart';
+import '../../data/services/categories_service.dart';
 import '../../data/services/notes_service.dart';
 import '../../data/services/storage_service.dart';
+import '../../data/services/tags_service.dart';
 import '../../data/services/user_service.dart';
 import '../network/dio_client.dart';
 import '../network/shared_preferences_token_storage.dart';
@@ -63,6 +65,16 @@ final userServiceProvider = Provider<UserService>((ref) {
 /// Object-storage upload / delete API service.
 final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageService(ref.watch(dioProvider));
+});
+
+/// Categories API service.
+final categoriesServiceProvider = Provider<CategoriesService>((ref) {
+  return CategoriesService(ref.watch(dioProvider));
+});
+
+/// Tags API service.
+final tagsServiceProvider = Provider<TagsService>((ref) {
+  return TagsService(ref.watch(dioProvider));
 });
 
 /// Local system notifications (draft updates; Web no-op).

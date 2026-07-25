@@ -7,8 +7,6 @@ class NotesListState {
     this.items = const [],
     this.page = 0,
     this.total = 0,
-    this.keyword = '',
-    this.filterTab = NotesFilterTab.all,
     this.isInitialLoading = false,
     this.isRefreshing = false,
     this.isLoadingMore = false,
@@ -19,8 +17,6 @@ class NotesListState {
   final List<NotesListItem> items;
   final int page;
   final int total;
-  final String keyword;
-  final NotesFilterTab filterTab;
   final bool isInitialLoading;
   final bool isRefreshing;
   final bool isLoadingMore;
@@ -33,8 +29,6 @@ class NotesListState {
     List<NotesListItem>? items,
     int? page,
     int? total,
-    String? keyword,
-    NotesFilterTab? filterTab,
     bool? isInitialLoading,
     bool? isRefreshing,
     bool? isLoadingMore,
@@ -46,8 +40,6 @@ class NotesListState {
       items: items ?? this.items,
       page: page ?? this.page,
       total: total ?? this.total,
-      keyword: keyword ?? this.keyword,
-      filterTab: filterTab ?? this.filterTab,
       isInitialLoading: isInitialLoading ?? this.isInitialLoading,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,

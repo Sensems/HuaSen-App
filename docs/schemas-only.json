@@ -1,582 +1,1424 @@
 {
-  "schemas": {
-    "WechatCallbackDto": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string",
-          "description": "微信授权回调 code",
-          "example": "081aB6tM0xj3bV1eYz2oM1tLqM0aB6tM"
-        }
-      },
-      "required": [
-        "code"
-      ]
-    },
-    "TokenResponseDto": {
-      "type": "object",
-      "properties": {
-        "accessToken": {
-          "type": "string",
-          "description": "访问令牌（access_token，2 小时有效）",
-          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        },
-        "refreshToken": {
-          "type": "string",
-          "description": "刷新令牌（refresh_token，7 天有效）",
-          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        },
-        "expiresIn": {
-          "type": "number",
-          "description": "access_token 过期时间（秒）",
-          "example": 7200
-        }
-      },
-      "required": [
-        "accessToken",
-        "refreshToken",
-        "expiresIn"
-      ]
-    },
-    "EmailSendCodeDto": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "description": "接收验证码的邮箱",
-          "example": "user@example.com"
-        },
-        "purpose": {
-          "type": "string",
-          "description": "验证码用途：register 注册 / reset_password 重置密码",
-          "example": "register",
-          "enum": [
-            "register",
-            "reset_password"
-          ]
-        }
-      },
-      "required": [
-        "email",
-        "purpose"
-      ]
-    },
-    "EmailRegisterDto": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "description": "邮箱",
-          "example": "user@example.com"
-        },
-        "password": {
-          "type": "string",
-          "description": "密码（≥8位，必须包含字母和数字）",
-          "example": "Abc12345"
-        },
-        "code": {
-          "type": "string",
-          "description": "6位数字验证码",
-          "example": "482931"
-        }
-      },
-      "required": [
-        "email",
-        "password",
-        "code"
-      ]
-    },
-    "EmailResetPasswordDto": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "description": "邮箱",
-          "example": "user@example.com"
-        },
-        "password": {
-          "type": "string",
-          "description": "新密码（≥8位，必须包含字母和数字）",
-          "example": "Abc12345"
-        },
-        "code": {
-          "type": "string",
-          "description": "6位数字验证码",
-          "example": "482931"
-        }
-      },
-      "required": [
-        "email",
-        "password",
-        "code"
-      ]
-    },
-    "EmailLoginDto": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string",
-          "description": "邮箱",
-          "example": "user@example.com"
-        },
-        "password": {
-          "type": "string",
-          "description": "密码",
-          "example": "Abc12345"
-        }
-      },
-      "required": [
-        "email",
-        "password"
-      ]
-    },
-    "RefreshTokenDto": {
-      "type": "object",
-      "properties": {
-        "refreshToken": {
-          "type": "string",
-          "description": "刷新令牌（refresh_token）",
-          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        }
-      },
-      "required": [
-        "refreshToken"
-      ]
-    },
-    "LogoutResponseDto": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "登出是否成功",
-          "example": true
-        }
-      },
-      "required": [
-        "success"
-      ]
-    },
-    "UpdateProfileDto": {
-      "type": "object",
-      "properties": {
-        "nickname": {
-          "type": "string",
-          "example": "花森",
-          "description": "昵称"
-        },
-        "avatar": {
-          "type": "string",
-          "example": "https://cdn.example.com/a.png",
-          "description": "头像 URL"
-        }
-      }
-    },
-    "BindUserDto": {
-      "type": "object",
-      "properties": {
-        "bindingCode": {
-          "type": "string",
-          "example": "ABC234",
-          "description": "微信空壳下发的绑定码"
-        }
-      },
-      "required": [
-        "bindingCode"
-      ]
-    },
-    "CreateNoteDto": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string",
-          "description": "笔记标题，留空时自动从正文截取前 100 字符",
-          "example": "我的第一篇笔记"
-        },
-        "content": {
-          "type": "string",
-          "description": "笔记正文内容",
-          "example": "这是笔记的正文内容..."
-        },
-        "source": {
-          "type": "string",
-          "description": "笔记来源",
-          "enum": [
-            "wechat",
-            "app_clipboard",
-            "app_manual"
-          ],
-          "example": "app_manual"
-        },
-        "categoryId": {
-          "type": "string",
-          "description": "所属分类 ID",
-          "example": "clxyz1234567890abcdef"
-        },
-        "tagIds": {
-          "description": "关联标签 ID 列表",
-          "example": [
-            "tag_abc123",
-            "tag_def456"
-          ],
-          "type": "array",
-          "items": {
-            "type": "string"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "花森笔记 API",
+    "description": "微信公众号驱动的个人笔记系统。\n\n## 统一响应\n除 `/wechat/*` 外，成功响应均为：\n```json\n{ \"code\": 0, \"message\": \"ok\", \"data\": {} }\n```\n业务错误多为 HTTP 200，通过 `code` 区分（见错误码）。\n\n## 认证\n需登录接口点击 Authorize，填入 `accessToken`（按 UI 提示是否加 Bearer 前缀）。",
+    "version": "1.0",
+    "contact": {}
+  },
+  "components": {
+    "schemas": {
+      "ApiErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "description": "业务错误码",
+            "example": 10001
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息",
+            "example": "请求参数校验失败"
+          },
+          "data": {
+            "type": "object",
+            "description": "错误时一般为 null",
+            "example": null,
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "details": {
+            "type": "array",
+            "description": "校验细节（可选）",
+            "example": [
+              "email must be an email"
+            ],
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
           }
         },
-        "mediaIds": {
-          "description": "已上传的媒体 ID 列表",
-          "example": [
-            "uuid-1",
-            "uuid-2"
-          ],
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "ApiResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "description": "业务码，0 表示成功",
+            "example": 0
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "ok"
+          },
+          "data": {
+            "type": "object",
+            "description": "业务数据，无数据时为 null",
+            "nullable": true,
+            "example": null,
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "TokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "访问令牌（access_token，2 小时有效）",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "刷新令牌（refresh_token，7 天有效）",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "access_token 过期时间（秒）",
+            "example": 7200
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "expiresIn"
+        ]
+      },
+      "WechatCallbackDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "微信授权回调 code",
+            "example": "081aB6tM0xj3bV1eYz2oM1tLqM0aB6tM"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "EmailSendCodeDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "接收验证码的邮箱",
+            "example": "user@example.com"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "验证码用途：register 注册 / reset_password 重置密码",
+            "example": "register",
+            "enum": [
+              "register",
+              "reset_password"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "purpose"
+        ]
+      },
+      "EmailRegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码（≥8位，必须包含字母和数字）",
+            "example": "Abc12345"
+          },
+          "code": {
+            "type": "string",
+            "description": "6位数字验证码",
+            "example": "482931"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "code"
+        ]
+      },
+      "EmailResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "新密码（≥8位，必须包含字母和数字）",
+            "example": "Abc12345"
+          },
+          "code": {
+            "type": "string",
+            "description": "6位数字验证码",
+            "example": "482931"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "code"
+        ]
+      },
+      "EmailLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "Abc12345"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "刷新令牌（refresh_token）",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "登出是否成功",
+            "example": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "UserProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "nickname": {
+            "type": "object",
+            "example": "花森",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "object",
+            "example": "https://cdn.example.com/a.png",
+            "nullable": true
+          },
+          "email": {
+            "type": "object",
+            "example": "user@example.com",
+            "nullable": true
+          },
+          "bindingCode": {
+            "type": "object",
+            "description": "6 位绑定码；可发到公众号完成绑定",
+            "example": "ABC234",
+            "nullable": true
+          },
+          "wxBound": {
+            "type": "boolean",
+            "description": "是否已绑定微信",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "nickname",
+          "avatar",
+          "email",
+          "bindingCode",
+          "wxBound"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "example": "花森",
+            "description": "昵称"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "https://cdn.example.com/a.png",
+            "description": "头像 URL"
+          }
+        }
+      },
+      "BindUserResponseDto": {
+        "type": "object",
+        "properties": {
+          "wxBound": {
+            "type": "boolean",
+            "example": true
+          },
+          "syncedDraftCount": {
+            "type": "number",
+            "description": "从空壳同步过来的草稿数",
+            "example": 3
+          },
+          "overwritten": {
+            "type": "boolean",
+            "description": "是否覆盖了其他账号上的同 openid",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "绑定成功"
+          }
+        },
+        "required": [
+          "wxBound",
+          "syncedDraftCount",
+          "overwritten",
+          "message"
+        ]
+      },
+      "BindUserDto": {
+        "type": "object",
+        "properties": {
+          "bindingCode": {
+            "type": "string",
+            "example": "ABC234",
+            "description": "微信空壳下发的绑定码"
+          }
+        },
+        "required": [
+          "bindingCode"
+        ]
+      },
+      "NoteBareDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "categoryId": {
+            "type": "object",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "content": {
+            "type": "object",
+            "example": "这是笔记的正文内容...",
+            "nullable": true
+          },
+          "rawContent": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "description": "扩展元数据（如微信 wechat_msg_id）",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "pinnedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "categoryId",
+          "type",
+          "source",
+          "title",
+          "content",
+          "rawContent",
+          "deletedAt",
+          "meta",
+          "createdAt",
+          "updatedAt",
+          "pinnedAt"
+        ]
+      },
+      "NoteCategoryBriefDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "name": {
+            "type": "string",
+            "example": "工作"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NoteTagBriefDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "name": {
+            "type": "string",
+            "example": "随笔"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NoteTagLinkDto": {
+        "type": "object",
+        "properties": {
+          "noteId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "tagId": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/NoteTagBriefDto"
+          }
+        },
+        "required": [
+          "noteId",
+          "tagId",
+          "tag"
+        ]
+      },
+      "MediaItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "VOICE",
+              "VIDEO",
+              "FILE",
+              "TEXT"
+            ],
+            "example": "IMAGE"
+          },
+          "qiniuKey": {
+            "type": "string",
+            "example": "notes/2026/07/a.jpg"
+          },
+          "qiniuUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/notes/2026/07/a.jpg"
+          },
+          "wxMediaId": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "originalFilename": {
+            "type": "object",
+            "description": "用户上传时的原始文件名",
+            "example": "vacation.jpg",
+            "nullable": true
+          },
+          "fileSize": {
+            "type": "object",
+            "example": 204800,
+            "nullable": true
+          },
+          "mimeType": {
+            "type": "object",
+            "example": "image/jpeg",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ATTACHED",
+              "ORPHAN"
+            ],
+            "example": "ATTACHED"
+          },
+          "uploadedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "type",
+          "qiniuKey",
+          "qiniuUrl",
+          "wxMediaId",
+          "originalFilename",
+          "fileSize",
+          "mimeType",
+          "status",
+          "uploadedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "NoteListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "categoryId": {
+            "type": "object",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "content": {
+            "type": "object",
+            "example": "这是笔记的正文内容...",
+            "nullable": true
+          },
+          "rawContent": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "description": "扩展元数据（如微信 wechat_msg_id）",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "pinnedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "category": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoteCategoryBriefDto"
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteTagLinkDto"
+            }
+          },
+          "media": {
+            "description": "关联媒体（排除 TEXT 占位）",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "categoryId",
+          "type",
+          "source",
+          "title",
+          "content",
+          "rawContent",
+          "deletedAt",
+          "meta",
+          "createdAt",
+          "updatedAt",
+          "pinnedAt",
+          "category",
+          "tags",
+          "media"
+        ]
+      },
+      "NoteListResponseDto": {
+        "type": "object",
+        "properties": {
           "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteListItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "size": {
+            "type": "number",
+            "example": 20
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "NoteDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "categoryId": {
+            "type": "object",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "content": {
+            "type": "object",
+            "example": "这是笔记的正文内容...",
+            "nullable": true
+          },
+          "rawContent": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "description": "扩展元数据（如微信 wechat_msg_id）",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "pinnedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "category": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoteCategoryBriefDto"
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteTagLinkDto"
+            }
+          },
+          "media": {
+            "description": "关联媒体（排除 TEXT 占位）",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "categoryId",
+          "type",
+          "source",
+          "title",
+          "content",
+          "rawContent",
+          "deletedAt",
+          "meta",
+          "createdAt",
+          "updatedAt",
+          "pinnedAt",
+          "category",
+          "tags",
+          "media"
+        ]
+      },
+      "CreateNoteDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "笔记标题，留空时自动从正文截取前 100 字符",
+            "example": "我的第一篇笔记"
+          },
+          "content": {
+            "type": "string",
+            "description": "笔记正文内容",
+            "example": "这是笔记的正文内容..."
+          },
+          "source": {
+            "type": "string",
+            "description": "笔记来源",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "所属分类 ID",
+            "example": "clxyz1234567890abcdef"
+          },
+          "tagIds": {
+            "description": "关联标签 ID 列表",
+            "example": [
+              "tag_abc123",
+              "tag_def456"
+            ],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
-          "type": "array"
-        }
-      }
-    },
-    "UpdateNoteDto": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "要更新的笔记 ID",
-          "example": "clxyz1234567890abcdef"
-        },
-        "title": {
-          "type": "string",
-          "description": "新的笔记标题",
-          "example": "更新后的标题"
-        },
-        "content": {
-          "type": "string",
-          "description": "新的笔记正文内容",
-          "example": "更新后的正文内容..."
-        },
-        "categoryId": {
-          "type": "string",
-          "description": "新的分类 ID（传空字符串或省略表示不修改）",
-          "example": "clxyz1234567890abcdef"
-        },
-        "tagIds": {
-          "description": "新的标签 ID 列表（传空数组可清空已有标签）",
-          "example": [
-            "tag_abc123"
-          ],
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "mediaIds": {
-          "description": "已上传的媒体 ID 列表",
-          "example": [
-            "uuid-1",
-            "uuid-2"
-          ],
-          "items": {
-            "type": "array",
+          "mediaIds": {
+            "description": "已上传的媒体 ID 列表",
+            "example": [
+              "uuid-1",
+              "uuid-2"
+            ],
             "items": {
-              "type": "string"
-            }
-          },
-          "type": "array"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "IdDto": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "资源 ID（UUID）",
-          "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "CheckMediaDto": {
-      "type": "object",
-      "properties": {
-        "mediaIds": {
-          "description": "需要校验的媒体 ID 列表",
-          "example": [
-            "uuid-1",
-            "uuid-2"
-          ],
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "type": "array"
-        }
-      },
-      "required": [
-        "mediaIds"
-      ]
-    },
-    "CategoryDto": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "分类 ID",
-          "example": "clxxxxxxxxxxxxxxxx"
-        },
-        "name": {
-          "type": "string",
-          "description": "分类名称",
-          "example": "工作"
-        },
-        "parentId": {
-          "type": "object",
-          "description": "父分类 ID，顶级分类为 null",
-          "example": null,
-          "nullable": true
-        },
-        "sortOrder": {
-          "type": "number",
-          "description": "排序值，数字越小越靠前",
-          "example": 0
-        },
-        "notesCount": {
-          "type": "number",
-          "description": "该分类下关联的笔记数量",
-          "example": 12
-        },
-        "children": {
-          "description": "子分类列表（树形结构）",
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/CategoryDto"
-          }
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "sortOrder",
-        "notesCount"
-      ]
-    },
-    "CreateCategoryDto": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "分类名称",
-          "example": "新分类"
-        },
-        "parentId": {
-          "type": "string",
-          "description": "父分类 ID，顶级分类为 null",
-          "example": null,
-          "nullable": true
-        }
-      },
-      "required": [
-        "name"
-      ]
-    },
-    "UpdateCategoryDto": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "分类 ID",
-          "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-        },
-        "name": {
-          "type": "string",
-          "description": "分类名称",
-          "example": "更新后的分类"
-        },
-        "parentId": {
-          "type": "string",
-          "description": "父分类 ID，顶级分类为 null",
-          "example": null,
-          "nullable": true
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "ReorderItem": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "分类 ID",
-          "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-        },
-        "parentId": {
-          "type": "object",
-          "description": "父分类 ID，顶级分类为 null",
-          "example": null,
-          "nullable": true
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "ReorderCategoryDto": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "description": "排序项列表",
-          "example": [
-            {
-              "id": "uuid1",
-              "parentId": null
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
-            {
-              "id": "uuid2",
-              "parentId": "uuid1"
-            }
-          ],
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/ReorderItem"
+            "type": "array"
           }
         }
       },
-      "required": [
-        "items"
-      ]
-    },
-    "TagResponseDto": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "标签 ID（UUID）",
-          "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      "UpdateNoteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "要更新的笔记 ID",
+            "example": "clxyz1234567890abcdef"
+          },
+          "title": {
+            "type": "string",
+            "description": "新的笔记标题",
+            "example": "更新后的标题"
+          },
+          "content": {
+            "type": "string",
+            "description": "新的笔记正文内容",
+            "example": "更新后的正文内容..."
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "新的分类 ID（传空字符串或省略表示不修改）",
+            "example": "clxyz1234567890abcdef"
+          },
+          "tagIds": {
+            "description": "新的标签 ID 列表（传空数组可清空已有标签）",
+            "example": [
+              "tag_abc123"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mediaIds": {
+            "description": "已上传的媒体 ID 列表",
+            "example": [
+              "uuid-1",
+              "uuid-2"
+            ],
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": "array"
+          }
         },
-        "name": {
-          "type": "string",
-          "description": "标签名称",
-          "example": "随笔"
-        },
-        "createdAt": {
-          "format": "date-time",
-          "type": "string",
-          "description": "创建时间",
-          "example": "2026-07-03T10:00:00.000Z"
-        },
-        "_count": {
-          "type": "object",
-          "description": "关联笔记数量（仅 list 接口返回）",
-          "example": 5
-        }
+        "required": [
+          "id"
+        ]
       },
-      "required": [
-        "id",
-        "name",
-        "createdAt"
-      ]
-    },
-    "CreateTagDto": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "标签名称",
-          "example": "随笔",
-          "maxLength": 32
-        }
-      },
-      "required": [
-        "name"
-      ]
-    },
-    "UploadTokenResponseDto": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "type": "string",
-          "description": "七牛云直传凭证 Token（有效期 1 小时，App 端使用该 Token 走直传）",
-          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6InNlbmh1YS1ub3RlcyIsImRlYWRsaW5lIjoxNzMyNDM2NDAwfQ.signature"
-        }
-      },
-      "required": [
-        "token"
-      ]
-    },
-    "UploadFileResponseDto": {
-      "type": "object",
-      "properties": {
-        "mediaId": {
-          "type": "string",
-          "description": "媒体记录 ID（后续用于关联笔记）",
-          "example": "550e8400-e29b-41d4-a716-446655440000"
+      "IdDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "资源 ID（UUID）",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          }
         },
-        "key": {
-          "type": "string",
-          "description": "文件在七牛云存储的 Key（唯一标识，后续可用于访问或删除）",
-          "example": "notes/2026/07/abc123.jpg"
-        },
-        "url": {
-          "type": "string",
-          "description": "文件公开访问 URL（七牛云 CDN 域名拼接）",
-          "example": "http://cdn.example.com/notes/2026/07/abc123.jpg"
-        },
-        "mimeType": {
-          "type": "string",
-          "description": "文件 MIME 类型（如 image/jpeg、video/mp4）",
-          "example": "image/jpeg"
-        },
-        "size": {
-          "type": "number",
-          "description": "文件大小（字节）",
-          "example": 204800
-        }
+        "required": [
+          "id"
+        ]
       },
-      "required": [
-        "mediaId",
-        "key",
-        "url",
-        "mimeType",
-        "size"
-      ]
-    },
-    "DeleteFileDto": {
-      "type": "object",
-      "properties": {
-        "key": {
-          "type": "string",
-          "description": "七牛云文件 key",
-          "example": "notes/2026/07/image.jpg"
-        }
+      "NoteShareResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "shareUrl": {
+            "type": "string",
+            "example": "/notes/detail?id=a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "type",
+          "shareUrl"
+        ]
       },
-      "required": [
-        "key"
-      ]
-    },
-    "DeleteFileResponseDto": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "七牛云侧文件是否删除成功（true=成功，false=失败）",
-          "example": true
-        }
+      "CheckMediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "description": "校验通过的媒体 ID（归属当前用户且为 PENDING 或 ORPHAN）",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "invalid": {
+            "description": "校验未通过的媒体 ID",
+            "example": [
+              "00000000-0000-4000-8000-000000000099"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "valid",
+          "invalid"
+        ]
       },
-      "required": [
-        "success"
-      ]
+      "CheckMediaDto": {
+        "type": "object",
+        "properties": {
+          "mediaIds": {
+            "description": "需要校验的媒体 ID 列表",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440000",
+              "00000000-0000-4000-8000-000000000099"
+            ],
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "mediaIds"
+        ]
+      },
+      "CategoryNotesCountDto": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "number",
+            "description": "该分类下关联的笔记数量",
+            "example": 12
+          }
+        },
+        "required": [
+          "notes"
+        ]
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "分类 ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "description": "所属用户 ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "name": {
+            "type": "string",
+            "description": "分类名称",
+            "example": "工作"
+          },
+          "parentId": {
+            "type": "object",
+            "description": "父分类 ID，顶级分类为 null",
+            "example": null,
+            "nullable": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "description": "排序值，数字越小越靠前",
+            "example": 0
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间",
+            "example": "2026-07-03T10:00:00.000Z"
+          },
+          "_count": {
+            "description": "关联笔记数量（仅列表/排序树节点返回）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoryNotesCountDto"
+              }
+            ]
+          },
+          "children": {
+            "description": "子分类列表（仅列表/排序树节点返回）",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "name",
+          "sortOrder",
+          "createdAt"
+        ]
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "分类名称",
+            "example": "新分类"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "父分类 ID，顶级分类为 null",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "分类 ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "name": {
+            "type": "string",
+            "description": "分类名称",
+            "example": "更新后的分类"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "父分类 ID，顶级分类为 null",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ReorderItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "分类 ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "parentId": {
+            "type": "object",
+            "description": "父分类 ID，顶级分类为 null",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ReorderCategoryDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "排序项列表",
+            "example": [
+              {
+                "id": "uuid1",
+                "parentId": null
+              },
+              {
+                "id": "uuid2",
+                "parentId": "uuid1"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReorderItem"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "TagNotesCountDto": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "number",
+            "description": "关联笔记数量",
+            "example": 5
+          }
+        },
+        "required": [
+          "notes"
+        ]
+      },
+      "TagResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "标签 ID（UUID）",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "name": {
+            "type": "string",
+            "description": "标签名称",
+            "example": "随笔"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间",
+            "example": "2026-07-03T10:00:00.000Z"
+          },
+          "_count": {
+            "description": "关联笔记数量（仅 list 接口返回）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TagNotesCountDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "createdAt"
+        ]
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "标签名称",
+            "example": "随笔",
+            "maxLength": 32
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UploadTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "七牛云直传凭证 Token（有效期 1 小时，App 端使用该 Token 走直传）",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6InNlbmh1YS1ub3RlcyIsImRlYWRsaW5lIjoxNzMyNDM2NDAwfQ.signature"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "UploadFileResponseDto": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string",
+            "description": "媒体记录 ID（后续用于关联笔记）",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "key": {
+            "type": "string",
+            "description": "文件在七牛云存储的 Key（唯一标识，后续可用于访问或删除）",
+            "example": "notes/2026/07/abc123.jpg"
+          },
+          "url": {
+            "type": "string",
+            "description": "文件公开访问 URL（七牛云 CDN 域名拼接）",
+            "example": "http://cdn.example.com/notes/2026/07/abc123.jpg"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "文件 MIME 类型（如 image/jpeg、video/mp4）",
+            "example": "image/jpeg"
+          },
+          "size": {
+            "type": "number",
+            "description": "文件大小（字节）",
+            "example": 204800
+          },
+          "originalFilename": {
+            "type": "object",
+            "description": "用户上传时的原始文件名（multipart filename）",
+            "example": "vacation.jpg",
+            "nullable": true
+          }
+        },
+        "required": [
+          "mediaId",
+          "key",
+          "url",
+          "mimeType",
+          "size",
+          "originalFilename"
+        ]
+      },
+      "DeleteFileResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "七牛云侧文件是否删除成功（true=成功，false=失败）",
+            "example": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "DeleteFileDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "七牛云文件 key",
+            "example": "notes/2026/07/image.jpg"
+          }
+        },
+        "required": [
+          "key"
+        ]
+      },
+      "QueueFailedJobDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123"
+          },
+          "name": {
+            "type": "string",
+            "example": "process-wechat-message"
+          },
+          "failedReason": {
+            "type": "string",
+            "example": "timeout"
+          },
+          "attemptsMade": {
+            "type": "number",
+            "example": 3
+          },
+          "timestamp": {
+            "type": "number",
+            "example": 1710000000000
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "failedReason",
+          "attemptsMade",
+          "timestamp"
+        ]
+      },
+      "QueueStatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "wechat-message"
+          },
+          "counts": {
+            "type": "object",
+            "description": "各状态任务数量",
+            "example": {
+              "waiting": 0,
+              "active": 0,
+              "completed": 10,
+              "failed": 1,
+              "delayed": 0
+            }
+          },
+          "workers": {
+            "type": "number",
+            "example": 1
+          },
+          "failedJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueueFailedJobDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "counts",
+          "workers",
+          "failedJobs"
+        ]
+      },
+      "QueueRetryResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "重试的任务数量",
+            "example": 2
+          }
+        },
+        "required": [
+          "count"
+        ]
+      }
     }
   }
 }

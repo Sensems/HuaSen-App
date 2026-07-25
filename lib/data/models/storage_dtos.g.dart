@@ -22,6 +22,7 @@ _UploadFileResponseDto _$UploadFileResponseDtoFromJson(
   url: json['url'] as String,
   mimeType: json['mimeType'] as String,
   size: (json['size'] as num).toInt(),
+  originalFilename: json['originalFilename'] as String?,
 );
 
 Map<String, dynamic> _$UploadFileResponseDtoToJson(
@@ -32,6 +33,7 @@ Map<String, dynamic> _$UploadFileResponseDtoToJson(
   'url': instance.url,
   'mimeType': instance.mimeType,
   'size': instance.size,
+  'originalFilename': instance.originalFilename,
 };
 
 _DeleteFileDto _$DeleteFileDtoFromJson(Map<String, dynamic> json) =>

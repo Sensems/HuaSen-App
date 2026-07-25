@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tolyui_message/tolyui_message.dart';
@@ -10,6 +11,9 @@ import 'core/providers/core_providers.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/auth_notifier.dart';
 import 'features/auth/auth_state.dart';
+import 'features/wechat/android_os.dart';
+import 'features/wechat/drafts_count_provider.dart';
+import 'features/wechat/drafts_list_notifier.dart';
 import 'features/wechat/drafts_watch_coordinator.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/theme_provider.dart';
@@ -82,6 +86,7 @@ class _DraftsWatchBootstrapState extends ConsumerState<_DraftsWatchBootstrap> {
   bool _permissionRequested = false;
   bool _tapHandlerSet = false;
   bool _launchNavigationHandled = false;
+  StreamSubscription<Map<String, dynamic>?>? _draftsUpdatedSub;
 
   @override
   void initState() {
@@ -90,7 +95,26 @@ class _DraftsWatchBootstrapState extends ConsumerState<_DraftsWatchBootstrap> {
       if (!mounted) return;
       _requestPermissionIfAuthenticated(ref.read(authNotifierProvider));
       unawaited(_handleColdStartNotificationLaunch());
+      _listenBackgroundDraftUpdates();
     });
+  }
+
+  void _listenBackgroundDraftUpdates() {
+    // Use real OS, not defaultTargetPlatform (tests default that to Android).
+    if (!isAndroidOperatingSystem) return;
+    _draftsUpdatedSub?.cancel();
+    _draftsUpdatedSub =
+        FlutterBackgroundService().on('draftsUpdated').listen((_) {
+      unawaited(ref.read(draftsCountProvider.notifier).refresh());
+      unawaited(ref.read(draftsListProvider.notifier).refresh());
+    });
+  }
+
+  @override
+  void dispose() {
+    _draftsUpdatedSub?.cancel();
+    _draftsUpdatedSub = null;
+    super.dispose();
   }
 
   Future<void> _handleColdStartNotificationLaunch() async {

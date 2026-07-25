@@ -31,6 +31,7 @@ const _$MediaTypeEnumMap = {
   MediaType.voice: 'VOICE',
   MediaType.video: 'VIDEO',
   MediaType.file: 'FILE',
+  MediaType.text: 'TEXT',
 };
 
 _CheckMediaDto _$CheckMediaDtoFromJson(Map<String, dynamic> json) =>
@@ -45,17 +46,12 @@ Map<String, dynamic> _$CheckMediaDtoToJson(_CheckMediaDto instance) =>
 
 _CheckMediaResultDto _$CheckMediaResultDtoFromJson(Map<String, dynamic> json) =>
     _CheckMediaResultDto(
-      validIds: (json['validIds'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      invalidIds: (json['invalidIds'] as List<dynamic>)
+      valid: (json['valid'] as List<dynamic>).map((e) => e as String).toList(),
+      invalid: (json['invalid'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
     );
 
 Map<String, dynamic> _$CheckMediaResultDtoToJson(
   _CheckMediaResultDto instance,
-) => <String, dynamic>{
-  'validIds': instance.validIds,
-  'invalidIds': instance.invalidIds,
-};
+) => <String, dynamic>{'valid': instance.valid, 'invalid': instance.invalid};

@@ -82,7 +82,8 @@ abstract class NoteMetaDto with _$NoteMetaDto {
 /// Nested media on `GET /notes/detail` (`media` array).
 ///
 /// Wire shape matches live OpenAPI `MediaItemDto` (`id` / `qiniuKey` / `qiniuUrl`
-/// / `fileSize`), not the upload-response `MediaDto` (`mediaId` / `key` / `url`).
+/// / `fileSize` / optional `originalFilename`), not the upload-response
+/// `MediaDto` (`mediaId` / `key` / `url`).
 /// Plain class (not freezed) so it can ship without regenerating `NoteDetailDto`.
 class NoteMediaItemDto {
   const NoteMediaItemDto({
@@ -93,6 +94,7 @@ class NoteMediaItemDto {
     this.status,
     this.mimeType,
     this.fileSize,
+    this.originalFilename,
   });
 
   factory NoteMediaItemDto.fromJson(Map<String, dynamic> json) {
@@ -104,6 +106,7 @@ class NoteMediaItemDto {
       status: json['status'] as String?,
       mimeType: json['mimeType'] as String?,
       fileSize: (json['fileSize'] as num?)?.toInt(),
+      originalFilename: json['originalFilename'] as String?,
     );
   }
 
@@ -114,6 +117,86 @@ class NoteMediaItemDto {
   final String? status;
   final String? mimeType;
   final int? fileSize;
+
+  /// User-facing original upload name when the API provides it.
+  final String? originalFilename;
+
+  /// Display / download basename: prefer [originalFilename], else last segment
+  /// of [qiniuKey], else [id].
+  String get displayFileName {
+    final original = originalFilename?.trim();
+    if (original != null && original.isNotEmpty) return original;
+    final key = qiniuKey ?? '';
+    final fromKey = key.split('/').last;
+    if (fromKey.isNotEmpty) return fromKey;
+    return id;
+  }
+}
+
+/// Extracts tag ids from either `tagIds: string[]` or nested
+/// `tags: [{ tagId, tag: { id, name } }]`.
+List<String>? extractNoteTagIds(Map<String, dynamic> json) {
+  final direct = json['tagIds'];
+  if (direct is List) {
+    return [
+      for (final item in direct)
+        if (item is String && item.isNotEmpty) item,
+    ];
+  }
+
+  final tags = json['tags'];
+  if (tags is! List) return null;
+
+  final ids = <String>[];
+  for (final item in tags) {
+    if (item is String && item.isNotEmpty) {
+      ids.add(item);
+      continue;
+    }
+    if (item is! Map) continue;
+    final tagId = item['tagId'];
+    if (tagId is String && tagId.isNotEmpty) {
+      ids.add(tagId);
+      continue;
+    }
+    final tag = item['tag'];
+    if (tag is Map) {
+      final id = tag['id'];
+      if (id is String && id.isNotEmpty) ids.add(id);
+    }
+  }
+  return ids;
+}
+
+/// Tag display names parallel to [extractNoteTagIds] from nested `tags`.
+List<String> extractNoteTagNames(Map<String, dynamic> json) {
+  final tags = json['tags'];
+  if (tags is! List) return const [];
+
+  final names = <String>[];
+  for (final item in tags) {
+    if (item is! Map) {
+      names.add('');
+      continue;
+    }
+    final tag = item['tag'];
+    if (tag is Map && tag['name'] is String) {
+      names.add(tag['name'] as String);
+    } else {
+      names.add('');
+    }
+  }
+  return names;
+}
+
+/// Nested `category: { id, name }` display name.
+String? extractNoteCategoryName(Map<String, dynamic> json) {
+  final category = json['category'];
+  if (category is Map && category['name'] is String) {
+    final name = category['name'] as String;
+    if (name.isNotEmpty) return name;
+  }
+  return null;
 }
 
 /// Detail payload: note fields + joined `media` from the same response.
@@ -121,10 +204,18 @@ class NoteDetailBundle {
   const NoteDetailBundle({
     required this.note,
     required this.media,
+    this.categoryName,
+    this.tagNames = const [],
   });
 
   final NoteDetailDto note;
   final List<NoteMediaItemDto> media;
+
+  /// From nested `category.name` when present.
+  final String? categoryName;
+
+  /// From nested `tags[].tag.name`, parallel to [NoteDetailDto.tagIds].
+  final List<String> tagNames;
 }
 
 /// List row: note fields + optional joined `media` from the same list-item JSON.
@@ -149,19 +240,26 @@ class PaginatedNotesList {
   final int size;
 }
 
-/// DTO representing a note detail response.
+/// DTO representing a note detail / list-item response.
+///
+/// Matches OpenAPI `NoteDetailDto` / `NoteListItemDto` core fields. Nested
+/// `category` / `tags` / `media` are parsed via helpers / [NoteDetailBundle].
 @freezed
 abstract class NoteDetailDto with _$NoteDetailDto {
   const factory NoteDetailDto({
     required String id,
+    String? userId,
     String? title,
     String? content,
+    String? rawContent,
     NoteSource? source,
     String? type,
     String? categoryId,
     List<String>? tagIds,
     List<String>? mediaIds,
     NoteMetaDto? meta,
+    @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)
+    DateTime? deletedAt,
     @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)
     DateTime? pinnedAt,
     @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)
@@ -171,29 +269,54 @@ abstract class NoteDetailDto with _$NoteDetailDto {
   }) = _NoteDetailDto;
 
   factory NoteDetailDto.fromJson(Map<String, dynamic> json) =>
-      _$NoteDetailDtoFromJson(json);
+      _$NoteDetailDtoFromJson(_normalizeNoteDetailJson(json));
 }
 
-/// DTO for paginated note list response.
-@freezed
-abstract class PaginatedNotes with _$PaginatedNotes {
-  const factory PaginatedNotes({
-    required List<NoteDetailDto> items,
-    required int total,
-    required int page,
-    required int size,
-  }) = _PaginatedNotes;
-
-  factory PaginatedNotes.fromJson(Map<String, dynamic> json) =>
-      _$PaginatedNotesFromJson(json);
+Map<String, dynamic> _normalizeNoteDetailJson(Map<String, dynamic> json) {
+  final map = Map<String, dynamic>.from(json);
+  final tagIds = extractNoteTagIds(map);
+  if (tagIds != null) {
+    map['tagIds'] = tagIds;
+  }
+  return map;
 }
 
-/// DTO for note share information.
+/// Legacy paginated list shape without per-item `media`.
+///
+/// Prefer [PaginatedNotesList] for `GET /notes` parsing.
+class PaginatedNotes {
+  const PaginatedNotes({
+    required this.items,
+    required this.total,
+    required this.page,
+    required this.size,
+  });
+
+  factory PaginatedNotes.fromJson(Map<String, dynamic> json) {
+    final rawItems = json['items'] as List<dynamic>? ?? const [];
+    return PaginatedNotes(
+      items: rawItems
+          .map((e) => NoteDetailDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      total: (json['total'] as num).toInt(),
+      page: (json['page'] as num).toInt(),
+      size: (json['size'] as num).toInt(),
+    );
+  }
+
+  final List<NoteDetailDto> items;
+  final int total;
+  final int page;
+  final int size;
+
+}
+
+/// DTO for note share information (`NoteShareResponseDto`).
 @freezed
 abstract class ShareInfoDto with _$ShareInfoDto {
   const factory ShareInfoDto({
     required String id,
-    required String title,
+    String? title,
     String? type,
     required String shareUrl,
   }) = _ShareInfoDto;

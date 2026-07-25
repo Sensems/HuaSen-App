@@ -21,6 +21,9 @@ abstract final class UiStrings {
   static const String notesFilterAll = '全部';
   static const String notesFilterPinned = '置顶';
   static const String notesFilterRecent = '最近';
+  static const String notesCategoryTagFilterTitle = '筛选';
+  static const String notesCategoryTagFilterConfirm = '确认';
+  static const String notesCategoryTagFilterClear = '清除';
   static const String noNotesFound = '还没有笔记';
   static const String noNotesHint = '点击右上角 + 创建第一条笔记';
   static const String noSearchResults = '没有找到相关笔记';
@@ -54,6 +57,32 @@ abstract final class UiStrings {
   static const String noteEditorLinkTitle = '添加链接';
   static const String noteEditorLinkHint = 'https://example.com';
   static const String noteEditorLinkEmpty = '请输入链接地址';
+
+  // --- Note editor category / tags ---
+  static const String noteEditorCategoryLabel = '分类';
+  static const String noteEditorTagsLabel = '标签';
+  static const String noteEditorCategoryPlaceholder = '选择分类';
+  static const String noteEditorTagsPlaceholder = '选择标签';
+  static const String categoryTagPickerTitle = '分类与标签';
+  static const String categoryTagPickerSelectCategory = '选择分类（单选）';
+  static const String categoryTagPickerSelectTags = '选择标签（多选）';
+  static const String categoryTagPickerNewCategoryHint = '新建分类...';
+  static const String categoryTagPickerNewTagHint = '新建标签...';
+  static const String categoryTagPickerAdd = '添加';
+  static const String categoryTagPickerDone = '完成';
+  static const String categoryTagPickerLoadFailed = '加载失败，请重试';
+  static const String categoryTagPickerRetry = '重试';
+  static const String categoryTagPickerEmptyName = '请输入名称';
+
+  // --- Note attachment open/download ---
+  static const String attachmentOpenFailed = '无法打开该文件';
+  static const String attachmentDownloadFailed = '下载失败，请重试';
+  static const String attachmentDownloadSuccess = '已保存到下载目录';
+  static const String attachmentSourceMissing = '文件不可用';
+  static const String attachmentOpening = '正在打开…';
+  static const String attachmentDownloading = '正在下载…';
+  static const String attachmentImagePreviewTitle = '预览';
+  static const String attachmentDownloadTooltip = '下载';
 
   // --- Note detail screen ---
   static const String noteDetailPageTitle = '笔记详情';
@@ -186,6 +215,10 @@ abstract final class UiStrings {
   static const String draft = '草稿';
   static const String draftsNotificationChannelName = '草稿更新';
   static const String draftsNotificationChannelDescription = '有新的微信/同步草稿时提醒';
+  static const String draftsSyncChannelName = '草稿同步';
+  static const String draftsSyncChannelDescription = '后台同步草稿时显示';
+  static const String draftsSyncOngoingTitle = '花森';
+  static const String draftsSyncOngoingBody = '正在同步草稿';
   static const String draftsNotificationTitle = '新草稿';
   static const String draftsNotificationUntitled = '无标题';
   static const String draftsNotificationMultiplePrefix = '有';

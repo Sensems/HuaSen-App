@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 
 import '../models/api_response.dart';
-import '../models/media_dto.dart';
 import '../models/note_dtos.dart';
 
 /// Service for notes-related API calls.
@@ -16,14 +15,14 @@ class NotesService {
   ///
   /// GET /notes
   ///
-  /// Each item may include a joined `media` array from the same JSON object
-  /// (no N+1). Missing/`null` `media` becomes an empty list.
+  /// Query `tags` is a repeated array (`tags[]`); single-tag `tag` was removed
+  /// from OpenAPI. Each item may include joined `media` (no N+1).
   Future<ApiResponse<PaginatedNotesList>> listNotes({
     int? page,
     int? size,
     String? type,
     String? category,
-    String? tag,
+    List<String>? tags,
     String? keyword,
     String? mediaType,
     NotesListView? view,
@@ -35,7 +34,7 @@ class NotesService {
         'size': size,
         'type': type,
         'category': category,
-        'tag': tag,
+        'tags': (tags == null || tags.isEmpty) ? null : tags,
         'keyword': keyword,
         'mediaType': mediaType,
         'view': switch (view) {
@@ -113,6 +112,8 @@ class NotesService {
         return NoteDetailBundle(
           note: NoteDetailDto.fromJson(map),
           media: media,
+          categoryName: extractNoteCategoryName(map),
+          tagNames: extractNoteTagNames(map),
         );
       },
     );
@@ -205,7 +206,9 @@ class NotesService {
   /// Get media associated with a note.
   ///
   /// GET /notes/media?note_id={noteId}
-  Future<ApiResponse<List<MediaDto>>> getNoteMedia(String noteId) async {
+  ///
+  /// Response items are OpenAPI `MediaItemDto` (same shape as detail `media`).
+  Future<ApiResponse<List<NoteMediaItemDto>>> getNoteMedia(String noteId) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/notes/media',
       queryParameters: <String, dynamic>{'note_id': noteId},
@@ -213,7 +216,7 @@ class NotesService {
     return ApiResponse.fromJson(
       response.data!,
       (json) => (json as List<dynamic>)
-          .map((e) => MediaDto.fromJson(e as Map<String, dynamic>))
+          .map((e) => NoteMediaItemDto.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

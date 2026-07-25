@@ -7,6 +7,8 @@ import 'core/constants/app_constants.dart';
 import 'core/notifications/local_notification_service.dart';
 import 'core/providers/core_providers.dart';
 import 'features/auth/auth_notifier.dart';
+import 'features/wechat/android_os.dart';
+import 'features/wechat/drafts_background_service.dart';
 
 /// Entry point for sebhua_notes.
 ///
@@ -24,6 +26,8 @@ Future<void> main() async {
   final notificationService = LocalNotificationService();
   await notificationService.initialize();
 
+  await _initAndroidBackgroundService();
+
   runApp(
     ProviderScope(
       overrides: [
@@ -34,4 +38,10 @@ Future<void> main() async {
       child: const SebhuaNotesApp(),
     ),
   );
+}
+
+/// Configures the drafts FG service on Android only (Web-safe via stub).
+Future<void> _initAndroidBackgroundService() async {
+  if (!isAndroidOperatingSystem) return;
+  await initializeDraftsBackgroundService();
 }

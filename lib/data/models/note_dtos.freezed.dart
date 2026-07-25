@@ -869,7 +869,7 @@ as String?,
 /// @nodoc
 mixin _$NoteDetailDto {
 
- String get id; String? get title; String? get content; NoteSource? get source; String? get type; String? get categoryId; List<String>? get tagIds; List<String>? get mediaIds; NoteMetaDto? get meta;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get pinnedAt;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get createdAt;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get updatedAt;
+ String get id; String? get userId; String? get title; String? get content; String? get rawContent; NoteSource? get source; String? get type; String? get categoryId; List<String>? get tagIds; List<String>? get mediaIds; NoteMetaDto? get meta;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get deletedAt;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get pinnedAt;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get createdAt;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get updatedAt;
 /// Create a copy of NoteDetailDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -882,16 +882,16 @@ $NoteDetailDtoCopyWith<NoteDetailDto> get copyWith => _$NoteDetailDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoteDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.content, content) || other.content == content)&&(identical(other.source, source) || other.source == source)&&(identical(other.type, type) || other.type == type)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&const DeepCollectionEquality().equals(other.tagIds, tagIds)&&const DeepCollectionEquality().equals(other.mediaIds, mediaIds)&&(identical(other.meta, meta) || other.meta == meta)&&(identical(other.pinnedAt, pinnedAt) || other.pinnedAt == pinnedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NoteDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.title, title) || other.title == title)&&(identical(other.content, content) || other.content == content)&&(identical(other.rawContent, rawContent) || other.rawContent == rawContent)&&(identical(other.source, source) || other.source == source)&&(identical(other.type, type) || other.type == type)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&const DeepCollectionEquality().equals(other.tagIds, tagIds)&&const DeepCollectionEquality().equals(other.mediaIds, mediaIds)&&(identical(other.meta, meta) || other.meta == meta)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.pinnedAt, pinnedAt) || other.pinnedAt == pinnedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,content,source,type,categoryId,const DeepCollectionEquality().hash(tagIds),const DeepCollectionEquality().hash(mediaIds),meta,pinnedAt,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,userId,title,content,rawContent,source,type,categoryId,const DeepCollectionEquality().hash(tagIds),const DeepCollectionEquality().hash(mediaIds),meta,deletedAt,pinnedAt,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'NoteDetailDto(id: $id, title: $title, content: $content, source: $source, type: $type, categoryId: $categoryId, tagIds: $tagIds, mediaIds: $mediaIds, meta: $meta, pinnedAt: $pinnedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'NoteDetailDto(id: $id, userId: $userId, title: $title, content: $content, rawContent: $rawContent, source: $source, type: $type, categoryId: $categoryId, tagIds: $tagIds, mediaIds: $mediaIds, meta: $meta, deletedAt: $deletedAt, pinnedAt: $pinnedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -902,7 +902,7 @@ abstract mixin class $NoteDetailDtoCopyWith<$Res>  {
   factory $NoteDetailDtoCopyWith(NoteDetailDto value, $Res Function(NoteDetailDto) _then) = _$NoteDetailDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String? title, String? content, NoteSource? source, String? type, String? categoryId, List<String>? tagIds, List<String>? mediaIds, NoteMetaDto? meta,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? pinnedAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? createdAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? updatedAt
+ String id, String? userId, String? title, String? content, String? rawContent, NoteSource? source, String? type, String? categoryId, List<String>? tagIds, List<String>? mediaIds, NoteMetaDto? meta,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? deletedAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? pinnedAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? createdAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? updatedAt
 });
 
 
@@ -919,18 +919,21 @@ class _$NoteDetailDtoCopyWithImpl<$Res>
 
 /// Create a copy of NoteDetailDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = freezed,Object? content = freezed,Object? source = freezed,Object? type = freezed,Object? categoryId = freezed,Object? tagIds = freezed,Object? mediaIds = freezed,Object? meta = freezed,Object? pinnedAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = freezed,Object? title = freezed,Object? content = freezed,Object? rawContent = freezed,Object? source = freezed,Object? type = freezed,Object? categoryId = freezed,Object? tagIds = freezed,Object? mediaIds = freezed,Object? meta = freezed,Object? deletedAt = freezed,Object? pinnedAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as String?,rawContent: freezed == rawContent ? _self.rawContent : rawContent // ignore: cast_nullable_to_non_nullable
 as String?,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
 as NoteSource?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String?,tagIds: freezed == tagIds ? _self.tagIds : tagIds // ignore: cast_nullable_to_non_nullable
 as List<String>?,mediaIds: freezed == mediaIds ? _self.mediaIds : mediaIds // ignore: cast_nullable_to_non_nullable
 as List<String>?,meta: freezed == meta ? _self.meta : meta // ignore: cast_nullable_to_non_nullable
-as NoteMetaDto?,pinnedAt: freezed == pinnedAt ? _self.pinnedAt : pinnedAt // ignore: cast_nullable_to_non_nullable
+as NoteMetaDto?,deletedAt: freezed == deletedAt ? _self.deletedAt : deletedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,pinnedAt: freezed == pinnedAt ? _self.pinnedAt : pinnedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -1030,10 +1033,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? title,  String? content,  NoteSource? source,  String? type,  String? categoryId,  List<String>? tagIds,  List<String>? mediaIds,  NoteMetaDto? meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? userId,  String? title,  String? content,  String? rawContent,  NoteSource? source,  String? type,  String? categoryId,  List<String>? tagIds,  List<String>? mediaIds,  NoteMetaDto? meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? deletedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NoteDetailDto() when $default != null:
-return $default(_that.id,_that.title,_that.content,_that.source,_that.type,_that.categoryId,_that.tagIds,_that.mediaIds,_that.meta,_that.pinnedAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.userId,_that.title,_that.content,_that.rawContent,_that.source,_that.type,_that.categoryId,_that.tagIds,_that.mediaIds,_that.meta,_that.deletedAt,_that.pinnedAt,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -1051,10 +1054,10 @@ return $default(_that.id,_that.title,_that.content,_that.source,_that.type,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? title,  String? content,  NoteSource? source,  String? type,  String? categoryId,  List<String>? tagIds,  List<String>? mediaIds,  NoteMetaDto? meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? userId,  String? title,  String? content,  String? rawContent,  NoteSource? source,  String? type,  String? categoryId,  List<String>? tagIds,  List<String>? mediaIds,  NoteMetaDto? meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? deletedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _NoteDetailDto():
-return $default(_that.id,_that.title,_that.content,_that.source,_that.type,_that.categoryId,_that.tagIds,_that.mediaIds,_that.meta,_that.pinnedAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.userId,_that.title,_that.content,_that.rawContent,_that.source,_that.type,_that.categoryId,_that.tagIds,_that.mediaIds,_that.meta,_that.deletedAt,_that.pinnedAt,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1071,10 +1074,10 @@ return $default(_that.id,_that.title,_that.content,_that.source,_that.type,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? title,  String? content,  NoteSource? source,  String? type,  String? categoryId,  List<String>? tagIds,  List<String>? mediaIds,  NoteMetaDto? meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? userId,  String? title,  String? content,  String? rawContent,  NoteSource? source,  String? type,  String? categoryId,  List<String>? tagIds,  List<String>? mediaIds,  NoteMetaDto? meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? deletedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _NoteDetailDto() when $default != null:
-return $default(_that.id,_that.title,_that.content,_that.source,_that.type,_that.categoryId,_that.tagIds,_that.mediaIds,_that.meta,_that.pinnedAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.userId,_that.title,_that.content,_that.rawContent,_that.source,_that.type,_that.categoryId,_that.tagIds,_that.mediaIds,_that.meta,_that.deletedAt,_that.pinnedAt,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -1086,12 +1089,14 @@ return $default(_that.id,_that.title,_that.content,_that.source,_that.type,_that
 @JsonSerializable()
 
 class _NoteDetailDto implements NoteDetailDto {
-  const _NoteDetailDto({required this.id, this.title, this.content, this.source, this.type, this.categoryId, final  List<String>? tagIds, final  List<String>? mediaIds, this.meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.updatedAt}): _tagIds = tagIds,_mediaIds = mediaIds;
+  const _NoteDetailDto({required this.id, this.userId, this.title, this.content, this.rawContent, this.source, this.type, this.categoryId, final  List<String>? tagIds, final  List<String>? mediaIds, this.meta, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.deletedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.pinnedAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.createdAt, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.updatedAt}): _tagIds = tagIds,_mediaIds = mediaIds;
   factory _NoteDetailDto.fromJson(Map<String, dynamic> json) => _$NoteDetailDtoFromJson(json);
 
 @override final  String id;
+@override final  String? userId;
 @override final  String? title;
 @override final  String? content;
+@override final  String? rawContent;
 @override final  NoteSource? source;
 @override final  String? type;
 @override final  String? categoryId;
@@ -1114,6 +1119,7 @@ class _NoteDetailDto implements NoteDetailDto {
 }
 
 @override final  NoteMetaDto? meta;
+@override@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) final  DateTime? deletedAt;
 @override@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) final  DateTime? pinnedAt;
 @override@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) final  DateTime? createdAt;
 @override@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) final  DateTime? updatedAt;
@@ -1131,16 +1137,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NoteDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.content, content) || other.content == content)&&(identical(other.source, source) || other.source == source)&&(identical(other.type, type) || other.type == type)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&const DeepCollectionEquality().equals(other._tagIds, _tagIds)&&const DeepCollectionEquality().equals(other._mediaIds, _mediaIds)&&(identical(other.meta, meta) || other.meta == meta)&&(identical(other.pinnedAt, pinnedAt) || other.pinnedAt == pinnedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NoteDetailDto&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.title, title) || other.title == title)&&(identical(other.content, content) || other.content == content)&&(identical(other.rawContent, rawContent) || other.rawContent == rawContent)&&(identical(other.source, source) || other.source == source)&&(identical(other.type, type) || other.type == type)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&const DeepCollectionEquality().equals(other._tagIds, _tagIds)&&const DeepCollectionEquality().equals(other._mediaIds, _mediaIds)&&(identical(other.meta, meta) || other.meta == meta)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.pinnedAt, pinnedAt) || other.pinnedAt == pinnedAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,content,source,type,categoryId,const DeepCollectionEquality().hash(_tagIds),const DeepCollectionEquality().hash(_mediaIds),meta,pinnedAt,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,userId,title,content,rawContent,source,type,categoryId,const DeepCollectionEquality().hash(_tagIds),const DeepCollectionEquality().hash(_mediaIds),meta,deletedAt,pinnedAt,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'NoteDetailDto(id: $id, title: $title, content: $content, source: $source, type: $type, categoryId: $categoryId, tagIds: $tagIds, mediaIds: $mediaIds, meta: $meta, pinnedAt: $pinnedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'NoteDetailDto(id: $id, userId: $userId, title: $title, content: $content, rawContent: $rawContent, source: $source, type: $type, categoryId: $categoryId, tagIds: $tagIds, mediaIds: $mediaIds, meta: $meta, deletedAt: $deletedAt, pinnedAt: $pinnedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -1151,7 +1157,7 @@ abstract mixin class _$NoteDetailDtoCopyWith<$Res> implements $NoteDetailDtoCopy
   factory _$NoteDetailDtoCopyWith(_NoteDetailDto value, $Res Function(_NoteDetailDto) _then) = __$NoteDetailDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? title, String? content, NoteSource? source, String? type, String? categoryId, List<String>? tagIds, List<String>? mediaIds, NoteMetaDto? meta,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? pinnedAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? createdAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? updatedAt
+ String id, String? userId, String? title, String? content, String? rawContent, NoteSource? source, String? type, String? categoryId, List<String>? tagIds, List<String>? mediaIds, NoteMetaDto? meta,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? deletedAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? pinnedAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? createdAt,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? updatedAt
 });
 
 
@@ -1168,18 +1174,21 @@ class __$NoteDetailDtoCopyWithImpl<$Res>
 
 /// Create a copy of NoteDetailDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = freezed,Object? content = freezed,Object? source = freezed,Object? type = freezed,Object? categoryId = freezed,Object? tagIds = freezed,Object? mediaIds = freezed,Object? meta = freezed,Object? pinnedAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = freezed,Object? title = freezed,Object? content = freezed,Object? rawContent = freezed,Object? source = freezed,Object? type = freezed,Object? categoryId = freezed,Object? tagIds = freezed,Object? mediaIds = freezed,Object? meta = freezed,Object? deletedAt = freezed,Object? pinnedAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_NoteDetailDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as String?,rawContent: freezed == rawContent ? _self.rawContent : rawContent // ignore: cast_nullable_to_non_nullable
 as String?,source: freezed == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
 as NoteSource?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String?,tagIds: freezed == tagIds ? _self._tagIds : tagIds // ignore: cast_nullable_to_non_nullable
 as List<String>?,mediaIds: freezed == mediaIds ? _self._mediaIds : mediaIds // ignore: cast_nullable_to_non_nullable
 as List<String>?,meta: freezed == meta ? _self.meta : meta // ignore: cast_nullable_to_non_nullable
-as NoteMetaDto?,pinnedAt: freezed == pinnedAt ? _self.pinnedAt : pinnedAt // ignore: cast_nullable_to_non_nullable
+as NoteMetaDto?,deletedAt: freezed == deletedAt ? _self.deletedAt : deletedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,pinnedAt: freezed == pinnedAt ? _self.pinnedAt : pinnedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -1203,287 +1212,9 @@ $NoteMetaDtoCopyWith<$Res>? get meta {
 
 
 /// @nodoc
-mixin _$PaginatedNotes {
-
- List<NoteDetailDto> get items; int get total; int get page; int get size;
-/// Create a copy of PaginatedNotes
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$PaginatedNotesCopyWith<PaginatedNotes> get copyWith => _$PaginatedNotesCopyWithImpl<PaginatedNotes>(this as PaginatedNotes, _$identity);
-
-  /// Serializes this PaginatedNotes to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaginatedNotes&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.total, total) || other.total == total)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(items),total,page,size);
-
-@override
-String toString() {
-  return 'PaginatedNotes(items: $items, total: $total, page: $page, size: $size)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $PaginatedNotesCopyWith<$Res>  {
-  factory $PaginatedNotesCopyWith(PaginatedNotes value, $Res Function(PaginatedNotes) _then) = _$PaginatedNotesCopyWithImpl;
-@useResult
-$Res call({
- List<NoteDetailDto> items, int total, int page, int size
-});
-
-
-
-
-}
-/// @nodoc
-class _$PaginatedNotesCopyWithImpl<$Res>
-    implements $PaginatedNotesCopyWith<$Res> {
-  _$PaginatedNotesCopyWithImpl(this._self, this._then);
-
-  final PaginatedNotes _self;
-  final $Res Function(PaginatedNotes) _then;
-
-/// Create a copy of PaginatedNotes
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? total = null,Object? page = null,Object? size = null,}) {
-  return _then(_self.copyWith(
-items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<NoteDetailDto>,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
-as int,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
-as int,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [PaginatedNotes].
-extension PaginatedNotesPatterns on PaginatedNotes {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PaginatedNotes value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _PaginatedNotes() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PaginatedNotes value)  $default,){
-final _that = this;
-switch (_that) {
-case _PaginatedNotes():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PaginatedNotes value)?  $default,){
-final _that = this;
-switch (_that) {
-case _PaginatedNotes() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<NoteDetailDto> items,  int total,  int page,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _PaginatedNotes() when $default != null:
-return $default(_that.items,_that.total,_that.page,_that.size);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<NoteDetailDto> items,  int total,  int page,  int size)  $default,) {final _that = this;
-switch (_that) {
-case _PaginatedNotes():
-return $default(_that.items,_that.total,_that.page,_that.size);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<NoteDetailDto> items,  int total,  int page,  int size)?  $default,) {final _that = this;
-switch (_that) {
-case _PaginatedNotes() when $default != null:
-return $default(_that.items,_that.total,_that.page,_that.size);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _PaginatedNotes implements PaginatedNotes {
-  const _PaginatedNotes({required final  List<NoteDetailDto> items, required this.total, required this.page, required this.size}): _items = items;
-  factory _PaginatedNotes.fromJson(Map<String, dynamic> json) => _$PaginatedNotesFromJson(json);
-
- final  List<NoteDetailDto> _items;
-@override List<NoteDetailDto> get items {
-  if (_items is EqualUnmodifiableListView) return _items;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_items);
-}
-
-@override final  int total;
-@override final  int page;
-@override final  int size;
-
-/// Create a copy of PaginatedNotes
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$PaginatedNotesCopyWith<_PaginatedNotes> get copyWith => __$PaginatedNotesCopyWithImpl<_PaginatedNotes>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$PaginatedNotesToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaginatedNotes&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.total, total) || other.total == total)&&(identical(other.page, page) || other.page == page)&&(identical(other.size, size) || other.size == size));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),total,page,size);
-
-@override
-String toString() {
-  return 'PaginatedNotes(items: $items, total: $total, page: $page, size: $size)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$PaginatedNotesCopyWith<$Res> implements $PaginatedNotesCopyWith<$Res> {
-  factory _$PaginatedNotesCopyWith(_PaginatedNotes value, $Res Function(_PaginatedNotes) _then) = __$PaginatedNotesCopyWithImpl;
-@override @useResult
-$Res call({
- List<NoteDetailDto> items, int total, int page, int size
-});
-
-
-
-
-}
-/// @nodoc
-class __$PaginatedNotesCopyWithImpl<$Res>
-    implements _$PaginatedNotesCopyWith<$Res> {
-  __$PaginatedNotesCopyWithImpl(this._self, this._then);
-
-  final _PaginatedNotes _self;
-  final $Res Function(_PaginatedNotes) _then;
-
-/// Create a copy of PaginatedNotes
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? total = null,Object? page = null,Object? size = null,}) {
-  return _then(_PaginatedNotes(
-items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<NoteDetailDto>,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
-as int,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
-as int,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
-as int,
-  ));
-}
-
-
-}
-
-
-/// @nodoc
 mixin _$ShareInfoDto {
 
- String get id; String get title; String? get type; String get shareUrl;
+ String get id; String? get title; String? get type; String get shareUrl;
 /// Create a copy of ShareInfoDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1516,7 +1247,7 @@ abstract mixin class $ShareInfoDtoCopyWith<$Res>  {
   factory $ShareInfoDtoCopyWith(ShareInfoDto value, $Res Function(ShareInfoDto) _then) = _$ShareInfoDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String? type, String shareUrl
+ String id, String? title, String? type, String shareUrl
 });
 
 
@@ -1533,11 +1264,11 @@ class _$ShareInfoDtoCopyWithImpl<$Res>
 
 /// Create a copy of ShareInfoDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? type = freezed,Object? shareUrl = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = freezed,Object? type = freezed,Object? shareUrl = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,shareUrl: null == shareUrl ? _self.shareUrl : shareUrl // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -1624,7 +1355,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? type,  String shareUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? title,  String? type,  String shareUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ShareInfoDto() when $default != null:
 return $default(_that.id,_that.title,_that.type,_that.shareUrl);case _:
@@ -1645,7 +1376,7 @@ return $default(_that.id,_that.title,_that.type,_that.shareUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? type,  String shareUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? title,  String? type,  String shareUrl)  $default,) {final _that = this;
 switch (_that) {
 case _ShareInfoDto():
 return $default(_that.id,_that.title,_that.type,_that.shareUrl);case _:
@@ -1665,7 +1396,7 @@ return $default(_that.id,_that.title,_that.type,_that.shareUrl);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? type,  String shareUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? title,  String? type,  String shareUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _ShareInfoDto() when $default != null:
 return $default(_that.id,_that.title,_that.type,_that.shareUrl);case _:
@@ -1680,11 +1411,11 @@ return $default(_that.id,_that.title,_that.type,_that.shareUrl);case _:
 @JsonSerializable()
 
 class _ShareInfoDto implements ShareInfoDto {
-  const _ShareInfoDto({required this.id, required this.title, this.type, required this.shareUrl});
+  const _ShareInfoDto({required this.id, this.title, this.type, required this.shareUrl});
   factory _ShareInfoDto.fromJson(Map<String, dynamic> json) => _$ShareInfoDtoFromJson(json);
 
 @override final  String id;
-@override final  String title;
+@override final  String? title;
 @override final  String? type;
 @override final  String shareUrl;
 
@@ -1721,7 +1452,7 @@ abstract mixin class _$ShareInfoDtoCopyWith<$Res> implements $ShareInfoDtoCopyWi
   factory _$ShareInfoDtoCopyWith(_ShareInfoDto value, $Res Function(_ShareInfoDto) _then) = __$ShareInfoDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String? type, String shareUrl
+ String id, String? title, String? type, String shareUrl
 });
 
 
@@ -1738,11 +1469,11 @@ class __$ShareInfoDtoCopyWithImpl<$Res>
 
 /// Create a copy of ShareInfoDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? type = freezed,Object? shareUrl = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = freezed,Object? type = freezed,Object? shareUrl = null,}) {
   return _then(_ShareInfoDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,shareUrl: null == shareUrl ? _self.shareUrl : shareUrl // ignore: cast_nullable_to_non_nullable
 as String,
   ));

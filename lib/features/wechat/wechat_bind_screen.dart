@@ -87,10 +87,13 @@ class _WechatBindScreenState extends ConsumerState<WechatBindScreen> {
         );
         return;
       }
+      final bindMessage = response.data?.message.trim();
       $message.success(
-        message: response.message.isNotEmpty
-            ? response.message
-            : UiStrings.wechatBindSuccess,
+        message: (bindMessage != null && bindMessage.isNotEmpty)
+            ? bindMessage
+            : (response.message.isNotEmpty
+                ? response.message
+                : UiStrings.wechatBindSuccess),
       );
       await ref.read(userProfileProvider.notifier).refresh();
       if (!mounted) return;

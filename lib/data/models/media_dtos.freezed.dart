@@ -565,7 +565,7 @@ as List<String>,
 /// @nodoc
 mixin _$CheckMediaResultDto {
 
- List<String> get validIds; List<String> get invalidIds;
+ List<String> get valid; List<String> get invalid;
 /// Create a copy of CheckMediaResultDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -578,16 +578,16 @@ $CheckMediaResultDtoCopyWith<CheckMediaResultDto> get copyWith => _$CheckMediaRe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckMediaResultDto&&const DeepCollectionEquality().equals(other.validIds, validIds)&&const DeepCollectionEquality().equals(other.invalidIds, invalidIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CheckMediaResultDto&&const DeepCollectionEquality().equals(other.valid, valid)&&const DeepCollectionEquality().equals(other.invalid, invalid));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(validIds),const DeepCollectionEquality().hash(invalidIds));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(valid),const DeepCollectionEquality().hash(invalid));
 
 @override
 String toString() {
-  return 'CheckMediaResultDto(validIds: $validIds, invalidIds: $invalidIds)';
+  return 'CheckMediaResultDto(valid: $valid, invalid: $invalid)';
 }
 
 
@@ -598,7 +598,7 @@ abstract mixin class $CheckMediaResultDtoCopyWith<$Res>  {
   factory $CheckMediaResultDtoCopyWith(CheckMediaResultDto value, $Res Function(CheckMediaResultDto) _then) = _$CheckMediaResultDtoCopyWithImpl;
 @useResult
 $Res call({
- List<String> validIds, List<String> invalidIds
+ List<String> valid, List<String> invalid
 });
 
 
@@ -615,10 +615,10 @@ class _$CheckMediaResultDtoCopyWithImpl<$Res>
 
 /// Create a copy of CheckMediaResultDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? validIds = null,Object? invalidIds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? valid = null,Object? invalid = null,}) {
   return _then(_self.copyWith(
-validIds: null == validIds ? _self.validIds : validIds // ignore: cast_nullable_to_non_nullable
-as List<String>,invalidIds: null == invalidIds ? _self.invalidIds : invalidIds // ignore: cast_nullable_to_non_nullable
+valid: null == valid ? _self.valid : valid // ignore: cast_nullable_to_non_nullable
+as List<String>,invalid: null == invalid ? _self.invalid : invalid // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));
 }
@@ -704,10 +704,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> validIds,  List<String> invalidIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> valid,  List<String> invalid)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CheckMediaResultDto() when $default != null:
-return $default(_that.validIds,_that.invalidIds);case _:
+return $default(_that.valid,_that.invalid);case _:
   return orElse();
 
 }
@@ -725,10 +725,10 @@ return $default(_that.validIds,_that.invalidIds);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> validIds,  List<String> invalidIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> valid,  List<String> invalid)  $default,) {final _that = this;
 switch (_that) {
 case _CheckMediaResultDto():
-return $default(_that.validIds,_that.invalidIds);case _:
+return $default(_that.valid,_that.invalid);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -745,10 +745,10 @@ return $default(_that.validIds,_that.invalidIds);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> validIds,  List<String> invalidIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> valid,  List<String> invalid)?  $default,) {final _that = this;
 switch (_that) {
 case _CheckMediaResultDto() when $default != null:
-return $default(_that.validIds,_that.invalidIds);case _:
+return $default(_that.valid,_that.invalid);case _:
   return null;
 
 }
@@ -760,21 +760,21 @@ return $default(_that.validIds,_that.invalidIds);case _:
 @JsonSerializable()
 
 class _CheckMediaResultDto implements CheckMediaResultDto {
-  const _CheckMediaResultDto({required final  List<String> validIds, required final  List<String> invalidIds}): _validIds = validIds,_invalidIds = invalidIds;
+  const _CheckMediaResultDto({required final  List<String> valid, required final  List<String> invalid}): _valid = valid,_invalid = invalid;
   factory _CheckMediaResultDto.fromJson(Map<String, dynamic> json) => _$CheckMediaResultDtoFromJson(json);
 
- final  List<String> _validIds;
-@override List<String> get validIds {
-  if (_validIds is EqualUnmodifiableListView) return _validIds;
+ final  List<String> _valid;
+@override List<String> get valid {
+  if (_valid is EqualUnmodifiableListView) return _valid;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_validIds);
+  return EqualUnmodifiableListView(_valid);
 }
 
- final  List<String> _invalidIds;
-@override List<String> get invalidIds {
-  if (_invalidIds is EqualUnmodifiableListView) return _invalidIds;
+ final  List<String> _invalid;
+@override List<String> get invalid {
+  if (_invalid is EqualUnmodifiableListView) return _invalid;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_invalidIds);
+  return EqualUnmodifiableListView(_invalid);
 }
 
 
@@ -791,16 +791,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckMediaResultDto&&const DeepCollectionEquality().equals(other._validIds, _validIds)&&const DeepCollectionEquality().equals(other._invalidIds, _invalidIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckMediaResultDto&&const DeepCollectionEquality().equals(other._valid, _valid)&&const DeepCollectionEquality().equals(other._invalid, _invalid));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_validIds),const DeepCollectionEquality().hash(_invalidIds));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_valid),const DeepCollectionEquality().hash(_invalid));
 
 @override
 String toString() {
-  return 'CheckMediaResultDto(validIds: $validIds, invalidIds: $invalidIds)';
+  return 'CheckMediaResultDto(valid: $valid, invalid: $invalid)';
 }
 
 
@@ -811,7 +811,7 @@ abstract mixin class _$CheckMediaResultDtoCopyWith<$Res> implements $CheckMediaR
   factory _$CheckMediaResultDtoCopyWith(_CheckMediaResultDto value, $Res Function(_CheckMediaResultDto) _then) = __$CheckMediaResultDtoCopyWithImpl;
 @override @useResult
 $Res call({
- List<String> validIds, List<String> invalidIds
+ List<String> valid, List<String> invalid
 });
 
 
@@ -828,10 +828,10 @@ class __$CheckMediaResultDtoCopyWithImpl<$Res>
 
 /// Create a copy of CheckMediaResultDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? validIds = null,Object? invalidIds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? valid = null,Object? invalid = null,}) {
   return _then(_CheckMediaResultDto(
-validIds: null == validIds ? _self._validIds : validIds // ignore: cast_nullable_to_non_nullable
-as List<String>,invalidIds: null == invalidIds ? _self._invalidIds : invalidIds // ignore: cast_nullable_to_non_nullable
+valid: null == valid ? _self._valid : valid // ignore: cast_nullable_to_non_nullable
+as List<String>,invalid: null == invalid ? _self._invalid : invalid // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));
 }

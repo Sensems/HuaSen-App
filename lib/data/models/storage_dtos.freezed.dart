@@ -278,7 +278,7 @@ as String,
 /// @nodoc
 mixin _$UploadFileResponseDto {
 
- String get mediaId; String get key; String get url; String get mimeType; int get size;
+ String get mediaId; String get key; String get url; String get mimeType; int get size; String? get originalFilename;
 /// Create a copy of UploadFileResponseDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -291,16 +291,16 @@ $UploadFileResponseDtoCopyWith<UploadFileResponseDto> get copyWith => _$UploadFi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadFileResponseDto&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.key, key) || other.key == key)&&(identical(other.url, url) || other.url == url)&&(identical(other.mimeType, mimeType) || other.mimeType == mimeType)&&(identical(other.size, size) || other.size == size));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadFileResponseDto&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.key, key) || other.key == key)&&(identical(other.url, url) || other.url == url)&&(identical(other.mimeType, mimeType) || other.mimeType == mimeType)&&(identical(other.size, size) || other.size == size)&&(identical(other.originalFilename, originalFilename) || other.originalFilename == originalFilename));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mediaId,key,url,mimeType,size);
+int get hashCode => Object.hash(runtimeType,mediaId,key,url,mimeType,size,originalFilename);
 
 @override
 String toString() {
-  return 'UploadFileResponseDto(mediaId: $mediaId, key: $key, url: $url, mimeType: $mimeType, size: $size)';
+  return 'UploadFileResponseDto(mediaId: $mediaId, key: $key, url: $url, mimeType: $mimeType, size: $size, originalFilename: $originalFilename)';
 }
 
 
@@ -311,7 +311,7 @@ abstract mixin class $UploadFileResponseDtoCopyWith<$Res>  {
   factory $UploadFileResponseDtoCopyWith(UploadFileResponseDto value, $Res Function(UploadFileResponseDto) _then) = _$UploadFileResponseDtoCopyWithImpl;
 @useResult
 $Res call({
- String mediaId, String key, String url, String mimeType, int size
+ String mediaId, String key, String url, String mimeType, int size, String? originalFilename
 });
 
 
@@ -328,14 +328,15 @@ class _$UploadFileResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of UploadFileResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mediaId = null,Object? key = null,Object? url = null,Object? mimeType = null,Object? size = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? mediaId = null,Object? key = null,Object? url = null,Object? mimeType = null,Object? size = null,Object? originalFilename = freezed,}) {
   return _then(_self.copyWith(
 mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,mimeType: null == mimeType ? _self.mimeType : mimeType // ignore: cast_nullable_to_non_nullable
 as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
-as int,
+as int,originalFilename: freezed == originalFilename ? _self.originalFilename : originalFilename // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -420,10 +421,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String mediaId,  String key,  String url,  String mimeType,  int size)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String mediaId,  String key,  String url,  String mimeType,  int size,  String? originalFilename)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UploadFileResponseDto() when $default != null:
-return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size);case _:
+return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size,_that.originalFilename);case _:
   return orElse();
 
 }
@@ -441,10 +442,10 @@ return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String mediaId,  String key,  String url,  String mimeType,  int size)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String mediaId,  String key,  String url,  String mimeType,  int size,  String? originalFilename)  $default,) {final _that = this;
 switch (_that) {
 case _UploadFileResponseDto():
-return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size);case _:
+return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size,_that.originalFilename);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -461,10 +462,10 @@ return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String mediaId,  String key,  String url,  String mimeType,  int size)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String mediaId,  String key,  String url,  String mimeType,  int size,  String? originalFilename)?  $default,) {final _that = this;
 switch (_that) {
 case _UploadFileResponseDto() when $default != null:
-return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size);case _:
+return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size,_that.originalFilename);case _:
   return null;
 
 }
@@ -476,7 +477,7 @@ return $default(_that.mediaId,_that.key,_that.url,_that.mimeType,_that.size);cas
 @JsonSerializable()
 
 class _UploadFileResponseDto implements UploadFileResponseDto {
-  const _UploadFileResponseDto({required this.mediaId, required this.key, required this.url, required this.mimeType, required this.size});
+  const _UploadFileResponseDto({required this.mediaId, required this.key, required this.url, required this.mimeType, required this.size, this.originalFilename});
   factory _UploadFileResponseDto.fromJson(Map<String, dynamic> json) => _$UploadFileResponseDtoFromJson(json);
 
 @override final  String mediaId;
@@ -484,6 +485,7 @@ class _UploadFileResponseDto implements UploadFileResponseDto {
 @override final  String url;
 @override final  String mimeType;
 @override final  int size;
+@override final  String? originalFilename;
 
 /// Create a copy of UploadFileResponseDto
 /// with the given fields replaced by the non-null parameter values.
@@ -498,16 +500,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadFileResponseDto&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.key, key) || other.key == key)&&(identical(other.url, url) || other.url == url)&&(identical(other.mimeType, mimeType) || other.mimeType == mimeType)&&(identical(other.size, size) || other.size == size));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UploadFileResponseDto&&(identical(other.mediaId, mediaId) || other.mediaId == mediaId)&&(identical(other.key, key) || other.key == key)&&(identical(other.url, url) || other.url == url)&&(identical(other.mimeType, mimeType) || other.mimeType == mimeType)&&(identical(other.size, size) || other.size == size)&&(identical(other.originalFilename, originalFilename) || other.originalFilename == originalFilename));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mediaId,key,url,mimeType,size);
+int get hashCode => Object.hash(runtimeType,mediaId,key,url,mimeType,size,originalFilename);
 
 @override
 String toString() {
-  return 'UploadFileResponseDto(mediaId: $mediaId, key: $key, url: $url, mimeType: $mimeType, size: $size)';
+  return 'UploadFileResponseDto(mediaId: $mediaId, key: $key, url: $url, mimeType: $mimeType, size: $size, originalFilename: $originalFilename)';
 }
 
 
@@ -518,7 +520,7 @@ abstract mixin class _$UploadFileResponseDtoCopyWith<$Res> implements $UploadFil
   factory _$UploadFileResponseDtoCopyWith(_UploadFileResponseDto value, $Res Function(_UploadFileResponseDto) _then) = __$UploadFileResponseDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String mediaId, String key, String url, String mimeType, int size
+ String mediaId, String key, String url, String mimeType, int size, String? originalFilename
 });
 
 
@@ -535,14 +537,15 @@ class __$UploadFileResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of UploadFileResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mediaId = null,Object? key = null,Object? url = null,Object? mimeType = null,Object? size = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? mediaId = null,Object? key = null,Object? url = null,Object? mimeType = null,Object? size = null,Object? originalFilename = freezed,}) {
   return _then(_UploadFileResponseDto(
 mediaId: null == mediaId ? _self.mediaId : mediaId // ignore: cast_nullable_to_non_nullable
 as String,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,mimeType: null == mimeType ? _self.mimeType : mimeType // ignore: cast_nullable_to_non_nullable
 as String,size: null == size ? _self.size : size // ignore: cast_nullable_to_non_nullable
-as int,
+as int,originalFilename: freezed == originalFilename ? _self.originalFilename : originalFilename // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

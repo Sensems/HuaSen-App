@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CategoryDto {
 
- String get id; String get name; String? get parentId; int get sortOrder; int get notesCount; List<CategoryDto>? get children;
+ String get id; String? get userId; String get name; String? get parentId; int get sortOrder;@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? get createdAt;@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount) int get notesCount; List<CategoryDto>? get children;
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CategoryDtoCopyWith<CategoryDto> get copyWith => _$CategoryDtoCopyWithImpl<Cate
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.notesCount, notesCount) || other.notesCount == notesCount)&&const DeepCollectionEquality().equals(other.children, children));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.notesCount, notesCount) || other.notesCount == notesCount)&&const DeepCollectionEquality().equals(other.children, children));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,parentId,sortOrder,notesCount,const DeepCollectionEquality().hash(children));
+int get hashCode => Object.hash(runtimeType,id,userId,name,parentId,sortOrder,createdAt,notesCount,const DeepCollectionEquality().hash(children));
 
 @override
 String toString() {
-  return 'CategoryDto(id: $id, name: $name, parentId: $parentId, sortOrder: $sortOrder, notesCount: $notesCount, children: $children)';
+  return 'CategoryDto(id: $id, userId: $userId, name: $name, parentId: $parentId, sortOrder: $sortOrder, createdAt: $createdAt, notesCount: $notesCount, children: $children)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CategoryDtoCopyWith<$Res>  {
   factory $CategoryDtoCopyWith(CategoryDto value, $Res Function(CategoryDto) _then) = _$CategoryDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String? parentId, int sortOrder, int notesCount, List<CategoryDto>? children
+ String id, String? userId, String name, String? parentId, int sortOrder,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? createdAt,@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount) int notesCount, List<CategoryDto>? children
 });
 
 
@@ -65,13 +65,15 @@ class _$CategoryDtoCopyWithImpl<$Res>
 
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? parentId = freezed,Object? sortOrder = null,Object? notesCount = null,Object? children = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = freezed,Object? name = null,Object? parentId = freezed,Object? sortOrder = null,Object? createdAt = freezed,Object? notesCount = null,Object? children = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,parentId: freezed == parentId ? _self.parentId : parentId // ignore: cast_nullable_to_non_nullable
 as String?,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
-as int,notesCount: null == notesCount ? _self.notesCount : notesCount // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,notesCount: null == notesCount ? _self.notesCount : notesCount // ignore: cast_nullable_to_non_nullable
 as int,children: freezed == children ? _self.children : children // ignore: cast_nullable_to_non_nullable
 as List<CategoryDto>?,
   ));
@@ -158,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? parentId,  int sortOrder,  int notesCount,  List<CategoryDto>? children)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? userId,  String name,  String? parentId,  int sortOrder, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount)  int notesCount,  List<CategoryDto>? children)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CategoryDto() when $default != null:
-return $default(_that.id,_that.name,_that.parentId,_that.sortOrder,_that.notesCount,_that.children);case _:
+return $default(_that.id,_that.userId,_that.name,_that.parentId,_that.sortOrder,_that.createdAt,_that.notesCount,_that.children);case _:
   return orElse();
 
 }
@@ -179,10 +181,10 @@ return $default(_that.id,_that.name,_that.parentId,_that.sortOrder,_that.notesCo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? parentId,  int sortOrder,  int notesCount,  List<CategoryDto>? children)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? userId,  String name,  String? parentId,  int sortOrder, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount)  int notesCount,  List<CategoryDto>? children)  $default,) {final _that = this;
 switch (_that) {
 case _CategoryDto():
-return $default(_that.id,_that.name,_that.parentId,_that.sortOrder,_that.notesCount,_that.children);case _:
+return $default(_that.id,_that.userId,_that.name,_that.parentId,_that.sortOrder,_that.createdAt,_that.notesCount,_that.children);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +201,10 @@ return $default(_that.id,_that.name,_that.parentId,_that.sortOrder,_that.notesCo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? parentId,  int sortOrder,  int notesCount,  List<CategoryDto>? children)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? userId,  String name,  String? parentId,  int sortOrder, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable)  DateTime? createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount)  int notesCount,  List<CategoryDto>? children)?  $default,) {final _that = this;
 switch (_that) {
 case _CategoryDto() when $default != null:
-return $default(_that.id,_that.name,_that.parentId,_that.sortOrder,_that.notesCount,_that.children);case _:
+return $default(_that.id,_that.userId,_that.name,_that.parentId,_that.sortOrder,_that.createdAt,_that.notesCount,_that.children);case _:
   return null;
 
 }
@@ -214,14 +216,16 @@ return $default(_that.id,_that.name,_that.parentId,_that.sortOrder,_that.notesCo
 @JsonSerializable()
 
 class _CategoryDto implements CategoryDto {
-  const _CategoryDto({required this.id, required this.name, this.parentId, required this.sortOrder, required this.notesCount, final  List<CategoryDto>? children}): _children = children;
+  const _CategoryDto({required this.id, this.userId, required this.name, this.parentId, required this.sortOrder, @JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) this.createdAt, @JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount) required this.notesCount, final  List<CategoryDto>? children}): _children = children;
   factory _CategoryDto.fromJson(Map<String, dynamic> json) => _$CategoryDtoFromJson(json);
 
 @override final  String id;
+@override final  String? userId;
 @override final  String name;
 @override final  String? parentId;
 @override final  int sortOrder;
-@override final  int notesCount;
+@override@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) final  DateTime? createdAt;
+@override@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount) final  int notesCount;
  final  List<CategoryDto>? _children;
 @override List<CategoryDto>? get children {
   final value = _children;
@@ -245,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.notesCount, notesCount) || other.notesCount == notesCount)&&const DeepCollectionEquality().equals(other._children, _children));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoryDto&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.notesCount, notesCount) || other.notesCount == notesCount)&&const DeepCollectionEquality().equals(other._children, _children));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,parentId,sortOrder,notesCount,const DeepCollectionEquality().hash(_children));
+int get hashCode => Object.hash(runtimeType,id,userId,name,parentId,sortOrder,createdAt,notesCount,const DeepCollectionEquality().hash(_children));
 
 @override
 String toString() {
-  return 'CategoryDto(id: $id, name: $name, parentId: $parentId, sortOrder: $sortOrder, notesCount: $notesCount, children: $children)';
+  return 'CategoryDto(id: $id, userId: $userId, name: $name, parentId: $parentId, sortOrder: $sortOrder, createdAt: $createdAt, notesCount: $notesCount, children: $children)';
 }
 
 
@@ -265,7 +269,7 @@ abstract mixin class _$CategoryDtoCopyWith<$Res> implements $CategoryDtoCopyWith
   factory _$CategoryDtoCopyWith(_CategoryDto value, $Res Function(_CategoryDto) _then) = __$CategoryDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String? parentId, int sortOrder, int notesCount, List<CategoryDto>? children
+ String id, String? userId, String name, String? parentId, int sortOrder,@JsonKey(fromJson: _dateTimeFromJsonNullable, toJson: _dateTimeToJsonNullable) DateTime? createdAt,@JsonKey(name: '_count', fromJson: _notesCountFromJson, toJson: _notesCountToJson, readValue: _readNotesCount) int notesCount, List<CategoryDto>? children
 });
 
 
@@ -282,13 +286,15 @@ class __$CategoryDtoCopyWithImpl<$Res>
 
 /// Create a copy of CategoryDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? parentId = freezed,Object? sortOrder = null,Object? notesCount = null,Object? children = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = freezed,Object? name = null,Object? parentId = freezed,Object? sortOrder = null,Object? createdAt = freezed,Object? notesCount = null,Object? children = freezed,}) {
   return _then(_CategoryDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,parentId: freezed == parentId ? _self.parentId : parentId // ignore: cast_nullable_to_non_nullable
 as String?,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
-as int,notesCount: null == notesCount ? _self.notesCount : notesCount // ignore: cast_nullable_to_non_nullable
+as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,notesCount: null == notesCount ? _self.notesCount : notesCount // ignore: cast_nullable_to_non_nullable
 as int,children: freezed == children ? _self._children : children // ignore: cast_nullable_to_non_nullable
 as List<CategoryDto>?,
   ));

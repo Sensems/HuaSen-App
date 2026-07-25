@@ -74,8 +74,10 @@ Map<String, dynamic> _$NoteMetaDtoToJson(_NoteMetaDto instance) =>
 _NoteDetailDto _$NoteDetailDtoFromJson(Map<String, dynamic> json) =>
     _NoteDetailDto(
       id: json['id'] as String,
+      userId: json['userId'] as String?,
       title: json['title'] as String?,
       content: json['content'] as String?,
+      rawContent: json['rawContent'] as String?,
       source: $enumDecodeNullable(_$NoteSourceEnumMap, json['source']),
       type: json['type'] as String?,
       categoryId: json['categoryId'] as String?,
@@ -88,6 +90,7 @@ _NoteDetailDto _$NoteDetailDtoFromJson(Map<String, dynamic> json) =>
       meta: json['meta'] == null
           ? null
           : NoteMetaDto.fromJson(json['meta'] as Map<String, dynamic>),
+      deletedAt: _dateTimeFromJsonNullable(json['deletedAt'] as String?),
       pinnedAt: _dateTimeFromJsonNullable(json['pinnedAt'] as String?),
       createdAt: _dateTimeFromJsonNullable(json['createdAt'] as String?),
       updatedAt: _dateTimeFromJsonNullable(json['updatedAt'] as String?),
@@ -96,41 +99,26 @@ _NoteDetailDto _$NoteDetailDtoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$NoteDetailDtoToJson(_NoteDetailDto instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'userId': instance.userId,
       'title': instance.title,
       'content': instance.content,
+      'rawContent': instance.rawContent,
       'source': _$NoteSourceEnumMap[instance.source],
       'type': instance.type,
       'categoryId': instance.categoryId,
       'tagIds': instance.tagIds,
       'mediaIds': instance.mediaIds,
       'meta': instance.meta,
+      'deletedAt': _dateTimeToJsonNullable(instance.deletedAt),
       'pinnedAt': _dateTimeToJsonNullable(instance.pinnedAt),
       'createdAt': _dateTimeToJsonNullable(instance.createdAt),
       'updatedAt': _dateTimeToJsonNullable(instance.updatedAt),
     };
 
-_PaginatedNotes _$PaginatedNotesFromJson(Map<String, dynamic> json) =>
-    _PaginatedNotes(
-      items: (json['items'] as List<dynamic>)
-          .map((e) => NoteDetailDto.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      total: (json['total'] as num).toInt(),
-      page: (json['page'] as num).toInt(),
-      size: (json['size'] as num).toInt(),
-    );
-
-Map<String, dynamic> _$PaginatedNotesToJson(_PaginatedNotes instance) =>
-    <String, dynamic>{
-      'items': instance.items,
-      'total': instance.total,
-      'page': instance.page,
-      'size': instance.size,
-    };
-
 _ShareInfoDto _$ShareInfoDtoFromJson(Map<String, dynamic> json) =>
     _ShareInfoDto(
       id: json['id'] as String,
-      title: json['title'] as String,
+      title: json['title'] as String?,
       type: json['type'] as String?,
       shareUrl: json['shareUrl'] as String,
     );

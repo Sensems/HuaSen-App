@@ -8,10 +8,12 @@ part of 'category_dtos.dart';
 
 _CategoryDto _$CategoryDtoFromJson(Map<String, dynamic> json) => _CategoryDto(
   id: json['id'] as String,
+  userId: json['userId'] as String?,
   name: json['name'] as String,
   parentId: json['parentId'] as String?,
   sortOrder: (json['sortOrder'] as num).toInt(),
-  notesCount: (json['notesCount'] as num).toInt(),
+  createdAt: _dateTimeFromJsonNullable(json['createdAt'] as String?),
+  notesCount: _notesCountFromJson(_readNotesCount(json, '_count')),
   children: (json['children'] as List<dynamic>?)
       ?.map((e) => CategoryDto.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -20,10 +22,12 @@ _CategoryDto _$CategoryDtoFromJson(Map<String, dynamic> json) => _CategoryDto(
 Map<String, dynamic> _$CategoryDtoToJson(_CategoryDto instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'userId': instance.userId,
       'name': instance.name,
       'parentId': instance.parentId,
       'sortOrder': instance.sortOrder,
-      'notesCount': instance.notesCount,
+      'createdAt': _dateTimeToJsonNullable(instance.createdAt),
+      '_count': _notesCountToJson(instance.notesCount),
       'children': instance.children,
     };
 

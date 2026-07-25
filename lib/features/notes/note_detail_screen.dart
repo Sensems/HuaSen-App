@@ -11,9 +11,12 @@ import '../../core/network/api_exception.dart';
 import '../../core/providers/core_providers.dart';
 import '../../data/models/note_dtos.dart';
 import '../../ui/components/custom_app_bar.dart';
+import '../../ui/theme/app_colors.dart';
+import 'note_attachment_actions.dart';
 import 'note_time_format.dart';
 import 'notes_list_notifier.dart';
 import 'quill_content_codec.dart';
+import 'widgets/note_attachment_card.dart';
 
 /// Read-only note detail screen with pin, delete, and edit entry.
 class NoteDetailScreen extends ConsumerStatefulWidget {
@@ -31,7 +34,10 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
   var _pinning = false;
   var _deleting = false;
   String? _loadErrorMessage;
+  String? _busyAttachmentName;
   NoteDetailDto? _note;
+  String? _categoryName;
+  List<String> _tagNames = const [];
   List<_DetailAttachment> _attachments = const [];
   late quill.QuillController _quillController;
   final _editorFocusNode = FocusNode();
@@ -87,6 +93,10 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         );
       setState(() {
         _note = bundle.note;
+        _categoryName = bundle.categoryName;
+        _tagNames = bundle.tagNames
+            .where((name) => name.isNotEmpty)
+            .toList(growable: false);
         _attachments =
             bundle.media.map(_DetailAttachment.fromNoteMedia).toList();
         _loading = false;
@@ -132,7 +142,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
       if (response.message.isNotEmpty) {
         $message.success(message: response.message);
       }
-      await ref.read(notesListProvider.notifier).refresh();
+      await refreshExistingNotesLists(ref);
     } on DioException catch (error) {
       if (!mounted) return;
       final apiError = error.error;
@@ -191,7 +201,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
       if (response.message.isNotEmpty) {
         $message.success(message: response.message);
       }
-      await ref.read(notesListProvider.notifier).refresh();
+      await refreshExistingNotesLists(ref);
       if (!mounted) return;
       context.pop();
     } on DioException catch (error) {
@@ -338,8 +348,32 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                       ],
                     ),
                   ),
+                  if (_categoryName != null || _tagNames.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            if (_categoryName != null &&
+                                _categoryName!.isNotEmpty)
+                              _DetailMetaChip(
+                                label: _categoryName!,
+                                backgroundColor: AppColors.categorySelected,
+                              ),
+                            for (final name in _tagNames)
+                              _DetailMetaChip(
+                                label: name,
+                                backgroundColor: AppColors.tagSelected,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
                     child: Text(
                       displayTitle,
                       style: theme.textTheme.headlineSmall?.copyWith(
@@ -412,10 +446,67 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         ),
         const SizedBox(height: 14),
         for (final attachment in _attachments) ...[
-          _DetailAttachmentCard(attachment: attachment),
+          NoteAttachmentCard(
+            name: attachment.name,
+            sizeLabel: attachment.sizeLabel,
+            icon: attachment.icon,
+            busy: _busyAttachmentName == attachment.name,
+            onOpen: () => _openAttachment(attachment),
+            onDownload: () => _downloadAttachment(attachment),
+          ),
           const SizedBox(height: 10),
         ],
       ],
+    );
+  }
+
+  Future<void> _openAttachment(_DetailAttachment attachment) async {
+    if (_busyAttachmentName != null) return;
+    setState(() => _busyAttachmentName = attachment.name);
+    try {
+      await NoteAttachmentActions.open(context, attachment.toRef());
+    } finally {
+      if (mounted) setState(() => _busyAttachmentName = null);
+    }
+  }
+
+  Future<void> _downloadAttachment(_DetailAttachment attachment) async {
+    if (_busyAttachmentName != null) return;
+    setState(() => _busyAttachmentName = attachment.name);
+    try {
+      await NoteAttachmentActions.download(context, attachment.toRef());
+    } finally {
+      if (mounted) setState(() => _busyAttachmentName = null);
+    }
+  }
+}
+
+class _DetailMetaChip extends StatelessWidget {
+  const _DetailMetaChip({
+    required this.label,
+    required this.backgroundColor,
+  });
+
+  final String label;
+  final Color backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Chip(
+      label: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: Colors.black,
+          fontSize: 10,
+        ),
+      ),
+      backgroundColor: backgroundColor,
+      side: BorderSide.none,
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      labelPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: -2),
+      padding: EdgeInsets.zero,
     );
   }
 }
@@ -450,93 +541,43 @@ class _AttachmentCountBadge extends StatelessWidget {
   }
 }
 
-class _DetailAttachmentCard extends StatelessWidget {
-  const _DetailAttachmentCard({required this.attachment});
-
-  final _DetailAttachment attachment;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(
-                  alpha: 0.7,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                attachment.icon,
-                size: 19,
-                color: colorScheme.primary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    attachment.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    attachment.sizeLabel,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _DetailAttachment {
   const _DetailAttachment({
     required this.name,
     required this.size,
     this.extension,
+    this.url,
+    this.mimeType,
+    this.type,
   });
 
   factory _DetailAttachment.fromNoteMedia(NoteMediaItemDto media) {
-    final key = media.qiniuKey ?? '';
-    final name = key.split('/').last;
+    final name = media.displayFileName;
     final extension = name.contains('.') ? name.split('.').last : null;
     return _DetailAttachment(
-      name: name.isEmpty ? media.id : name,
+      name: name,
       size: media.fileSize ?? 0,
       extension: extension,
+      url: media.qiniuUrl,
+      mimeType: media.mimeType,
+      type: media.type,
     );
   }
 
   final String name;
   final int size;
   final String? extension;
+  final String? url;
+  final String? mimeType;
+  final String? type;
+
+  NoteAttachmentRef toRef() => NoteAttachmentRef(
+        name: name,
+        extension: extension,
+        url: url,
+        mimeType: mimeType,
+        mediaType: type,
+      );
 
   String get sizeLabel {
     if (size < 1024) return '$size B';

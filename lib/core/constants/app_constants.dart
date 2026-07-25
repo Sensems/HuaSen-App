@@ -94,4 +94,15 @@ class AppConstants {
 
   /// Android notification channel id for draft updates.
   static const String draftsNotificationChannelId = 'drafts_updates';
+
+  /// Android channel for the foreground-service ongoing notification.
+  static const String draftsSyncNotificationChannelId = 'drafts_sync';
+
+  /// Notification id used by the drafts FG service ongoing notification.
+  static const int draftsSyncForegroundNotificationId = 8801;
+
+  /// SharedPreferences keys for drafts-watch baseline (main + service isolates).
+  static const String keyDraftsWatchKnownIds = 'drafts_watch_known_ids';
+  static const String keyDraftsWatchKnownTotal = 'drafts_watch_known_total';
+  static const String keyDraftsWatchHasBaseline = 'drafts_watch_has_baseline';
 }

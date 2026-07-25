@@ -3,16 +3,20 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/ui_strings.dart';
 import '../notes_list_state.dart';
 
-/// Text filter tabs for the notes list: 全部 / 置顶 / 最近.
+/// Text filter tabs for the notes list: 全部 / 置顶 / 最近, plus trailing filter icon.
 class NotesFilterTabs extends StatelessWidget {
   const NotesFilterTabs({
     super.key,
     required this.value,
     required this.onChanged,
+    required this.onFilterTap,
+    this.hasActiveFilter = false,
   });
 
   final NotesFilterTab value;
   final ValueChanged<NotesFilterTab> onChanged;
+  final VoidCallback onFilterTap;
+  final bool hasActiveFilter;
 
   static const _tabs = <(NotesFilterTab, String)>[
     (NotesFilterTab.all, UiStrings.notesFilterAll),
@@ -37,6 +41,20 @@ class NotesFilterTabs extends StatelessWidget {
             textTheme: textTheme,
           ),
         ],
+        const Spacer(),
+        IconButton(
+          onPressed: onFilterTap,
+          tooltip: UiStrings.notesCategoryTagFilterTitle,
+          visualDensity: VisualDensity.compact,
+          icon: Badge(
+            isLabelVisible: hasActiveFilter,
+            smallSize: 8,
+            child: Icon(
+              Icons.filter_list,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
       ],
     );
   }

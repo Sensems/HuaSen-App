@@ -10,6 +10,8 @@ String? _dateTimeToJsonNullable(DateTime? dateTime) =>
     dateTime?.toIso8601String();
 
 /// Type of media file.
+///
+/// Wire values match OpenAPI `MediaItemDto.type` / `GET /notes?mediaType=`.
 @JsonEnum()
 enum MediaType {
   @JsonValue('IMAGE')
@@ -20,6 +22,8 @@ enum MediaType {
   video,
   @JsonValue('FILE')
   file,
+  @JsonValue('TEXT')
+  text,
 }
 
 /// DTO representing a media item.
@@ -51,12 +55,12 @@ abstract class CheckMediaDto with _$CheckMediaDto {
       _$CheckMediaDtoFromJson(json);
 }
 
-/// DTO for check media result.
+/// DTO for check media result (`CheckMediaResponseDto`).
 @freezed
 abstract class CheckMediaResultDto with _$CheckMediaResultDto {
   const factory CheckMediaResultDto({
-    required List<String> validIds,
-    required List<String> invalidIds,
+    required List<String> valid,
+    required List<String> invalid,
   }) = _CheckMediaResultDto;
 
   factory CheckMediaResultDto.fromJson(Map<String, dynamic> json) =>

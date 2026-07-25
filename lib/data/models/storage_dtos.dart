@@ -23,6 +23,7 @@ abstract class UploadFileResponseDto with _$UploadFileResponseDto {
     required String url,
     required String mimeType,
     required int size,
+    String? originalFilename,
   }) = _UploadFileResponseDto;
 
   factory UploadFileResponseDto.fromJson(Map<String, dynamic> json) =>

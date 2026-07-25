@@ -38,12 +38,15 @@ class UserService {
 
   /// Bind WeChat to the current account with a binding code.
   ///
-  /// POST /user/bind
-  Future<ApiResponse<void>> bindWechat(BindUserDto dto) async {
+  /// POST /user/bind → [BindUserResponseDto]
+  Future<ApiResponse<BindUserResponseDto>> bindWechat(BindUserDto dto) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/user/bind',
       data: dto.toJson(),
     );
-    return ApiResponse.fromJson(response.data!, (_) {});
+    return ApiResponse.fromJson(
+      response.data!,
+      (json) => BindUserResponseDto.fromJson(json as Map<String, dynamic>),
+    );
   }
 }

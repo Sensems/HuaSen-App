@@ -29,6 +29,12 @@ class AppColors {
   /// Cool teal used as a secondary accent (tags, links).
   static const Color teal = Color(0xFF4A9E9E);
 
+  /// Soft coral fill for selected category chips.
+  static const Color categorySelected = Color(0xFFF7E6E1);
+
+  /// Soft lavender fill for selected tag chips.
+  static const Color tagSelected = Color(0xFFe0eded);
+
   /// WeChat brand green (bind screen / WeChat row accents).
   static const Color wechat = Color(0xFF07C160);
 

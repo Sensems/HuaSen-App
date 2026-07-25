@@ -3,10 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'user_dtos.freezed.dart';
 part 'user_dtos.g.dart';
 
-/// Current user profile (`GET /user/profile`).
-///
-/// OpenAPI does not publish a response schema; fields are optional so unknown
-/// or partial payloads still decode.
+/// Current user profile (`GET /user/profile` → `UserProfileResponseDto`).
 @freezed
 abstract class UserProfileDto with _$UserProfileDto {
   const factory UserProfileDto({
@@ -14,6 +11,8 @@ abstract class UserProfileDto with _$UserProfileDto {
     String? email,
     String? nickname,
     String? avatar,
+    /// 6-digit code for WeChat official-account binding when unbound.
+    String? bindingCode,
     bool? wxBound,
   }) = _UserProfileDto;
 
@@ -42,4 +41,18 @@ abstract class BindUserDto with _$BindUserDto {
 
   factory BindUserDto.fromJson(Map<String, dynamic> json) =>
       _$BindUserDtoFromJson(json);
+}
+
+/// Response payload for `POST /user/bind` (`BindUserResponseDto`).
+@freezed
+abstract class BindUserResponseDto with _$BindUserResponseDto {
+  const factory BindUserResponseDto({
+    required bool wxBound,
+    required int syncedDraftCount,
+    required bool overwritten,
+    required String message,
+  }) = _BindUserResponseDto;
+
+  factory BindUserResponseDto.fromJson(Map<String, dynamic> json) =>
+      _$BindUserResponseDtoFromJson(json);
 }

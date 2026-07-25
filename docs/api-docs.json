@@ -3,6 +3,7 @@
   "paths": {
     "/auth/wechat/callback": {
       "post": {
+        "description": "用微信授权 code 换取 JWT。",
         "operationId": "AuthController_wechatLogin",
         "parameters": [],
         "requestBody": {
@@ -11,26 +12,47 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/WechatCallbackDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "code": "081aB6tM0xj3bV1eYz2oM1tLqM0aB6tM"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "认证失败\n\n登录成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TokenResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example",
+                      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh",
+                      "expiresIn": 7200
+                    }
+                  }
                 }
               }
             }
-          },
-          "400": {
-            "description": "参数校验失败"
-          },
-          "401": {
-            "description": "认证失败"
           }
         },
         "summary": "微信 OAuth 登录",
@@ -41,6 +63,7 @@
     },
     "/auth/email/send-code": {
       "post": {
+        "description": "限流 1 次/分钟。register：已注册报错；reset_password：未注册报错。",
         "operationId": "AuthController_sendEmailCode",
         "parameters": [],
         "requestBody": {
@@ -49,16 +72,51 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EmailSendCodeDto"
+              },
+              "examples": {
+                "注册": {
+                  "value": {
+                    "email": "user@example.com",
+                    "purpose": "register"
+                  }
+                },
+                "重置密码": {
+                  "value": {
+                    "email": "user@example.com",
+                    "purpose": "reset_password"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "发送成功"
-          },
-          "400": {
-            "description": "参数校验失败"
+            "description": "邮箱未注册（reset_password）\n\n发送成功（data 为 null）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": null
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "发送邮箱验证码",
@@ -69,6 +127,7 @@
     },
     "/auth/email/register": {
       "post": {
+        "description": "注册成功后 data 为 null，需再调用登录接口获取 JWT。",
         "operationId": "AuthController_emailRegister",
         "parameters": [],
         "requestBody": {
@@ -77,16 +136,46 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EmailRegisterDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "Abc12345",
+                    "code": "482931"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "注册成功"
-          },
-          "400": {
-            "description": "参数校验失败"
+            "description": "邮箱已注册\n\n注册成功（data 为 null）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": null
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "邮箱注册",
@@ -97,6 +186,7 @@
     },
     "/auth/email/reset-password": {
       "post": {
+        "description": "成功只返回提示，不签发 JWT。",
         "operationId": "AuthController_emailResetPassword",
         "parameters": [],
         "requestBody": {
@@ -105,16 +195,46 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EmailResetPasswordDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "Abc12345",
+                    "code": "482931"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "重置成功"
-          },
-          "400": {
-            "description": "参数校验失败"
+            "description": "验证码错误\n\n重置成功（data 为 null）",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": null
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "邮箱重置密码",
@@ -125,6 +245,7 @@
     },
     "/auth/email/login": {
       "post": {
+        "description": "成功返回 JWT。",
         "operationId": "AuthController_emailLogin",
         "parameters": [],
         "requestBody": {
@@ -133,23 +254,48 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EmailLoginDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "Abc12345"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "密码错误\n\n登录成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TokenResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example",
+                      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh",
+                      "expiresIn": 7200
+                    }
+                  }
                 }
               }
             }
-          },
-          "400": {
-            "description": "参数校验失败"
           }
         },
         "summary": "邮箱登录",
@@ -160,6 +306,7 @@
     },
     "/auth/refresh": {
       "post": {
+        "description": "用 refreshToken 换新的 access / refresh。",
         "operationId": "AuthController_refresh",
         "parameters": [],
         "requestBody": {
@@ -168,26 +315,47 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RefreshTokenDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "认证失败\n\n刷新成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TokenResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example",
+                      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh",
+                      "expiresIn": 7200
+                    }
+                  }
                 }
               }
             }
-          },
-          "400": {
-            "description": "参数校验失败"
-          },
-          "401": {
-            "description": "认证失败"
           }
         },
         "summary": "刷新 access_token",
@@ -198,6 +366,7 @@
     },
     "/auth/logout": {
       "post": {
+        "description": "将当前 accessToken 加入黑名单。",
         "operationId": "AuthController_logout",
         "parameters": [
           {
@@ -211,22 +380,37 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "登出成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LogoutResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/LogoutResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "success": true
+                    }
+                  }
                 }
               }
             }
-          },
-          "401": {
-            "description": "认证失败"
           }
         },
         "security": [
           {
-            "bearer": []
+            "JWT-auth": []
           }
         ],
         "summary": "登出",
@@ -241,7 +425,37 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "成功"
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/UserProfileResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "nickname": "花森",
+                      "avatar": "https://cdn.example.com/a.png",
+                      "email": "user@example.com",
+                      "bindingCode": "ABC234",
+                      "wxBound": false
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -257,6 +471,7 @@
     },
     "/user/update": {
       "post": {
+        "description": "至少提供 nickname 或 avatar 其中一项。",
         "operationId": "UserController_update",
         "parameters": [],
         "requestBody": {
@@ -265,13 +480,55 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateProfileDto"
+              },
+              "examples": {
+                "改昵称": {
+                  "value": {
+                    "nickname": "花森"
+                  }
+                },
+                "改头像": {
+                  "value": {
+                    "avatar": "https://cdn.example.com/a.png"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/UserProfileResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "nickname": "花森",
+                      "avatar": "https://cdn.example.com/a.png",
+                      "email": "user@example.com",
+                      "bindingCode": "ABC234",
+                      "wxBound": false
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -287,6 +544,7 @@
     },
     "/user/bind": {
       "post": {
+        "description": "将公众号侧空壳账号合并到当前登录用户。",
         "operationId": "UserController_bind",
         "parameters": [],
         "requestBody": {
@@ -295,13 +553,48 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/BindUserDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "bindingCode": "ABC234"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "绑定码无效\n\n成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/BindUserResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "wxBound": true,
+                      "syncedDraftCount": 3,
+                      "overwritten": false,
+                      "message": "绑定成功"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -317,6 +610,7 @@
     },
     "/notes": {
       "get": {
+        "description": "view=pinned 仅置顶；view=recent 按创建时间；不传=置顶优先再按创建时间。枚举值须为大写（如 type=DRAFT）。",
         "operationId": "NotesController_list",
         "parameters": [
           {
@@ -348,10 +642,15 @@
             "name": "type",
             "required": false,
             "in": "query",
-            "description": "笔记类型筛选（draft/published/archived）",
+            "description": "笔记类型筛选（DRAFT/PUBLISHED/ARCHIVED）",
             "schema": {
-              "example": "published",
-              "type": "string"
+              "example": "PUBLISHED",
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "ARCHIVED"
+              ]
             }
           },
           {
@@ -365,13 +664,18 @@
             }
           },
           {
-            "name": "tag",
+            "name": "tags",
             "required": false,
             "in": "query",
-            "description": "按标签 ID 筛选（命中关联该标签的笔记）",
+            "description": "按标签 ID 多选筛选（须同时关联全部所选标签，AND）",
             "schema": {
-              "example": "tag_abc123",
-              "type": "string"
+              "example": [
+                "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
@@ -396,7 +700,8 @@
                 "IMAGE",
                 "VOICE",
                 "VIDEO",
-                "FILE"
+                "FILE",
+                "TEXT"
               ]
             }
           },
@@ -417,11 +722,79 @@
         ],
         "responses": {
           "200": {
-            "description": "成功返回分页后的笔记列表，data: { items, total, page, size }",
+            "description": "分页笔记列表",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteListResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "items": [
+                        {
+                          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                          "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "type": "PUBLISHED",
+                          "source": "APP_MANUAL",
+                          "title": "我的第一篇笔记",
+                          "content": "这是笔记的正文内容...",
+                          "rawContent": null,
+                          "deletedAt": null,
+                          "meta": null,
+                          "createdAt": "2026-07-15T10:00:00.000Z",
+                          "updatedAt": "2026-07-15T10:00:00.000Z",
+                          "pinnedAt": null,
+                          "category": {
+                            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                            "name": "工作"
+                          },
+                          "tags": [
+                            {
+                              "noteId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                              "tagId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                              "tag": {
+                                "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                                "name": "随笔"
+                              }
+                            }
+                          ],
+                          "media": [
+                            {
+                              "id": "550e8400-e29b-41d4-a716-446655440000",
+                              "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                              "type": "IMAGE",
+                              "qiniuKey": "notes/2026/07/a.jpg",
+                              "qiniuUrl": "https://cdn.example.com/notes/2026/07/a.jpg",
+                              "wxMediaId": null,
+                              "originalFilename": "vacation.jpg",
+                              "fileSize": 204800,
+                              "mimeType": "image/jpeg",
+                              "status": "ATTACHED",
+                              "uploadedAt": "2026-07-15T10:00:00.000Z",
+                              "createdAt": "2026-07-15T10:00:00.000Z",
+                              "updatedAt": "2026-07-15T10:00:00.000Z"
+                            }
+                          ]
+                        }
+                      ],
+                      "total": 1,
+                      "page": 1,
+                      "size": 20
+                    }
+                  }
                 }
               }
             }
@@ -448,18 +821,79 @@
             "in": "query",
             "description": "笔记 ID",
             "schema": {
-              "example": "clxyz1234567890abcdef",
+              "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "成功返回笔记详情（含分类、标签、媒体），data: 笔记对象",
+            "description": "笔记不存在\n\n笔记详情（含分类、标签、媒体）",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteDetailDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "DRAFT",
+                      "source": "APP_MANUAL",
+                      "title": "我的第一篇笔记",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": null,
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": null,
+                      "category": {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "name": "工作"
+                      },
+                      "tags": [
+                        {
+                          "noteId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "tagId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                          "tag": {
+                            "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                            "name": "随笔"
+                          }
+                        }
+                      ],
+                      "media": [
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440000",
+                          "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                          "type": "IMAGE",
+                          "qiniuKey": "notes/2026/07/a.jpg",
+                          "qiniuUrl": "https://cdn.example.com/notes/2026/07/a.jpg",
+                          "wxMediaId": null,
+                          "originalFilename": "vacation.jpg",
+                          "fileSize": 204800,
+                          "mimeType": "image/jpeg",
+                          "status": "ATTACHED",
+                          "uploadedAt": "2026-07-15T10:00:00.000Z",
+                          "createdAt": "2026-07-15T10:00:00.000Z",
+                          "updatedAt": "2026-07-15T10:00:00.000Z"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -478,6 +912,7 @@
     },
     "/notes/create": {
       "post": {
+        "description": "默认创建为草稿 DRAFT。",
         "operationId": "NotesController_create",
         "parameters": [],
         "requestBody": {
@@ -493,12 +928,12 @@
                     "title": "我的第一篇笔记",
                     "content": "这是笔记的正文内容...",
                     "source": "APP_MANUAL",
-                    "categoryId": "clxyz1234567890abcdef",
+                    "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                     "tagIds": [
-                      "tag_abc123"
+                      "b2c3d4e5-f6a7-8901-bcde-f12345678901"
                     ],
                     "mediaIds": [
-                      "uuid-1"
+                      "550e8400-e29b-41d4-a716-446655440000"
                     ]
                   }
                 }
@@ -508,11 +943,72 @@
         },
         "responses": {
           "200": {
-            "description": "成功创建笔记，data: 创建的笔记对象",
+            "description": "创建成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteDetailDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "DRAFT",
+                      "source": "APP_MANUAL",
+                      "title": "我的第一篇笔记",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": null,
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": null,
+                      "category": {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "name": "工作"
+                      },
+                      "tags": [
+                        {
+                          "noteId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "tagId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                          "tag": {
+                            "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                            "name": "随笔"
+                          }
+                        }
+                      ],
+                      "media": [
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440000",
+                          "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                          "type": "IMAGE",
+                          "qiniuKey": "notes/2026/07/a.jpg",
+                          "qiniuUrl": "https://cdn.example.com/notes/2026/07/a.jpg",
+                          "wxMediaId": null,
+                          "originalFilename": "vacation.jpg",
+                          "fileSize": 204800,
+                          "mimeType": "image/jpeg",
+                          "status": "ATTACHED",
+                          "uploadedAt": "2026-07-15T10:00:00.000Z",
+                          "createdAt": "2026-07-15T10:00:00.000Z",
+                          "updatedAt": "2026-07-15T10:00:00.000Z"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -531,6 +1027,7 @@
     },
     "/notes/update": {
       "post": {
+        "description": "勿通过本接口写 pinnedAt，置顶请用 /notes/pin。",
         "operationId": "NotesController_update",
         "parameters": [],
         "requestBody": {
@@ -543,15 +1040,15 @@
               "examples": {
                 "示例": {
                   "value": {
-                    "id": "clxyz1234567890abcdef",
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                     "title": "更新后的标题",
                     "content": "更新后的正文内容...",
-                    "categoryId": "clxyz1234567890abcdef",
+                    "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                     "tagIds": [
-                      "tag_abc123"
+                      "b2c3d4e5-f6a7-8901-bcde-f12345678901"
                     ],
                     "mediaIds": [
-                      "uuid-1"
+                      "550e8400-e29b-41d4-a716-446655440000"
                     ]
                   }
                 }
@@ -561,11 +1058,72 @@
         },
         "responses": {
           "200": {
-            "description": "成功更新笔记，data: 更新后的笔记对象",
+            "description": "更新成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteDetailDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "DRAFT",
+                      "source": "APP_MANUAL",
+                      "title": "更新后的标题",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": null,
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": null,
+                      "category": {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "name": "工作"
+                      },
+                      "tags": [
+                        {
+                          "noteId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "tagId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                          "tag": {
+                            "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                            "name": "随笔"
+                          }
+                        }
+                      ],
+                      "media": [
+                        {
+                          "id": "550e8400-e29b-41d4-a716-446655440000",
+                          "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                          "type": "IMAGE",
+                          "qiniuKey": "notes/2026/07/a.jpg",
+                          "qiniuUrl": "https://cdn.example.com/notes/2026/07/a.jpg",
+                          "wxMediaId": null,
+                          "originalFilename": "vacation.jpg",
+                          "fileSize": 204800,
+                          "mimeType": "image/jpeg",
+                          "status": "ATTACHED",
+                          "uploadedAt": "2026-07-15T10:00:00.000Z",
+                          "createdAt": "2026-07-15T10:00:00.000Z",
+                          "updatedAt": "2026-07-15T10:00:00.000Z"
+                        }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -605,11 +1163,41 @@
         },
         "responses": {
           "200": {
-            "description": "成功软删除笔记，data: 被删除的笔记对象",
+            "description": "软删除成功（返回更新后的裸 Note，含 deletedAt）",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteBareDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "DRAFT",
+                      "source": "APP_MANUAL",
+                      "title": "我的第一篇笔记",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": "2026-07-16T02:00:00.000Z",
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": null
+                    }
+                  }
                 }
               }
             }
@@ -649,11 +1237,41 @@
         },
         "responses": {
           "200": {
-            "description": "成功发布笔记，data: 发布后的笔记对象",
+            "description": "发布成功（返回裸 Note，不含 category/tags/media）",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteBareDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "PUBLISHED",
+                      "source": "APP_MANUAL",
+                      "title": "我的第一篇笔记",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": null,
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": null
+                    }
+                  }
                 }
               }
             }
@@ -693,11 +1311,41 @@
         },
         "responses": {
           "200": {
-            "description": "成功切换归档状态，data: 状态变更后的笔记对象",
+            "description": "草稿不可归档\n\n状态切换成功（返回裸 Note，不含 category/tags/media）",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteBareDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "ARCHIVED",
+                      "source": "APP_MANUAL",
+                      "title": "我的第一篇笔记",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": null,
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": null
+                    }
+                  }
                 }
               }
             }
@@ -737,11 +1385,41 @@
         },
         "responses": {
           "200": {
-            "description": "成功切换置顶状态，data: 更新后的笔记对象（含 pinnedAt）",
+            "description": "置顶状态切换成功（返回裸 Note，不含 category/tags/media）",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteBareDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "categoryId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "type": "PUBLISHED",
+                      "source": "APP_MANUAL",
+                      "title": "我的第一篇笔记",
+                      "content": "这是笔记的正文内容...",
+                      "rawContent": null,
+                      "deletedAt": null,
+                      "meta": null,
+                      "createdAt": "2026-07-15T10:00:00.000Z",
+                      "updatedAt": "2026-07-15T10:00:00.000Z",
+                      "pinnedAt": "2026-07-16T02:00:00.000Z"
+                    }
+                  }
                 }
               }
             }
@@ -768,18 +1446,53 @@
             "in": "query",
             "description": "笔记 ID",
             "schema": {
-              "example": "clxyz1234567890abcdef",
+              "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "成功返回该笔记下的多媒体资源列表，data: Media 数组",
+            "description": "媒体列表",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MediaItemDto"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": [
+                      {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                        "type": "IMAGE",
+                        "qiniuKey": "notes/2026/07/a.jpg",
+                        "qiniuUrl": "https://cdn.example.com/notes/2026/07/a.jpg",
+                        "wxMediaId": null,
+                        "originalFilename": "vacation.jpg",
+                        "fileSize": 204800,
+                        "mimeType": "image/jpeg",
+                        "status": "ATTACHED",
+                        "uploadedAt": "2026-07-15T10:00:00.000Z",
+                        "createdAt": "2026-07-15T10:00:00.000Z",
+                        "updatedAt": "2026-07-15T10:00:00.000Z"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -806,18 +1519,39 @@
             "in": "query",
             "description": "笔记 ID",
             "schema": {
-              "example": "clxyz1234567890abcdef",
+              "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
               "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "成功返回分享所需的精简信息，data: { id, title, type, shareUrl }",
+            "description": "分享精简信息",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/NoteShareResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "title": "我的第一篇笔记",
+                      "type": "PUBLISHED",
+                      "shareUrl": "/notes/detail?id=a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    }
+                  }
                 }
               }
             }
@@ -836,6 +1570,7 @@
     },
     "/media/check": {
       "post": {
+        "description": "创建/更新笔记前，校验媒体是否属于当前用户且状态可关联（PENDING 或 ORPHAN）。",
         "operationId": "MediaController_check",
         "parameters": [],
         "requestBody": {
@@ -844,13 +1579,53 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CheckMediaDto"
+              },
+              "examples": {
+                "默认": {
+                  "value": {
+                    "mediaIds": [
+                      "550e8400-e29b-41d4-a716-446655440000",
+                      "00000000-0000-4000-8000-000000000099"
+                    ]
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "返回有效和无效的媒体 ID 列表"
+            "description": "返回有效和无效的媒体 ID 列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CheckMediaResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "valid": [
+                        "550e8400-e29b-41d4-a716-446655440000"
+                      ],
+                      "invalid": [
+                        "00000000-0000-4000-8000-000000000099"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -874,9 +1649,51 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CategoryDto"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": [
+                      {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                        "name": "工作",
+                        "parentId": null,
+                        "sortOrder": 0,
+                        "createdAt": "2026-07-03T10:00:00.000Z",
+                        "_count": {
+                          "notes": 12
+                        },
+                        "children": [
+                          {
+                            "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                            "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                            "name": "会议",
+                            "parentId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                            "sortOrder": 0,
+                            "createdAt": "2026-07-03T10:00:00.000Z",
+                            "_count": {
+                              "notes": 3
+                            },
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
                   }
                 }
               }
@@ -896,6 +1713,7 @@
     },
     "/categories/create": {
       "post": {
+        "description": "最多 3 层；同级自动追加 sortOrder。",
         "operationId": "CategoriesController_create",
         "parameters": [],
         "requestBody": {
@@ -918,11 +1736,34 @@
         },
         "responses": {
           "200": {
-            "description": "成功创建分类",
+            "description": "分类层级超过限制\n\n成功创建分类（扁平 Category，无 `_count` / `children`）",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CategoryDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "name": "新分类",
+                      "parentId": null,
+                      "sortOrder": 0,
+                      "createdAt": "2026-07-03T10:00:00.000Z"
+                    }
+                  }
                 }
               }
             }
@@ -953,7 +1794,7 @@
               "examples": {
                 "default": {
                   "value": {
-                    "id": "uuid-here",
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                     "name": "更新后的分类",
                     "parentId": null
                   }
@@ -964,11 +1805,34 @@
         },
         "responses": {
           "200": {
-            "description": "成功更新分类",
+            "description": "成功更新分类（扁平 Category，无 `_count` / `children`）",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CategoryDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "name": "更新后的分类",
+                      "parentId": null,
+                      "sortOrder": 0,
+                      "createdAt": "2026-07-03T10:00:00.000Z"
+                    }
+                  }
                 }
               }
             }
@@ -987,6 +1851,7 @@
     },
     "/categories/delete": {
       "post": {
+        "description": "递归删子孙，关联笔记 categoryId 置空（不删笔记）。",
         "operationId": "CategoriesController_delete",
         "parameters": [],
         "requestBody": {
@@ -999,7 +1864,7 @@
               "examples": {
                 "default": {
                   "value": {
-                    "id": "uuid-here"
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
                   }
                 }
               }
@@ -1008,11 +1873,34 @@
         },
         "responses": {
           "200": {
-            "description": "成功删除分类",
+            "description": "成功删除分类（返回被删的扁平 Category）",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CategoryDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                      "name": "工作",
+                      "parentId": null,
+                      "sortOrder": 0,
+                      "createdAt": "2026-07-03T10:00:00.000Z"
+                    }
+                  }
                 }
               }
             }
@@ -1031,6 +1919,7 @@
     },
     "/categories/reorder": {
       "post": {
+        "description": "成功后返回更新后的分类树。",
         "operationId": "CategoriesController_reorder",
         "parameters": [],
         "requestBody": {
@@ -1045,12 +1934,12 @@
                   "value": {
                     "items": [
                       {
-                        "id": "uuid1",
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                         "parentId": null
                       },
                       {
-                        "id": "uuid2",
-                        "parentId": "uuid1"
+                        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                        "parentId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
                       }
                     ]
                   }
@@ -1061,7 +1950,59 @@
         },
         "responses": {
           "200": {
-            "description": "成功排序分类"
+            "description": "成功排序并返回分类树",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CategoryDto"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": [
+                      {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                        "name": "工作",
+                        "parentId": null,
+                        "sortOrder": 0,
+                        "createdAt": "2026-07-03T10:00:00.000Z",
+                        "_count": {
+                          "notes": 12
+                        },
+                        "children": [
+                          {
+                            "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                            "userId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                            "name": "会议",
+                            "parentId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                            "sortOrder": 0,
+                            "createdAt": "2026-07-03T10:00:00.000Z",
+                            "_count": {
+                              "notes": 3
+                            },
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1085,9 +2026,34 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TagResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TagResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": [
+                      {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "name": "随笔",
+                        "createdAt": "2026-07-03T10:00:00.000Z",
+                        "_count": {
+                          "notes": 5
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -1107,6 +2073,7 @@
     },
     "/tags/create": {
       "post": {
+        "description": "同名标签直接返回已有记录，不报错。",
         "operationId": "TagsController_create",
         "parameters": [],
         "requestBody": {
@@ -1128,11 +2095,31 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TagResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TagResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "随笔",
+                      "createdAt": "2026-07-03T10:00:00.000Z"
+                    }
+                  }
                 }
               }
             }
@@ -1151,6 +2138,7 @@
     },
     "/tags/delete": {
       "post": {
+        "description": "先解绑笔记关联再删除。",
         "operationId": "TagsController_delete",
         "parameters": [],
         "requestBody": {
@@ -1172,11 +2160,31 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TagResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TagResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "name": "随笔",
+                      "createdAt": "2026-07-03T10:00:00.000Z"
+                    }
+                  }
                 }
               }
             }
@@ -1195,25 +2203,100 @@
     },
     "/wechat/callback": {
       "get": {
+        "description": "校验通过原样返回 echostr（纯文本，非 JSON）。",
         "operationId": "WechatController_verify",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "echostr",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "echostr-to-return"
+            }
+          },
+          {
+            "name": "nonce",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "nonce"
+            }
+          },
+          {
+            "name": "timestamp",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "1710000000"
+            }
+          },
+          {
+            "name": "signature",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "xxx"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "验证成功返回 echostr 纯文本",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "echostr-to-return"
+                }
+              }
+            }
           }
         },
+        "summary": "微信服务器 Token 验证",
         "tags": [
           "微信"
         ]
       },
       "post": {
+        "description": "请求体为加密 XML（text/xml）。成功返回加密被动回复 XML；异常时降级返回纯文本 success。不走统一 JSON 包装。",
         "operationId": "WechatController_receive",
         "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "description": "微信推送的加密 XML",
+          "content": {
+            "text/xml": {
+              "schema": {
+                "type": "string"
+              },
+              "examples": {
+                "占位": {
+                  "value": "<xml><Encrypt><![CDATA[...]]></Encrypt></xml>"
+                }
+              }
+            }
           }
         },
+        "responses": {
+          "200": {
+            "description": "加密被动回复 XML 或 success",
+            "content": {
+              "text/xml": {
+                "schema": {
+                  "type": "string",
+                  "example": "<xml>...</xml>"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        },
+        "summary": "接收微信消息",
         "tags": [
           "微信"
         ]
@@ -1240,16 +2323,28 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UploadTokenResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/UploadTokenResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "token": "qiniu-upload-token-example"
+                    }
+                  }
                 }
               }
             }
-          },
-          "400": {
-            "description": "参数校验失败"
-          },
-          "401": {
-            "description": "未认证，需要 Bearer Token"
           }
         },
         "security": [
@@ -1299,7 +2394,7 @@
                   "value": {
                     "type": "IMAGE"
                   },
-                  "description": "上传图片文件"
+                  "description": "上传图片文件（file 字段在 Try it out 中选择）"
                 }
               }
             }
@@ -1307,20 +2402,37 @@
         },
         "responses": {
           "200": {
-            "description": "上传成功，返回媒体记录 ID 和文件信息",
+            "description": "文件为空或格式不支持\n\n上传成功，返回媒体记录 ID 和文件信息",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UploadFileResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/UploadFileResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "mediaId": "550e8400-e29b-41d4-a716-446655440000",
+                      "key": "notes/2026/07/abc123.jpg",
+                      "url": "http://cdn.example.com/notes/2026/07/abc123.jpg",
+                      "mimeType": "image/jpeg",
+                      "size": 204800,
+                      "originalFilename": "vacation.jpg"
+                    }
+                  }
                 }
               }
             }
-          },
-          "400": {
-            "description": "参数校验失败\n\n文件为空或格式不支持"
-          },
-          "401": {
-            "description": "未认证，需要 Bearer Token"
           }
         },
         "security": [
@@ -1362,19 +2474,28 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeleteFileResponseDto"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/DeleteFileResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "success": true
+                    }
+                  }
                 }
               }
             }
-          },
-          "400": {
-            "description": "参数校验失败"
-          },
-          "401": {
-            "description": "未认证，需要 Bearer Token"
-          },
-          "404": {
-            "description": "文件不存在"
           }
         },
         "security": [
@@ -1390,13 +2511,57 @@
     },
     "/admin/queues": {
       "get": {
+        "description": "公开接口，生产环境请自行加保护。",
         "operationId": "QueueAdminController_stats",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/QueueStatsResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "name": "wechat-message",
+                      "counts": {
+                        "waiting": 0,
+                        "active": 0,
+                        "completed": 10,
+                        "failed": 1,
+                        "delayed": 0
+                      },
+                      "workers": 1,
+                      "failedJobs": [
+                        {
+                          "id": "123",
+                          "name": "process-wechat-message",
+                          "failedReason": "timeout",
+                          "attemptsMade": 3,
+                          "timestamp": 1710000000000
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "获取队列统计",
         "tags": [
           "队列管理"
         ]
@@ -1407,10 +2572,36 @@
         "operationId": "QueueAdminController_retryAll",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/QueueRetryResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "count": 2
+                    }
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "重试全部失败任务",
         "tags": [
           "队列管理"
         ]
@@ -1421,10 +2612,35 @@
         "operationId": "QueueAdminController_cleanFailed",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": null
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "清空失败任务",
         "tags": [
           "队列管理"
         ]
@@ -1435,10 +2651,35 @@
         "operationId": "QueueAdminController_pause",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": null
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "暂停队列",
         "tags": [
           "队列管理"
         ]
@@ -1449,10 +2690,35 @@
         "operationId": "QueueAdminController_resume",
         "parameters": [],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": null
+                  }
+                }
+              }
+            }
           }
         },
+        "summary": "恢复队列",
         "tags": [
           "队列管理"
         ]
@@ -1460,19 +2726,23 @@
     }
   },
   "info": {
-    "title": "森花笔记 API",
-    "description": "微信公众号驱动的个人笔记系统",
+    "title": "花森笔记 API",
+    "description": "微信公众号驱动的个人笔记系统。\n\n## 统一响应\n除 `/wechat/*` 外，成功响应均为：\n```json\n{ \"code\": 0, \"message\": \"ok\", \"data\": {} }\n```\n业务错误多为 HTTP 200，通过 `code` 区分（见错误码）。\n\n## 认证\n需登录接口点击 Authorize，填入 `accessToken`（按 UI 提示是否加 Bearer 前缀）。",
     "version": "1.0",
     "contact": {}
   },
   "tags": [
     {
       "name": "认证",
-      "description": "微信 OAuth 登录、JWT 签发/刷新/登出"
+      "description": "微信 OAuth、邮箱注册登录、JWT 刷新/登出"
+    },
+    {
+      "name": "用户",
+      "description": "资料查询/更新、微信空壳绑定"
     },
     {
       "name": "笔记",
-      "description": "笔记的增删改查与状态流转"
+      "description": "笔记增删改查与状态流转、置顶、分享"
     },
     {
       "name": "分类",
@@ -1480,15 +2750,23 @@
     },
     {
       "name": "标签",
-      "description": "标签的创建与删除"
+      "description": "标签创建（同名复用）与删除"
+    },
+    {
+      "name": "媒体",
+      "description": "媒体归属校验"
     },
     {
       "name": "存储",
-      "description": "七牛云上传 Token 与文件删除"
+      "description": "七牛云上传 Token、上传与删除"
     },
     {
       "name": "微信",
-      "description": "公众号服务器配置验证与消息接收"
+      "description": "公众号服务器校验与消息接收（非 JSON）"
+    },
+    {
+      "name": "队列管理",
+      "description": "BullMQ 运维接口（公开，生产请加保护）"
     }
   ],
   "servers": [],
@@ -1499,22 +2777,74 @@
         "bearerFormat": "JWT",
         "type": "http",
         "name": "JWT",
-        "description": "请输入 JWT Token",
+        "description": "请输入 JWT accessToken",
         "in": "header"
       }
     },
     "schemas": {
-      "WechatCallbackDto": {
+      "ApiErrorResponseDto": {
         "type": "object",
         "properties": {
           "code": {
+            "type": "number",
+            "description": "业务错误码",
+            "example": 10001
+          },
+          "message": {
             "type": "string",
-            "description": "微信授权回调 code",
-            "example": "081aB6tM0xj3bV1eYz2oM1tLqM0aB6tM"
+            "description": "错误信息",
+            "example": "请求参数校验失败"
+          },
+          "data": {
+            "type": "object",
+            "description": "错误时一般为 null",
+            "example": null,
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "details": {
+            "type": "array",
+            "description": "校验细节（可选）",
+            "example": [
+              "email must be an email"
+            ],
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
-          "code"
+          "code",
+          "message",
+          "data"
+        ]
+      },
+      "ApiResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number",
+            "description": "业务码，0 表示成功",
+            "example": 0
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "ok"
+          },
+          "data": {
+            "type": "object",
+            "description": "业务数据，无数据时为 null",
+            "nullable": true,
+            "example": null,
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "data"
         ]
       },
       "TokenResponseDto": {
@@ -1540,6 +2870,19 @@
           "accessToken",
           "refreshToken",
           "expiresIn"
+        ]
+      },
+      "WechatCallbackDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "微信授权回调 code",
+            "example": "081aB6tM0xj3bV1eYz2oM1tLqM0aB6tM"
+          }
+        },
+        "required": [
+          "code"
         ]
       },
       "EmailSendCodeDto": {
@@ -1660,6 +3003,49 @@
           "success"
         ]
       },
+      "UserProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "nickname": {
+            "type": "object",
+            "example": "花森",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "object",
+            "example": "https://cdn.example.com/a.png",
+            "nullable": true
+          },
+          "email": {
+            "type": "object",
+            "example": "user@example.com",
+            "nullable": true
+          },
+          "bindingCode": {
+            "type": "object",
+            "description": "6 位绑定码；可发到公众号完成绑定",
+            "example": "ABC234",
+            "nullable": true
+          },
+          "wxBound": {
+            "type": "boolean",
+            "description": "是否已绑定微信",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "nickname",
+          "avatar",
+          "email",
+          "bindingCode",
+          "wxBound"
+        ]
+      },
       "UpdateProfileDto": {
         "type": "object",
         "properties": {
@@ -1675,6 +3061,35 @@
           }
         }
       },
+      "BindUserResponseDto": {
+        "type": "object",
+        "properties": {
+          "wxBound": {
+            "type": "boolean",
+            "example": true
+          },
+          "syncedDraftCount": {
+            "type": "number",
+            "description": "从空壳同步过来的草稿数",
+            "example": 3
+          },
+          "overwritten": {
+            "type": "boolean",
+            "description": "是否覆盖了其他账号上的同 openid",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "绑定成功"
+          }
+        },
+        "required": [
+          "wxBound",
+          "syncedDraftCount",
+          "overwritten",
+          "message"
+        ]
+      },
       "BindUserDto": {
         "type": "object",
         "properties": {
@@ -1686,6 +3101,508 @@
         },
         "required": [
           "bindingCode"
+        ]
+      },
+      "NoteBareDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "categoryId": {
+            "type": "object",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "content": {
+            "type": "object",
+            "example": "这是笔记的正文内容...",
+            "nullable": true
+          },
+          "rawContent": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "description": "扩展元数据（如微信 wechat_msg_id）",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "pinnedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "categoryId",
+          "type",
+          "source",
+          "title",
+          "content",
+          "rawContent",
+          "deletedAt",
+          "meta",
+          "createdAt",
+          "updatedAt",
+          "pinnedAt"
+        ]
+      },
+      "NoteCategoryBriefDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "name": {
+            "type": "string",
+            "example": "工作"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NoteTagBriefDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "name": {
+            "type": "string",
+            "example": "随笔"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "NoteTagLinkDto": {
+        "type": "object",
+        "properties": {
+          "noteId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "tagId": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/NoteTagBriefDto"
+          }
+        },
+        "required": [
+          "noteId",
+          "tagId",
+          "tag"
+        ]
+      },
+      "MediaItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "VOICE",
+              "VIDEO",
+              "FILE",
+              "TEXT"
+            ],
+            "example": "IMAGE"
+          },
+          "qiniuKey": {
+            "type": "string",
+            "example": "notes/2026/07/a.jpg"
+          },
+          "qiniuUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/notes/2026/07/a.jpg"
+          },
+          "wxMediaId": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "originalFilename": {
+            "type": "object",
+            "description": "用户上传时的原始文件名",
+            "example": "vacation.jpg",
+            "nullable": true
+          },
+          "fileSize": {
+            "type": "object",
+            "example": 204800,
+            "nullable": true
+          },
+          "mimeType": {
+            "type": "object",
+            "example": "image/jpeg",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ATTACHED",
+              "ORPHAN"
+            ],
+            "example": "ATTACHED"
+          },
+          "uploadedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "type",
+          "qiniuKey",
+          "qiniuUrl",
+          "wxMediaId",
+          "originalFilename",
+          "fileSize",
+          "mimeType",
+          "status",
+          "uploadedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "NoteListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "categoryId": {
+            "type": "object",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "content": {
+            "type": "object",
+            "example": "这是笔记的正文内容...",
+            "nullable": true
+          },
+          "rawContent": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "description": "扩展元数据（如微信 wechat_msg_id）",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "pinnedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "category": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoteCategoryBriefDto"
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteTagLinkDto"
+            }
+          },
+          "media": {
+            "description": "关联媒体（排除 TEXT 占位）",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "categoryId",
+          "type",
+          "source",
+          "title",
+          "content",
+          "rawContent",
+          "deletedAt",
+          "meta",
+          "createdAt",
+          "updatedAt",
+          "pinnedAt",
+          "category",
+          "tags",
+          "media"
+        ]
+      },
+      "NoteListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteListItemDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "size": {
+            "type": "number",
+            "example": 20
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ]
+      },
+      "NoteDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "categoryId": {
+            "type": "object",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
+            ],
+            "example": "APP_MANUAL"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "content": {
+            "type": "object",
+            "example": "这是笔记的正文内容...",
+            "nullable": true
+          },
+          "rawContent": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "deletedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "meta": {
+            "type": "object",
+            "description": "扩展元数据（如微信 wechat_msg_id）",
+            "example": null,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-07-15T10:00:00.000Z"
+          },
+          "pinnedAt": {
+            "type": "object",
+            "example": null,
+            "nullable": true
+          },
+          "category": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoteCategoryBriefDto"
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NoteTagLinkDto"
+            }
+          },
+          "media": {
+            "description": "关联媒体（排除 TEXT 占位）",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaItemDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "categoryId",
+          "type",
+          "source",
+          "title",
+          "content",
+          "rawContent",
+          "deletedAt",
+          "meta",
+          "createdAt",
+          "updatedAt",
+          "pinnedAt",
+          "category",
+          "tags",
+          "media"
         ]
       },
       "CreateNoteDto": {
@@ -1705,11 +3622,11 @@
             "type": "string",
             "description": "笔记来源",
             "enum": [
-              "wechat",
-              "app_clipboard",
-              "app_manual"
+              "WECHAT",
+              "APP_CLIPBOARD",
+              "APP_MANUAL"
             ],
-            "example": "app_manual"
+            "example": "APP_MANUAL"
           },
           "categoryId": {
             "type": "string",
@@ -1808,14 +3725,76 @@
           "id"
         ]
       },
+      "NoteShareResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "title": {
+            "type": "object",
+            "example": "我的第一篇笔记",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "ARCHIVED"
+            ],
+            "example": "PUBLISHED"
+          },
+          "shareUrl": {
+            "type": "string",
+            "example": "/notes/detail?id=a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "type",
+          "shareUrl"
+        ]
+      },
+      "CheckMediaResponseDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "description": "校验通过的媒体 ID（归属当前用户且为 PENDING 或 ORPHAN）",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "invalid": {
+            "description": "校验未通过的媒体 ID",
+            "example": [
+              "00000000-0000-4000-8000-000000000099"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "valid",
+          "invalid"
+        ]
+      },
       "CheckMediaDto": {
         "type": "object",
         "properties": {
           "mediaIds": {
             "description": "需要校验的媒体 ID 列表",
             "example": [
-              "uuid-1",
-              "uuid-2"
+              "550e8400-e29b-41d4-a716-446655440000",
+              "00000000-0000-4000-8000-000000000099"
             ],
             "items": {
               "type": "array",
@@ -1830,13 +3809,31 @@
           "mediaIds"
         ]
       },
+      "CategoryNotesCountDto": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "number",
+            "description": "该分类下关联的笔记数量",
+            "example": 12
+          }
+        },
+        "required": [
+          "notes"
+        ]
+      },
       "CategoryDto": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
             "description": "分类 ID",
-            "example": "clxxxxxxxxxxxxxxxx"
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "userId": {
+            "type": "string",
+            "description": "所属用户 ID",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
           },
           "name": {
             "type": "string",
@@ -1854,13 +3851,22 @@
             "description": "排序值，数字越小越靠前",
             "example": 0
           },
-          "notesCount": {
-            "type": "number",
-            "description": "该分类下关联的笔记数量",
-            "example": 12
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间",
+            "example": "2026-07-03T10:00:00.000Z"
+          },
+          "_count": {
+            "description": "关联笔记数量（仅列表/排序树节点返回）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoryNotesCountDto"
+              }
+            ]
           },
           "children": {
-            "description": "子分类列表（树形结构）",
+            "description": "子分类列表（仅列表/排序树节点返回）",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CategoryDto"
@@ -1869,9 +3875,10 @@
         },
         "required": [
           "id",
+          "userId",
           "name",
           "sortOrder",
-          "notesCount"
+          "createdAt"
         ]
       },
       "CreateCategoryDto": {
@@ -1961,6 +3968,19 @@
           "items"
         ]
       },
+      "TagNotesCountDto": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "number",
+            "description": "关联笔记数量",
+            "example": 5
+          }
+        },
+        "required": [
+          "notes"
+        ]
+      },
       "TagResponseDto": {
         "type": "object",
         "properties": {
@@ -1981,9 +4001,12 @@
             "example": "2026-07-03T10:00:00.000Z"
           },
           "_count": {
-            "type": "object",
             "description": "关联笔记数量（仅 list 接口返回）",
-            "example": 5
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TagNotesCountDto"
+              }
+            ]
           }
         },
         "required": [
@@ -2046,6 +4069,12 @@
             "type": "number",
             "description": "文件大小（字节）",
             "example": 204800
+          },
+          "originalFilename": {
+            "type": "object",
+            "description": "用户上传时的原始文件名（multipart filename）",
+            "example": "vacation.jpg",
+            "nullable": true
           }
         },
         "required": [
@@ -2053,7 +4082,21 @@
           "key",
           "url",
           "mimeType",
-          "size"
+          "size",
+          "originalFilename"
+        ]
+      },
+      "DeleteFileResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "七牛云侧文件是否删除成功（true=成功，false=失败）",
+            "example": true
+          }
+        },
+        "required": [
+          "success"
         ]
       },
       "DeleteFileDto": {
@@ -2069,17 +4112,85 @@
           "key"
         ]
       },
-      "DeleteFileResponseDto": {
+      "QueueFailedJobDto": {
         "type": "object",
         "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "七牛云侧文件是否删除成功（true=成功，false=失败）",
-            "example": true
+          "id": {
+            "type": "string",
+            "example": "123"
+          },
+          "name": {
+            "type": "string",
+            "example": "process-wechat-message"
+          },
+          "failedReason": {
+            "type": "string",
+            "example": "timeout"
+          },
+          "attemptsMade": {
+            "type": "number",
+            "example": 3
+          },
+          "timestamp": {
+            "type": "number",
+            "example": 1710000000000
           }
         },
         "required": [
-          "success"
+          "id",
+          "name",
+          "failedReason",
+          "attemptsMade",
+          "timestamp"
+        ]
+      },
+      "QueueStatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "wechat-message"
+          },
+          "counts": {
+            "type": "object",
+            "description": "各状态任务数量",
+            "example": {
+              "waiting": 0,
+              "active": 0,
+              "completed": 10,
+              "failed": 1,
+              "delayed": 0
+            }
+          },
+          "workers": {
+            "type": "number",
+            "example": 1
+          },
+          "failedJobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QueueFailedJobDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "counts",
+          "workers",
+          "failedJobs"
+        ]
+      },
+      "QueueRetryResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "重试的任务数量",
+            "example": 2
+          }
+        },
+        "required": [
+          "count"
         ]
       }
     }
