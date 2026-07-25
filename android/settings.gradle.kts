@@ -10,12 +10,17 @@ pluginManagement {
 
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
+    val isCi = System.getenv("CI") == "true"
+
     repositories {
-        // 国内镜像优先（不要用全局 init.gradle 的 PREFER_SETTINGS，会和 Flutter 冲突）
-        maven(url = "https://maven.aliyun.com/repository/google")
-        maven(url = "https://maven.aliyun.com/repository/central")
-        maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
-        maven(url = "https://maven.aliyun.com/repository/public")
+        // Local (China): Aliyun first. CI (GitHub-hosted): official repos only —
+        // Aliyun often returns 502 from overseas runners.
+        if (!isCi) {
+            maven(url = "https://maven.aliyun.com/repository/google")
+            maven(url = "https://maven.aliyun.com/repository/central")
+            maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
+            maven(url = "https://maven.aliyun.com/repository/public")
+        }
         google()
         mavenCentral()
         gradlePluginPortal()

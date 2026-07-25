@@ -1,8 +1,12 @@
 allprojects {
+    val isCi = System.getenv("CI") == "true"
     repositories {
-        maven(url = "https://maven.aliyun.com/repository/google")
-        maven(url = "https://maven.aliyun.com/repository/central")
-        maven(url = "https://maven.aliyun.com/repository/public")
+        // Local (China): Aliyun first. CI: official repos — Aliyun 502s from overseas.
+        if (!isCi) {
+            maven(url = "https://maven.aliyun.com/repository/google")
+            maven(url = "https://maven.aliyun.com/repository/central")
+            maven(url = "https://maven.aliyun.com/repository/public")
+        }
         google()
         mavenCentral()
     }
