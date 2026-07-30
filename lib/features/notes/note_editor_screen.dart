@@ -773,54 +773,77 @@ class _NoteEditorScreenState extends ConsumerState<NoteEditorScreen> {
     // Preserve selection across the dialog; apply after the route closes so
     // Quill's selection overlay is not torn down mid-InheritedWidget update.
     final selection = _quillController.selection;
-    final urlController = TextEditingController();
 
-    try {
-      final url = await showDialog<String>(
-        context: context,
-        builder: (dialogContext) {
-          return AlertDialog(
-            title: const Text(UiStrings.noteEditorLinkTitle),
-            content: TextField(
-              controller: urlController,
-              autofocus: true,
-              keyboardType: TextInputType.url,
-              textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                hintText: UiStrings.noteEditorLinkHint,
-              ),
-              onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text(UiStrings.cancel),
-              ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.of(dialogContext).pop(urlController.text),
-                child: const Text(UiStrings.confirm),
-              ),
-            ],
-          );
-        },
-      );
+    // Own the TextEditingController inside the dialog widget so it is disposed
+    // only after the route exit animation finishes (not when showDialog returns).
+    final url = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => const _LinkUrlDialog(),
+    );
 
-      if (!mounted || url == null) return;
+    if (!mounted || url == null) return;
 
-      final trimmed = url.trim();
-      if (trimmed.isEmpty) {
-        $message.error(message: UiStrings.noteEditorLinkEmpty);
-        return;
-      }
-
-      _quillController
-        ..updateSelection(selection, quill.ChangeSource.local)
-        ..formatSelection(quill.LinkAttribute(trimmed));
-      _editorFocusNode.requestFocus();
-    } finally {
-      urlController.dispose();
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) {
+      $message.error(message: UiStrings.noteEditorLinkEmpty);
+      return;
     }
+
+    _quillController
+      ..updateSelection(selection, quill.ChangeSource.local)
+      ..formatSelection(quill.LinkAttribute(trimmed));
+    _editorFocusNode.requestFocus();
+  }
+}
+
+/// Link URL dialog that owns its [TextEditingController] lifecycle.
+class _LinkUrlDialog extends StatefulWidget {
+  const _LinkUrlDialog();
+
+  @override
+  State<_LinkUrlDialog> createState() => _LinkUrlDialogState();
+}
+
+class _LinkUrlDialogState extends State<_LinkUrlDialog> {
+  late final TextEditingController _urlController;
+
+  @override
+  void initState() {
+    super.initState();
+    _urlController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _urlController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(UiStrings.noteEditorLinkTitle),
+      content: TextField(
+        controller: _urlController,
+        autofocus: true,
+        keyboardType: TextInputType.url,
+        textInputAction: TextInputAction.done,
+        decoration: const InputDecoration(
+          hintText: UiStrings.noteEditorLinkHint,
+        ),
+        onSubmitted: (value) => Navigator.of(context).pop(value),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text(UiStrings.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(_urlController.text),
+          child: const Text(UiStrings.confirm),
+        ),
+      ],
+    );
   }
 }
 

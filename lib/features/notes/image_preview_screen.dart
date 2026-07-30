@@ -2,10 +2,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../../core/constants/ui_strings.dart';
 
-/// Pushes a fullscreen image preview (pinch-zoom via [InteractiveViewer]).
+/// Pushes a fullscreen image preview (pinch-zoom via [PhotoView]).
 Future<void> openImagePreview(
   BuildContext context, {
   required String title,
@@ -55,6 +56,35 @@ class ImagePreviewScreen extends StatelessWidget {
     return null;
   }
 
+  Widget _buildLoading(BuildContext context, ImageChunkEvent? event) {
+    final expected = event?.expectedTotalBytes;
+    final loaded = event?.cumulativeBytesLoaded;
+    final progress = expected != null && expected > 0 && loaded != null
+        ? loaded / expected
+        : null;
+
+    return Center(
+      child: SizedBox(
+        width: 28,
+        height: 28,
+        child: CircularProgressIndicator(
+          value: progress,
+          color: Colors.white70,
+          strokeWidth: 2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError() {
+    return const Center(
+      child: Text(
+        UiStrings.attachmentOpenFailed,
+        style: TextStyle(color: Colors.white70),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final displayTitle = title.trim().isEmpty
@@ -78,25 +108,18 @@ class ImagePreviewScreen extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
       ),
-      body: Center(
-        child: provider == null
-            ? const Text(
-                UiStrings.attachmentOpenFailed,
-                style: TextStyle(color: Colors.white70),
-              )
-            : InteractiveViewer(
-                minScale: 0.5,
-                maxScale: 4,
-                child: Image(
-                  image: provider,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) => const Text(
-                    UiStrings.attachmentOpenFailed,
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ),
-              ),
-      ),
+      body: provider == null
+          ? _buildError()
+          : PhotoView(
+              imageProvider: provider,
+              backgroundDecoration: const BoxDecoration(color: Colors.black),
+              initialScale: PhotoViewComputedScale.contained,
+              minScale: PhotoViewComputedScale.contained * 0.8,
+              maxScale: PhotoViewComputedScale.covered * 4,
+              loadingBuilder: _buildLoading,
+              errorBuilder: (_, _, _) => _buildError(),
+              gaplessPlayback: true,
+            ),
     );
   }
 }

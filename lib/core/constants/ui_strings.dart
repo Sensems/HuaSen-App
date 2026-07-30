@@ -6,7 +6,7 @@
 /// keys.
 abstract final class UiStrings {
   // --- App-level ---
-  static const String appTitle = 'Sebhua Notes';
+  static const String appTitle = '花森';
 
   // --- Navigation ---
   static const String navNotes = '笔记';

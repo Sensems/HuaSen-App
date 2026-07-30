@@ -6,14 +6,14 @@ class AppConstants {
   AppConstants._();
 
   // ── App identity ──────────────────────────────────────────────
-  static const String appName = 'sebhua notes';
-  static const String appVersion = '1.0.0';
+  static const String appName = '花森';
+  static const String appVersion = '1.0.2';
 
   // ── Route paths ───────────────────────────────────────────────
   /// Notes list / home screen.
   static const String routeHome = '/';
 
-  /// Note detail (read-only). `:id` is a real note UUID — never `new`.
+  /// Note detail (read-only). `:id` is a real note UUID �?never `new`.
   static const String routeNote = '/note/:id';
 
   /// Create note editor.

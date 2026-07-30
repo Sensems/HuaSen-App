@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.sebhua" "\0"
-            VALUE "FileDescription", "sebhua_notes" "\0"
+            VALUE "FileDescription", "花森" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "sebhua_notes" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.sebhua. All rights reserved." "\0"
             VALUE "OriginalFilename", "sebhua_notes.exe" "\0"
-            VALUE "ProductName", "sebhua_notes" "\0"
+            VALUE "ProductName", "花森" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
