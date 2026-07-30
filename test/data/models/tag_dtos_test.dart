@@ -6,6 +6,7 @@ void main() {
     final dto = TagResponseDto.fromJson({
       'id': 't1',
       'name': '随笔',
+      'sortOrder': 0,
       'createdAt': '2026-07-03T10:00:00.000Z',
       '_count': 5,
     });
@@ -16,6 +17,7 @@ void main() {
     final dto = TagResponseDto.fromJson({
       'id': 't1',
       'name': '随笔',
+      'sortOrder': 1,
       'createdAt': '2026-07-03T10:00:00.000Z',
       '_count': {'notes': 5},
     });
@@ -26,6 +28,7 @@ void main() {
     final dto = TagResponseDto.fromJson({
       'id': 't1',
       'name': '随笔',
+      'sortOrder': 2,
       'createdAt': '2026-07-03T10:00:00.000Z',
     });
     expect(dto.notesCount, isNull);
