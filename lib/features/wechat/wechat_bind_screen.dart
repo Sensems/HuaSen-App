@@ -10,6 +10,7 @@ import '../../core/network/api_exception.dart';
 import '../../core/providers/core_providers.dart';
 import '../../data/models/user_dtos.dart';
 import '../../ui/components/custom_app_bar.dart';
+import '../../ui/components/wechat_icon.dart';
 import '../../ui/theme/app_colors.dart';
 import '../settings/user_profile_provider.dart';
 
@@ -25,23 +26,30 @@ class _WechatBindScreenState extends ConsumerState<WechatBindScreen> {
   late final TextEditingController _codeController;
   bool _binding = false;
 
-  static const _steps = [
-    UiStrings.wechatStep1,
-    UiStrings.wechatStep2,
-    UiStrings.wechatStep3,
-    UiStrings.wechatStep4,
-  ];
-
   @override
   void initState() {
     super.initState();
     _codeController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyBoundCodeFromProfile();
+    });
   }
 
   @override
   void dispose() {
     _codeController.dispose();
     super.dispose();
+  }
+
+  void _applyBoundCodeFromProfile() {
+    if (!mounted) return;
+    final profile = ref.read(userProfileProvider).asData?.value;
+    if (profile?.wxBound != true) return;
+
+    final code = profile!.bindingCode?.trim() ?? '';
+    if (code.isEmpty || _codeController.text == code) return;
+
+    setState(() => _codeController.text = code);
   }
 
   Future<void> _paste() async {
@@ -119,6 +127,10 @@ class _WechatBindScreenState extends ConsumerState<WechatBindScreen> {
     final alreadyBound = profile?.wxBound == true;
     final canInteract = profileReady && !alreadyBound && !_binding;
 
+    ref.listen(userProfileProvider, (previous, next) {
+      _applyBoundCodeFromProfile();
+    });
+
     return Scaffold(
       backgroundColor: scheme.surface,
       appBar: const CustomAppBar(
@@ -130,34 +142,7 @@ class _WechatBindScreenState extends ConsumerState<WechatBindScreen> {
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           child: Column(
             children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: const BoxDecoration(
-                  color: AppColors.wechat,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.chat_bubble,
-                  color: Colors.white,
-                  size: 36,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                UiStrings.wechatBindTitle,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                UiStrings.wechatBindSubtitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
+              _HeroSection(theme: theme, scheme: scheme),
               if (profileAsync.isLoading && !profileReady) ...[
                 const SizedBox(height: 20),
                 const SizedBox(
@@ -189,177 +174,491 @@ class _WechatBindScreenState extends ConsumerState<WechatBindScreen> {
                   ],
                 ),
               ],
+              const SizedBox(height: 28),
+              _InputCard(
+                theme: theme,
+                scheme: scheme,
+                controller: _codeController,
+                canInteract: canInteract,
+                binding: _binding,
+                onChanged: () => setState(() {}),
+                onPaste: _paste,
+                onConfirm: _confirm,
+              ),
+              const SizedBox(height: 28),
+              _StepsSection(theme: theme, scheme: scheme),
               if (alreadyBound) ...[
-                const SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.wechat.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppColors.wechat.withValues(alpha: 0.35),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        UiStrings.wechatAlreadyBound,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.wechat,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        UiStrings.wechatAlreadyBoundHint,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              const SizedBox(height: 28),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.elevatedSurfaceOf(context),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: scheme.outlineVariant.withValues(alpha: 0.5),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _codeController,
-                      enabled: canInteract,
-                      decoration: InputDecoration(
-                        hintText: UiStrings.wechatBindCodeHint,
-                        filled: true,
-                        fillColor: scheme.surface,
-                        suffixIcon: _codeController.text.isEmpty
-                            ? null
-                            : IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: canInteract
-                                    ? () => setState(
-                                          () => _codeController.clear(),
-                                        )
-                                    : null,
-                              ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      onChanged: (_) => setState(() {}),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: canInteract ? _paste : null,
-                            icon: const Icon(Icons.content_paste, size: 18),
-                            label: const Text(UiStrings.wechatPaste),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: scheme.onSurface,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          flex: 2,
-                          child: FilledButton.icon(
-                            onPressed: canInteract ? _confirm : null,
-                            icon: _binding
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Icon(Icons.link, size: 18),
-                            label: const Text(UiStrings.wechatConfirmBind),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.wechat,
-                              foregroundColor: Colors.white,
-                              disabledBackgroundColor:
-                                  AppColors.wechat.withValues(alpha: 0.4),
-                              disabledForegroundColor: Colors.white70,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  UiStrings.wechatStepsTitle,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              for (var i = 0; i < _steps.length; i++) ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: AppColors.wechat,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '${i + 1}',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          _steps[i],
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                if (i < _steps.length - 1) const SizedBox(height: 12),
+                const SizedBox(height: 28),
+                _BoundStatusCard(theme: theme, scheme: scheme),
               ],
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _HeroSection extends StatelessWidget {
+  const _HeroSection({
+    required this.theme,
+    required this.scheme,
+  });
+
+  final ThemeData theme;
+  final ColorScheme scheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CustomPaint(
+          painter: _DashedRoundedRectPainter(
+            color: AppColors.wechat.withValues(alpha: 0.45),
+            radius: 20,
+          ),
+          child: Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              color: AppColors.wechat.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            alignment: Alignment.center,
+            child: const WechatIcon(size: 50),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          UiStrings.wechatBindTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: scheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          UiStrings.wechatBindSubtitle,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: scheme.onSurfaceVariant,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InputCard extends StatelessWidget {
+  const _InputCard({
+    required this.theme,
+    required this.scheme,
+    required this.controller,
+    required this.canInteract,
+    required this.binding,
+    required this.onChanged,
+    required this.onPaste,
+    required this.onConfirm,
+  });
+
+  final ThemeData theme;
+  final ColorScheme scheme;
+  final TextEditingController controller;
+  final bool canInteract;
+  final bool binding;
+  final VoidCallback onChanged;
+  final Future<void> Function() onPaste;
+  final Future<void> Function() onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.elevatedSurfaceOf(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.55),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.shadow.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            UiStrings.wechatBindCodeLabel,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: scheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            enabled: canInteract,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontFamily: 'monospace',
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              color: scheme.onSurface,
+            ),
+            decoration: InputDecoration(
+              hintText: UiStrings.wechatBindCodeHint,
+              hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                fontFamily: 'monospace',
+                color: scheme.onSurfaceVariant.withValues(alpha: 0.65),
+                fontWeight: FontWeight.w500,
+              ),
+              filled: true,
+              fillColor: AppColors.wechatBindInputFill,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
+              suffixIcon: controller.text.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ),
+                      onPressed: canInteract
+                          ? () {
+                              controller.clear();
+                              onChanged();
+                            }
+                          : null,
+                    ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            onChanged: (_) => onChanged(),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: canInteract ? onPaste : null,
+                  icon: Icon(
+                    Icons.content_copy_outlined,
+                    size: 18,
+                    color: canInteract
+                        ? scheme.onSurface
+                        : scheme.onSurfaceVariant,
+                  ),
+                  label: const Text(UiStrings.wechatPaste),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: scheme.onSurface,
+                    backgroundColor: AppColors.elevatedSurfaceOf(context),
+                    side: BorderSide(
+                      color: scheme.outlineVariant.withValues(alpha: 0.8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: FilledButton.icon(
+                  onPressed: canInteract ? onConfirm : null,
+                  icon: binding
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.link, size: 18),
+                  label: const Text(UiStrings.wechatConfirmBind),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.wechat,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor:
+                        AppColors.wechat.withValues(alpha: 0.4),
+                    disabledForegroundColor: Colors.white70,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepsSection extends StatelessWidget {
+  const _StepsSection({
+    required this.theme,
+    required this.scheme,
+  });
+
+  final ThemeData theme;
+  final ColorScheme scheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          UiStrings.wechatStepsTitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: scheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _StepRow(
+          index: 1,
+          theme: theme,
+          child: Text(
+            UiStrings.wechatStep1,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurface,
+              height: 1.45,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _StepRow(
+          index: 2,
+          theme: theme,
+          child: RichText(
+            text: TextSpan(
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurface,
+                height: 1.45,
+              ),
+              children: const [
+                TextSpan(text: UiStrings.wechatStep2Prefix),
+                TextSpan(
+                  text: UiStrings.wechatStep2Keyword,
+                  style: TextStyle(
+                    color: AppColors.wechat,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                TextSpan(text: UiStrings.wechatStep2Suffix),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _StepRow(
+          index: 3,
+          theme: theme,
+          child: Text(
+            UiStrings.wechatStep3,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurface,
+              height: 1.45,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        _StepRow(
+          index: 4,
+          theme: theme,
+          child: Text(
+            UiStrings.wechatStep4,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurface,
+              height: 1.45,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StepRow extends StatelessWidget {
+  const _StepRow({
+    required this.index,
+    required this.theme,
+    required this.child,
+  });
+
+  final int index;
+  final ThemeData theme;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.wechat.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            '$index',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: AppColors.wechat,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: child,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BoundStatusCard extends StatelessWidget {
+  const _BoundStatusCard({
+    required this.theme,
+    required this.scheme,
+  });
+
+  final ThemeData theme;
+  final ColorScheme scheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.elevatedSurfaceOf(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.55),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.wechat.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.check,
+              size: 20,
+              color: AppColors.wechat,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  UiStrings.wechatAlreadyBound,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: scheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  UiStrings.wechatAlreadyBoundHint,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DashedRoundedRectPainter extends CustomPainter {
+  _DashedRoundedRectPainter({
+    required this.color,
+    required this.radius,
+  });
+
+  final Color color;
+  final double radius;
+  static const _strokeWidth = 1.5;
+  static const _dashWidth = 5.0;
+  static const _dashGap = 4.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _strokeWidth;
+
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+        _strokeWidth / 2,
+        _strokeWidth / 2,
+        size.width - _strokeWidth,
+        size.height - _strokeWidth,
+      ),
+      Radius.circular(radius),
+    );
+    final path = Path()..addRRect(rrect);
+
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final end = (distance + _dashWidth).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(distance, end), paint);
+        distance += _dashWidth + _dashGap;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedRoundedRectPainter oldDelegate) {
+    return color != oldDelegate.color || radius != oldDelegate.radius;
   }
 }

@@ -38,6 +38,9 @@ class AppColors {
   /// WeChat brand green (bind screen / WeChat row accents).
   static const Color wechat = Color(0xFF07C160);
 
+  /// Bind-code input fill on the WeChat bind screen.
+  static const Color wechatBindInputFill = Color(0xFFF7F4F0);
+
   // ── Semantic ──────────────────────────────────────────────────
   static const Color success = Color(0xFF5B8C5A);
   static const Color warning = Color(0xFFC89642);

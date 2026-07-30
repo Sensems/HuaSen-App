@@ -275,6 +275,7 @@ class _NotesFilterSheetState extends State<NotesFilterSheet> {
                       label: UiStrings.notesCategoryTagFilterClear,
                       variant: CustomButtonVariant.secondary,
                       expanded: true,
+                      compact: true,
                       onPressed: _onClear,
                     ),
                   ),
@@ -283,6 +284,7 @@ class _NotesFilterSheetState extends State<NotesFilterSheet> {
                     child: CustomButton(
                       label: UiStrings.notesCategoryTagFilterConfirm,
                       expanded: true,
+                      compact: true,
                       onPressed: _onConfirm,
                     ),
                   ),

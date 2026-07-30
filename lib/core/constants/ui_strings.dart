@@ -74,6 +74,28 @@ abstract final class UiStrings {
   static const String categoryTagPickerRetry = '重试';
   static const String categoryTagPickerEmptyName = '请输入名称';
 
+  // --- Note management (settings) ---
+  static const String noteManagementSection = '笔记管理';
+  static const String manageCategoriesTags = '管理分类和标签';
+  static const String manageCategoriesTagsHint = '编辑、删除、整理分类与标签';
+  static const String manageCategoriesTagsTitle = '管理分类和标签';
+  static const String categoriesSection = '分类';
+  static const String tagsSection = '标签';
+  static const String itemCountSuffix = '个';
+  static const String notesCountSuffix = '篇笔记';
+  static const String addCategory = '添加分类';
+  static const String addTag = '添加标签';
+  static const String editCategoryTitle = '编辑分类';
+  static const String newCategoryTitle = '新建分类';
+  static const String newTagTitle = '新建标签';
+  static const String categoryNameLabel = '分类名称';
+  static const String tagNameLabel = '标签名称';
+  static const String deleteCategoryConfirmTitle = '确认删除该分类？';
+  static const String deleteCategoryConfirmMessage = '删除后关联笔记将移出该分类。';
+  static const String deleteTagConfirmTitle = '确认删除该标签？';
+  static const String deleteTagConfirmMessage = '删除后笔记将不再关联此标签。';
+  static const String reorderSaved = '排序已保存';
+
   // --- Note attachment open/download ---
   static const String attachmentOpenFailed = '无法打开该文件';
   static const String attachmentDownloadFailed = '下载失败，请重试';
@@ -143,7 +165,10 @@ abstract final class UiStrings {
   static const String unbind = '解绑';
   static const String emailLabel = '邮箱';
   static const String wechatLabel = '微信';
-  static const String unbindComingSoon = '解绑功能即将开放';
+  static const String wechatUnbindConfirmTitle = '确认解绑微信？';
+  static const String wechatUnbindConfirmMessage =
+      '解绑后公众号消息将不再同步到本账号，已同步的笔记仍会保留。';
+  static const String wechatUnbindSuccess = '解绑成功';
   static const String placeholderDisplayName = '张明';
   static const String placeholderAvatarInitial = '张';
   static const String placeholderEmail = 'zhangming@example.com';
@@ -176,21 +201,24 @@ abstract final class UiStrings {
 
   // --- WeChat bind ---
   static const String wechatBindTitle = '绑定微信';
-  static const String wechatBindSubtitle = '绑定后可将公众号消息同步到草稿箱';
+  static const String wechatBindSubtitle =
+      '通过绑定码将花森笔记助手与你的微信账号关联';
+  static const String wechatBindCodeLabel = '输入绑定码';
   static const String wechatBindCodeHint = '请输入绑定码';
   static const String wechatPaste = '粘贴';
   static const String wechatConfirmBind = '确认绑定';
   static const String wechatBindSuccess = '绑定成功，消息将同步至草稿箱';
-  static const String wechatAlreadyBound = '微信已绑定';
-  static const String wechatAlreadyBoundHint =
-      '当前账号已绑定微信，可将公众号消息同步到草稿箱';
+  static const String wechatAlreadyBound = '已绑定·花森笔记助手';
+  static const String wechatAlreadyBoundHint = '微信消息将自动同步至草稿箱';
   static const String wechatBindCodeRequired = '请输入绑定码';
   static const String wechatClipboardEmpty = '剪贴板为空';
   static const String wechatStepsTitle = '绑定步骤';
   static const String wechatStep1 = '关注花森公众号';
-  static const String wechatStep2 = '发送关键词「绑定」';
-  static const String wechatStep3 = '复制收到的绑定码';
-  static const String wechatStep4 = '回到 App 粘贴并确认';
+  static const String wechatStep2Prefix = '发送关键词「';
+  static const String wechatStep2Keyword = '绑定';
+  static const String wechatStep2Suffix = '」获取绑定码';
+  static const String wechatStep3 = '复制收到的绑定码到输入框';
+  static const String wechatStep4 = '点击确认绑定完成关联';
 
   // --- Drafts screen ---
   static const String draftsTitle = '草稿箱';

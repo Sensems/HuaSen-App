@@ -60,3 +60,17 @@ Map<String, dynamic> _$BindUserResponseDtoToJson(
   'overwritten': instance.overwritten,
   'message': instance.message,
 };
+
+_UnbindWechatResponseDto _$UnbindWechatResponseDtoFromJson(
+  Map<String, dynamic> json,
+) => _UnbindWechatResponseDto(
+  wxBound: json['wxBound'] as bool,
+  message: json['message'] as String,
+);
+
+Map<String, dynamic> _$UnbindWechatResponseDtoToJson(
+  _UnbindWechatResponseDto instance,
+) => <String, dynamic>{
+  'wxBound': instance.wxBound,
+  'message': instance.message,
+};

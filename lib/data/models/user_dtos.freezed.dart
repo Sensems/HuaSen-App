@@ -1092,4 +1092,270 @@ as String,
 
 }
 
+
+/// @nodoc
+mixin _$UnbindWechatResponseDto {
+
+ bool get wxBound; String get message;
+/// Create a copy of UnbindWechatResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UnbindWechatResponseDtoCopyWith<UnbindWechatResponseDto> get copyWith => _$UnbindWechatResponseDtoCopyWithImpl<UnbindWechatResponseDto>(this as UnbindWechatResponseDto, _$identity);
+
+  /// Serializes this UnbindWechatResponseDto to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UnbindWechatResponseDto&&(identical(other.wxBound, wxBound) || other.wxBound == wxBound)&&(identical(other.message, message) || other.message == message));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,wxBound,message);
+
+@override
+String toString() {
+  return 'UnbindWechatResponseDto(wxBound: $wxBound, message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $UnbindWechatResponseDtoCopyWith<$Res>  {
+  factory $UnbindWechatResponseDtoCopyWith(UnbindWechatResponseDto value, $Res Function(UnbindWechatResponseDto) _then) = _$UnbindWechatResponseDtoCopyWithImpl;
+@useResult
+$Res call({
+ bool wxBound, String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$UnbindWechatResponseDtoCopyWithImpl<$Res>
+    implements $UnbindWechatResponseDtoCopyWith<$Res> {
+  _$UnbindWechatResponseDtoCopyWithImpl(this._self, this._then);
+
+  final UnbindWechatResponseDto _self;
+  final $Res Function(UnbindWechatResponseDto) _then;
+
+/// Create a copy of UnbindWechatResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? wxBound = null,Object? message = null,}) {
+  return _then(_self.copyWith(
+wxBound: null == wxBound ? _self.wxBound : wxBound // ignore: cast_nullable_to_non_nullable
+as bool,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [UnbindWechatResponseDto].
+extension UnbindWechatResponseDtoPatterns on UnbindWechatResponseDto {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UnbindWechatResponseDto value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UnbindWechatResponseDto() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UnbindWechatResponseDto value)  $default,){
+final _that = this;
+switch (_that) {
+case _UnbindWechatResponseDto():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UnbindWechatResponseDto value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UnbindWechatResponseDto() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool wxBound,  String message)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UnbindWechatResponseDto() when $default != null:
+return $default(_that.wxBound,_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool wxBound,  String message)  $default,) {final _that = this;
+switch (_that) {
+case _UnbindWechatResponseDto():
+return $default(_that.wxBound,_that.message);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool wxBound,  String message)?  $default,) {final _that = this;
+switch (_that) {
+case _UnbindWechatResponseDto() when $default != null:
+return $default(_that.wxBound,_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _UnbindWechatResponseDto implements UnbindWechatResponseDto {
+  const _UnbindWechatResponseDto({required this.wxBound, required this.message});
+  factory _UnbindWechatResponseDto.fromJson(Map<String, dynamic> json) => _$UnbindWechatResponseDtoFromJson(json);
+
+@override final  bool wxBound;
+@override final  String message;
+
+/// Create a copy of UnbindWechatResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UnbindWechatResponseDtoCopyWith<_UnbindWechatResponseDto> get copyWith => __$UnbindWechatResponseDtoCopyWithImpl<_UnbindWechatResponseDto>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$UnbindWechatResponseDtoToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UnbindWechatResponseDto&&(identical(other.wxBound, wxBound) || other.wxBound == wxBound)&&(identical(other.message, message) || other.message == message));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,wxBound,message);
+
+@override
+String toString() {
+  return 'UnbindWechatResponseDto(wxBound: $wxBound, message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UnbindWechatResponseDtoCopyWith<$Res> implements $UnbindWechatResponseDtoCopyWith<$Res> {
+  factory _$UnbindWechatResponseDtoCopyWith(_UnbindWechatResponseDto value, $Res Function(_UnbindWechatResponseDto) _then) = __$UnbindWechatResponseDtoCopyWithImpl;
+@override @useResult
+$Res call({
+ bool wxBound, String message
+});
+
+
+
+
+}
+/// @nodoc
+class __$UnbindWechatResponseDtoCopyWithImpl<$Res>
+    implements _$UnbindWechatResponseDtoCopyWith<$Res> {
+  __$UnbindWechatResponseDtoCopyWithImpl(this._self, this._then);
+
+  final _UnbindWechatResponseDto _self;
+  final $Res Function(_UnbindWechatResponseDto) _then;
+
+/// Create a copy of UnbindWechatResponseDto
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? wxBound = null,Object? message = null,}) {
+  return _then(_UnbindWechatResponseDto(
+wxBound: null == wxBound ? _self.wxBound : wxBound // ignore: cast_nullable_to_non_nullable
+as bool,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on

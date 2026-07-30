@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../models/api_response.dart';
-import '../models/tag_response_dto.dart';
+import '../models/tag_dtos.dart';
 
 /// Service for tag-related API calls.
 class TagsService {
@@ -47,6 +47,22 @@ class TagsService {
     return ApiResponse.fromJson(
       response.data!,
       (json) => TagResponseDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  /// Reorder tags.
+  ///
+  /// POST /tags/reorder → `List<TagResponseDto>`
+  Future<ApiResponse<List<TagResponseDto>>> reorderTags(List<String> ids) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/tags/reorder',
+      data: ReorderTagDto(ids: ids).toJson(),
+    );
+    return ApiResponse.fromJson(
+      response.data!,
+      (json) => (json as List<dynamic>)
+          .map((e) => TagResponseDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

@@ -608,6 +608,53 @@
         ]
       }
     },
+    "/user/unbind": {
+      "post": {
+        "description": "清除当前 App 账号上的 wxOpenid，已同步的笔记仍保留在本账号，之后公众号消息将重新创建空壳账号。",
+        "operationId": "UserController_unbind",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "未绑微信\n\n成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/UnbindWechatResponseDto"
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": {
+                      "wxBound": false,
+                      "message": "解绑成功"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "解绑微信",
+        "tags": [
+          "用户"
+        ]
+      }
+    },
     "/notes": {
       "get": {
         "description": "view=pinned 仅置顶；view=recent 按创建时间；不传=置顶优先再按创建时间。枚举值须为大写（如 type=DRAFT）。",
@@ -2048,6 +2095,7 @@
                       {
                         "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                         "name": "随笔",
+                        "sortOrder": 0,
                         "createdAt": "2026-07-03T10:00:00.000Z",
                         "_count": {
                           "notes": 5
@@ -2117,6 +2165,7 @@
                     "data": {
                       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                       "name": "随笔",
+                      "sortOrder": 0,
                       "createdAt": "2026-07-03T10:00:00.000Z"
                     }
                   }
@@ -2182,6 +2231,7 @@
                     "data": {
                       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                       "name": "随笔",
+                      "sortOrder": 0,
                       "createdAt": "2026-07-03T10:00:00.000Z"
                     }
                   }
@@ -2723,6 +2773,83 @@
           "队列管理"
         ]
       }
+    },
+    "/tags/reorder": {
+      "post": {
+        "description": "成功后返回更新后的标签列表。",
+        "operationId": "TagsController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderTagDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ids": [
+                      "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功排序并返回标签列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TagResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "example": {
+                    "code": 0,
+                    "message": "ok",
+                    "data": [
+                      {
+                        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                        "name": "随笔",
+                        "sortOrder": 0,
+                        "createdAt": "2026-07-03T10:00:00.000Z",
+                        "_count": {
+                          "notes": 5
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "拖拽排序标签",
+        "tags": [
+          "标签"
+        ]
+      }
     }
   },
   "info": {
@@ -3101,6 +3228,23 @@
         },
         "required": [
           "bindingCode"
+        ]
+      },
+      "UnbindWechatResponseDto": {
+        "type": "object",
+        "properties": {
+          "wxBound": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "解绑成功"
+          }
+        },
+        "required": [
+          "wxBound",
+          "message"
         ]
       },
       "NoteBareDto": {
@@ -3994,6 +4138,11 @@
             "description": "标签名称",
             "example": "随笔"
           },
+          "sortOrder": {
+            "type": "number",
+            "description": "排序值，数字越小越靠前",
+            "example": 0
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -4012,6 +4161,7 @@
         "required": [
           "id",
           "name",
+          "sortOrder",
           "createdAt"
         ]
       },
@@ -4191,6 +4341,25 @@
         },
         "required": [
           "count"
+        ]
+      },
+      "ReorderTagDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "description": "按目标顺序排列的标签 ID 列表",
+            "example": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ids"
         ]
       }
     }

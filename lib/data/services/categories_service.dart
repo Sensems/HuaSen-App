@@ -69,8 +69,10 @@ class CategoriesService {
 
   /// Reorder categories.
   ///
-  /// POST /categories/reorder
-  Future<ApiResponse<void>> reorderCategories(List<ReorderItem> items) async {
+  /// POST /categories/reorder → category tree
+  Future<ApiResponse<List<CategoryDto>>> reorderCategories(
+    List<ReorderItem> items,
+  ) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '/categories/reorder',
       data: <String, dynamic>{
@@ -79,7 +81,9 @@ class CategoriesService {
     );
     return ApiResponse.fromJson(
       response.data!,
-      (_) {},
+      (json) => (json as List<dynamic>)
+          .map((e) => CategoryDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

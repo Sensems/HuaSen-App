@@ -28,6 +28,7 @@ abstract class TagResponseDto with _$TagResponseDto {
   const factory TagResponseDto({
     required String id,
     required String name,
+    required int sortOrder,
     @JsonKey(fromJson: _dateTimeFromJson, toJson: _dateTimeToJson)
     required DateTime createdAt,
     @JsonKey(
@@ -51,4 +52,15 @@ abstract class CreateTagDto with _$CreateTagDto {
 
   factory CreateTagDto.fromJson(Map<String, dynamic> json) =>
       _$CreateTagDtoFromJson(json);
+}
+
+/// DTO for reordering tags (`POST /tags/reorder`).
+@freezed
+abstract class ReorderTagDto with _$ReorderTagDto {
+  const factory ReorderTagDto({
+    required List<String> ids,
+  }) = _ReorderTagDto;
+
+  factory ReorderTagDto.fromJson(Map<String, dynamic> json) =>
+      _$ReorderTagDtoFromJson(json);
 }

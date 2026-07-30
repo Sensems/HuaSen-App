@@ -329,6 +329,23 @@
           "bindingCode"
         ]
       },
+      "UnbindWechatResponseDto": {
+        "type": "object",
+        "properties": {
+          "wxBound": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "解绑成功"
+          }
+        },
+        "required": [
+          "wxBound",
+          "message"
+        ]
+      },
       "NoteBareDto": {
         "type": "object",
         "properties": {
@@ -1220,6 +1237,11 @@
             "description": "标签名称",
             "example": "随笔"
           },
+          "sortOrder": {
+            "type": "number",
+            "description": "排序值，数字越小越靠前",
+            "example": 0
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -1238,6 +1260,7 @@
         "required": [
           "id",
           "name",
+          "sortOrder",
           "createdAt"
         ]
       },
@@ -1417,6 +1440,25 @@
         },
         "required": [
           "count"
+        ]
+      },
+      "ReorderTagDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "description": "按目标顺序排列的标签 ID 列表",
+            "example": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "ids"
         ]
       }
     }

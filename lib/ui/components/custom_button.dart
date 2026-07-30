@@ -30,6 +30,7 @@ class CustomButton extends StatelessWidget {
     this.disabled = false,
     this.icon,
     this.expanded = false,
+    this.compact = false,
   });
 
   /// The text displayed on the button.
@@ -56,6 +57,9 @@ class CustomButton extends StatelessWidget {
   /// When true the button expands to fill available width.
   final bool expanded;
 
+  /// When true uses smaller vertical padding for a shorter button.
+  final bool compact;
+
   bool get _isInteractive => onPressed != null && !loading && !disabled;
 
   @override
@@ -80,8 +84,14 @@ class CustomButton extends StatelessWidget {
             ),
             alignment: Alignment.center,
             padding: expanded
-                ? const EdgeInsets.symmetric(horizontal: 24, vertical: 14)
-                : const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ? EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: compact ? 10 : 14,
+                  )
+                : EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: compact ? 8 : 12,
+                  ),
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(12),

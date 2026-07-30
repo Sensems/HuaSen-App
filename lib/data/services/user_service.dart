@@ -49,4 +49,15 @@ class UserService {
       (json) => BindUserResponseDto.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  /// Unbind WeChat from the current account.
+  ///
+  /// POST /user/unbind → [UnbindWechatResponseDto]
+  Future<ApiResponse<UnbindWechatResponseDto>> unbindWechat() async {
+    final response = await _dio.post<Map<String, dynamic>>('/user/unbind');
+    return ApiResponse.fromJson(
+      response.data!,
+      (json) => UnbindWechatResponseDto.fromJson(json as Map<String, dynamic>),
+    );
+  }
 }

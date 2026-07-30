@@ -13,6 +13,7 @@ import '../../features/notes/note_detail_screen.dart';
 import '../../features/notes/note_editor_screen.dart';
 import '../../features/notes/notes_list_screen.dart';
 import '../../features/settings/account_edit_screen.dart';
+import '../../features/settings/category_tags_manage_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/wechat/drafts_screen.dart';
 import '../../features/wechat/wechat_bind_screen.dart';
@@ -136,6 +137,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppConstants.routeSettingsWechatBind,
         name: 'settings-wechat-bind',
         builder: (context, state) => const WechatBindScreen(),
+      ),
+      GoRoute(
+        path: AppConstants.routeSettingsCategoriesTags,
+        name: 'settings-categories-tags',
+        builder: (context, state) => const CategoryTagsManageScreen(),
       ),
       GoRoute(
         path: AppConstants.routeClipboard,

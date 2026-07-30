@@ -34,6 +34,9 @@ class AppConstants {
   /// WeChat bind flow (outside shell).
   static const String routeSettingsWechatBind = '/settings/wechat-bind';
 
+  /// Category and tag management (outside shell).
+  static const String routeSettingsCategoriesTags = '/settings/categories-tags';
+
   /// WeChat drafts screen.
   static const String routeDrafts = '/drafts';
 

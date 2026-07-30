@@ -56,3 +56,15 @@ abstract class BindUserResponseDto with _$BindUserResponseDto {
   factory BindUserResponseDto.fromJson(Map<String, dynamic> json) =>
       _$BindUserResponseDtoFromJson(json);
 }
+
+/// Response payload for `POST /user/unbind` (`UnbindWechatResponseDto`).
+@freezed
+abstract class UnbindWechatResponseDto with _$UnbindWechatResponseDto {
+  const factory UnbindWechatResponseDto({
+    required bool wxBound,
+    required String message,
+  }) = _UnbindWechatResponseDto;
+
+  factory UnbindWechatResponseDto.fromJson(Map<String, dynamic> json) =>
+      _$UnbindWechatResponseDtoFromJson(json);
+}

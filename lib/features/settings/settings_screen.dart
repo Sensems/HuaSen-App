@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,16 +6,16 @@ import 'package:tolyui_message/tolyui_message.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_strings.dart';
+import '../../core/network/api_exception.dart';
+import '../../core/providers/core_providers.dart';
 import '../../data/models/user_dtos.dart';
 import '../../ui/components/custom_app_bar.dart';
+import '../../ui/components/wechat_icon.dart';
 import '../../ui/theme/app_colors.dart';
 import '../../ui/theme/theme_provider.dart';
 import 'user_profile_provider.dart';
 
-/// Settings tab: account card, appearance, sync, thresholds, and bindings.
-///
-/// Dark mode is wired to [themeModeProvider] (session-only). Other controls
-/// use local placeholder state. Account / binding rows use [userProfileProvider].
+/// Settings tab: account card, note management, bindings, and appearance.
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
@@ -23,10 +24,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  bool _draftsSync = true;
-  bool _clipboardSync = true;
-  double _maxImageSizeMb = 10;
-  double _maxFileSizeMb = 50;
+  bool _unbindingWechat = false;
 
   bool get _isWide => MediaQuery.sizeOf(context).width >= 600;
 
@@ -42,57 +40,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           _buildAccountCard(context, profileAsync),
           const SizedBox(height: 24),
-          _sectionTitle(UiStrings.syncSection),
-          _settingsTile(
-            icon: Icons.inventory_2_outlined,
-            title: UiStrings.draftsSync,
-            subtitle: UiStrings.draftsSyncHint,
-            trailing: Switch.adaptive(
-              value: _draftsSync,
-              onChanged: (v) => setState(() => _draftsSync = v),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _settingsTile(
-            icon: Icons.content_paste_go_outlined,
-            title: UiStrings.clipboardSync,
-            subtitle: UiStrings.clipboardSyncHint,
-            trailing: Switch.adaptive(
-              value: _clipboardSync,
-              onChanged: (v) => setState(() => _clipboardSync = v),
-            ),
-          ),
-          const SizedBox(height: 24),
-          _sectionTitle(UiStrings.sizeThresholds),
-          _settingsTile(
-            icon: Icons.image_outlined,
-            title: UiStrings.maxImageSize,
-            subtitle: UiStrings.maxImageSizeHint,
-            trailing: Text('${_maxImageSizeMb.round()} MB'),
-            extra: Slider(
-              value: _maxImageSizeMb,
-              min: 1,
-              max: 50,
-              divisions: 49,
-              label: '${_maxImageSizeMb.round()} MB',
-              onChanged: (v) => setState(() => _maxImageSizeMb = v),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _settingsTile(
-            icon: Icons.insert_drive_file_outlined,
-            title: UiStrings.maxFileSize,
-            subtitle: UiStrings.maxFileSizeHint,
-            trailing: Text('${_maxFileSizeMb.round()} MB'),
-            extra: Slider(
-              value: _maxFileSizeMb,
-              min: 1,
-              max: 200,
-              divisions: 199,
-              label: '${_maxFileSizeMb.round()} MB',
-              onChanged: (v) => setState(() => _maxFileSizeMb = v),
-            ),
-          ),
+          _sectionTitle(UiStrings.noteManagementSection),
+          _noteManagementRow(context),
           const SizedBox(height: 24),
           _sectionTitle(UiStrings.accountBinding),
           _bindingEmailRow(context, profileAsync),
@@ -378,28 +327,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _settingsTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Widget trailing,
-    Widget? extra,
-  }) {
+  Widget _noteManagementRow(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.elevatedSurfaceOf(context),
+    return Material(
+      color: AppColors.elevatedSurfaceOf(context),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.4),
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
+        onTap: () => context.push(AppConstants.routeSettingsCategoriesTags),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: scheme.outlineVariant.withValues(alpha: 0.4),
+            ),
+          ),
+          child: Row(
             children: [
               Container(
                 width: 40,
@@ -408,7 +354,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   color: scheme.primaryContainer.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, size: 20, color: scheme.primary),
+                child: Icon(
+                  Icons.local_offer_outlined,
+                  size: 20,
+                  color: scheme.primary,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -416,7 +366,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      UiStrings.manageCategoriesTags,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: scheme.onSurface,
@@ -424,7 +374,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      subtitle,
+                      UiStrings.manageCategoriesTagsHint,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -432,14 +382,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ],
                 ),
               ),
-              trailing,
+              Icon(
+                Icons.chevron_right,
+                color: scheme.onSurfaceVariant,
+              ),
             ],
           ),
-          if (extra != null) ...[
-            const SizedBox(height: 8),
-            extra,
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -545,11 +494,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   color: AppColors.wechat.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.chat_bubble_outline,
-                  size: 20,
-                  color: AppColors.wechat,
-                ),
+                alignment: Alignment.center,
+                child: const WechatIcon(size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -576,21 +522,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               if (wxBound)
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    $message.success(message: UiStrings.unbindComingSoon);
-                  },
+                  onTap: _unbindingWechat
+                      ? null
+                      : () => _confirmUnbindWechat(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
-                    child: Text(
-                      UiStrings.unbind,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: scheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: _unbindingWechat
+                        ? SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: scheme.primary,
+                            ),
+                          )
+                        : Text(
+                            UiStrings.unbind,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: scheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
             ],
@@ -598,5 +553,65 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmUnbindWechat(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(UiStrings.wechatUnbindConfirmTitle),
+          content: const Text(UiStrings.wechatUnbindConfirmMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text(UiStrings.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text(UiStrings.unbind),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !mounted) return;
+    await _unbindWechat();
+  }
+
+  Future<void> _unbindWechat() async {
+    if (_unbindingWechat) return;
+    setState(() => _unbindingWechat = true);
+    try {
+      final response = await ref.read(userServiceProvider).unbindWechat();
+      if (!response.isSuccess) {
+        $message.error(
+          message: response.message.isNotEmpty
+              ? response.message
+              : UiStrings.profileLoadFailed,
+        );
+        return;
+      }
+      final unbindMessage = response.data?.message.trim();
+      $message.success(
+        message: (unbindMessage != null && unbindMessage.isNotEmpty)
+            ? unbindMessage
+            : (response.message.isNotEmpty
+                ? response.message
+                : UiStrings.wechatUnbindSuccess),
+      );
+      await ref.read(userProfileProvider.notifier).refresh();
+    } on DioException catch (e) {
+      final err = e.error;
+      final msg = err is ApiException && err.message.isNotEmpty
+          ? err.message
+          : UiStrings.profileLoadFailed;
+      $message.error(message: msg);
+    } finally {
+      if (mounted) setState(() => _unbindingWechat = false);
+    }
   }
 }
