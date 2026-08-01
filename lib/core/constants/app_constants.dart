@@ -13,7 +13,7 @@ class AppConstants {
   /// Notes list / home screen.
   static const String routeHome = '/';
 
-  /// Note detail (read-only). `:id` is a real note UUID â€?never `new`.
+  /// Note detail (read-only). `:id` is a real note UUID ï¿½?never `new`.
   static const String routeNote = '/note/:id';
 
   /// Create note editor.
@@ -83,7 +83,7 @@ class AppConstants {
   /// with a real endpoint before release.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://tv.sensems.top',
+    defaultValue: 'https://notes.sensems.top/api',
   );
 
   /// Seconds before access-token expiry to trigger proactive refresh.
