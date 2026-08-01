@@ -99,7 +99,6 @@ dev_dependencies:
 
 # sqlparser 0.44.6+ made DartPlaceholder a sealed class (breaking), but
 # drift_dev 2.34.0 still calls `.when()`. Newer drift_dev needs analyzer ^13,
-# which conflicts with riverpod_lint's analyzer ^12 â€?pin until that resolves.
 dependency_overrides:
   sqlparser: 0.44.5
 
