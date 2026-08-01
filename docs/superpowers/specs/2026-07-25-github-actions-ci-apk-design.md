@@ -13,7 +13,7 @@ Add GitHub Actions so every PR and every `master` push runs Flutter static analy
 - Repo root is the Flutter app (`pubspec.yaml`, `sdk: ^3.12.2`).
 - No existing `.github/workflows`.
 - Local release APK path: `build/app/outputs/flutter-apk/app-release.apk`.
-- `API_BASE_URL` defaults in `AppConstants` to `http://tv.sensems.top`; CI builds do not pass `--dart-define`.
+- `API_BASE_URL` defaults in `AppConstants` to `http://notes.sensems.top/api`; CI builds do not pass `--dart-define`.
 - Freezed / json_serializable / Riverpod generated files are committed; CI still runs `build_runner` so generated code stays in sync with sources.
 
 ## Decisions

@@ -47,7 +47,7 @@
 ```bash
 flutter pub get
 
-# 默认 API：http://tv.sensems.top（见 AppConstants）
+# 默认 API：http://notes.sensems.top/api（见 AppConstants）
 flutter run -d windows
 # 或
 flutter run -d android
@@ -116,7 +116,7 @@ docs/
 
 ## 后端约定
 
-- Base URL：编译期 `API_BASE_URL`，默认 `http://tv.sensems.top`
+- Base URL：编译期 `API_BASE_URL`，默认 `http://notes.sensems.top/api`
 - 在线文档：`{API_BASE_URL}/api/docs-json`
 - 统一响应：`{ "code": 200|0, "message": "...", "data": ... }`
 - 邮箱鉴权：`POST /auth/email/login|register|send-code|reset-password`
